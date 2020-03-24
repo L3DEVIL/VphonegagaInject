@@ -95,6 +95,9 @@ public class FloatingModMenuService extends Service {
         //A little message for the user when he opens the app
         //Toast.makeText(this, Toast(), Toast.LENGTH_LONG).show();
         //Init Lib
+
+        // When you change the lib name, change also on Android.mk file
+        // Both must have same name
         System.loadLibrary("LGLTeam");
 
         initFloating();
@@ -108,7 +111,7 @@ public class FloatingModMenuService extends Service {
         });
     }
 
-   //Here we write the code for our Menu
+    //Here we write the code for our Menu
     private void initFloating() {
         this.rootFrame = new FrameLayout(getBaseContext()); // Global markup
         this.mRootContainer = new RelativeLayout(getBaseContext()); // Markup on which two markups of the icon and the menu itself will be placed
@@ -420,8 +423,7 @@ public class FloatingModMenuService extends Service {
     boolean delayed;
 
     public void playSound(Uri uri) {
-        if (soundEnabled)
-        {
+        if (soundEnabled) {
             if (!delayed) {
                 delayed = true;
                 if (FXPlayer != null) {

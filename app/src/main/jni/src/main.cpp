@@ -175,8 +175,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
             } else {
                // LOGD("Feature 3 ON");
             }
+            break;
         case 3:
             HookHack2 = !HookHack2;
+            break;
         case 4:
             HookHack3 = !HookHack3;
             break;

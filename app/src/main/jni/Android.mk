@@ -7,7 +7,7 @@ include $(CLEAR_VARS)
 # Both must have same name
 LOCAL_MODULE    := LGLTeam
 
-# Stuff you don't need to know
+# Code optimization
 LOCAL_ARM_MODE := arm
 LOCAL_CFLAGS := -Wno-error=format-security -fpermissive -fvisibility=hidden -fvisibility-inlines-hidden
 LOCAL_CFLAGS += -fno-rtti -fno-exceptions -g0 -fomit-frame-pointer -ffunction-sections -fdata-sections

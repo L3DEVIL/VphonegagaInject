@@ -1,3 +1,10 @@
+/*
+ * Credit:
+ *
+ * AndnixSH - GTA V Sound effects - https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
+ *
+ * */
+
 package uk.lgl.modmenu;
 
 public class Sounds {

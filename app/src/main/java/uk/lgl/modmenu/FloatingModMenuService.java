@@ -1,3 +1,14 @@
+/*
+ * Credit:
+ *
+ * Octowolve - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu
+ * And hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
+ * VanHoevenTR A.K.A Nixi: https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
+ * MrIkso - Mod menu: https://github.com/MrIkso/FloatingModMenu
+ * AndnixSH - GTA V Sound effects: https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
+ * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
+ * */
+
 package uk.lgl.modmenu;
 
 import android.app.ActivityManager;

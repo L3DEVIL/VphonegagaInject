@@ -1,3 +1,14 @@
+/*
+ * Credit:
+ *
+ * Octowolve - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu
+ * And hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
+ * VanHoevenTR A.K.A Nixi: https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
+ * MrIkso - Mod menu: https://github.com/MrIkso/FloatingModMenu
+ * AndnixSH - GTA V Sound effects: https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
+ * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
+ * */
+
 #include <pthread.h>
 #include <jni.h>
 #include <src/Includes/Utils.h>
@@ -142,8 +153,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
         case 0:
             KMHack1 = !KMHack1;
             if (KMHack1) {
+                LOGD("Feature 1 ON");
                 my_cool_Patches.GodMode.Modify();
             } else {
+                LOGD("Feature 1 OFF");
                 my_cool_Patches.GodMode.Restore();
             }
             break;
@@ -157,7 +170,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
             break;
         case 2:
             HookHack1 = !HookHack1;
-            if (HookHack2) {
+            if (HookHack1) {
               //  LOGD("Feature 3 OFF");
             } else {
                // LOGD("Feature 3 ON");
@@ -264,10 +277,10 @@ void *hack_thread(void *) {
     LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
 
     // modify & print bytes
-    if (my_cool_Patches.GodMode.Modify()) {
+    /*if (my_cool_Patches.GodMode.Modify()) {
         LOGD("GodMode has been modified successfully");
         LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
-    }
+    }*/
     // restore & print bytes
     //  if (my_cool_Patches.canShowInMinimap.Restore()) {
     //     LOGD("canShowInMinimap has been restored successfully");
@@ -279,12 +292,9 @@ void *hack_thread(void *) {
     // loop until our target library is found
 
     // ---------- Hook ---------- //
-    do {
-        sleep(1);
-    } while (!isLibraryLoaded(libName));
     LOGI("I found the il2cpp lib. Address is: %p", (void*)findLibrary(libName));
 
-    //MSHookFunction((void*)getAbsoluteAddress(libName, 0x7000DCCD0), (void*)GameManager_LateUpdate, (void**)&old_GameManager_LateUpdate);
+    MSHookFunction((void*)getAbsoluteAddress(libName, 0x7000DCCD0), (void*)GameManager_LateUpdate, (void**)&old_GameManager_LateUpdate);
     MSHookFunction((void *) getAbsoluteAddress(libName, 0x185A330), (void *) get_Cooltime, (void **) &old_get_Cooltime);
     MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible, (void **) &old_get_IsInvincible);
     MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate, (void **) &old_get_MoveSpeedUpRate);

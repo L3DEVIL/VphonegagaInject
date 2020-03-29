@@ -124,59 +124,59 @@ public class FloatingModMenuService extends Service {
 
     //Here we write the code for our Menu
     private void initFloating() {
-        this.rootFrame = new FrameLayout(getBaseContext()); // Global markup
-        this.mRootContainer = new RelativeLayout(getBaseContext()); // Markup on which two markups of the icon and the menu itself will be placed
-        this.mCollapsed = new RelativeLayout(getBaseContext()); // Markup of the icon (when the menu is minimized)
-        this.mExpanded = new LinearLayout(getBaseContext()); // Menu markup (when the menu is expanded)
-        this.view1 = new LinearLayout(getBaseContext());
-        this.patches = new LinearLayout(getBaseContext());
-        this.view2 = new LinearLayout(getBaseContext());
-        this.mButtonPanel = new LinearLayout(getBaseContext()); // Layout of option buttons (when the menu is expanded)
+        rootFrame = new FrameLayout(getBaseContext()); // Global markup
+        mRootContainer = new RelativeLayout(getBaseContext()); // Markup on which two markups of the icon and the menu itself will be placed
+        mCollapsed = new RelativeLayout(getBaseContext()); // Markup of the icon (when the menu is minimized)
+        mExpanded = new LinearLayout(getBaseContext()); // Menu markup (when the menu is expanded)
+        view1 = new LinearLayout(getBaseContext());
+        patches = new LinearLayout(getBaseContext());
+        view2 = new LinearLayout(getBaseContext());
+        mButtonPanel = new LinearLayout(getBaseContext()); // Layout of option buttons (when the menu is expanded)
 
         RelativeLayout relativeLayout = new RelativeLayout(this);
         relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(-2, -1));
-        relativeLayout.setPadding(10, 10, 10, 10);
+        relativeLayout.setPadding(3, 3, 3, 3);
         relativeLayout.setVerticalGravity(16);
 
-        this.kill = new Button(this);
-        this.kill.setBackgroundColor(Color.parseColor("#1C2A35"));
-        this.kill.setText("HIDE");
-        this.kill.setTextColor(Color.parseColor("#82CAFD"));
+        kill = new Button(this);
+        kill.setBackgroundColor(Color.parseColor("#1C2A35"));
+        kill.setText("HIDE");
+        kill.setTextColor(Color.parseColor("#82CAFD"));
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(-2, -2);
         layoutParams.addRule(11);
 
-        this.close = new Button(this);
-        this.close.setBackgroundColor(Color.parseColor("#1C2A35"));
-        this.close.setText("CLOSE");
-        this.close.setTextColor(Color.parseColor("#82CAFD"));
-        this.close.setLayoutParams(layoutParams);
+        close = new Button(this);
+        close.setBackgroundColor(Color.parseColor("#1C2A35"));
+        close.setText("CLOSE");
+        close.setTextColor(Color.parseColor("#82CAFD"));
+        close.setLayoutParams(layoutParams);
 
-        relativeLayout.addView(this.kill);
-        relativeLayout.addView(this.close);
+        relativeLayout.addView(kill);
+        relativeLayout.addView(close);
 
-        this.rootFrame.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
-        this.mRootContainer.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
-        this.mCollapsed.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
-        this.mCollapsed.setVisibility(View.VISIBLE);
-        this.startimage = new ImageView(getBaseContext());
-        this.startimage.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
+        rootFrame.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+        mRootContainer.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+        mCollapsed.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
+        mCollapsed.setVisibility(View.VISIBLE);
+        startimage = new ImageView(getBaseContext());
+        startimage.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
         int applyDimension = (int) TypedValue.applyDimension(1, (float) IconSize(), getResources().getDisplayMetrics());
-        this.startimage.getLayoutParams().height = applyDimension;
-        this.startimage.getLayoutParams().width = applyDimension;
-        this.startimage.requestLayout();
-        this.startimage.setScaleType(ImageView.ScaleType.FIT_XY);
+        startimage.getLayoutParams().height = applyDimension;
+        startimage.getLayoutParams().width = applyDimension;
+        startimage.requestLayout();
+        startimage.setScaleType(ImageView.ScaleType.FIT_XY);
         byte[] decode = Base64.decode(Icon(), 0);
-        this.startimage.setImageBitmap(BitmapFactory.decodeByteArray(decode, 0, decode.length));
-        this.startimage.setImageAlpha(200);
-        ((ViewGroup.MarginLayoutParams) this.startimage.getLayoutParams()).topMargin = convertDipToPixels(10);
+        startimage.setImageBitmap(BitmapFactory.decodeByteArray(decode, 0, decode.length));
+        startimage.setImageAlpha(200);
+        ((ViewGroup.MarginLayoutParams) startimage.getLayoutParams()).topMargin = convertDipToPixels(10);
 
         this.mExpanded.setVisibility(View.GONE);
         this.mExpanded.setBackgroundColor(Color.parseColor("#1C2A35"));
         this.mExpanded.setAlpha(0.95f);
         this.mExpanded.setGravity(17);
         this.mExpanded.setOrientation(LinearLayout.VERTICAL);
-        this.mExpanded.setPadding(5, 0, 5, 0);
+        this.mExpanded.setPadding(3, 0, 3, 0);
         this.mExpanded.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
 
         ScrollView scrollView = new ScrollView(getBaseContext());
@@ -198,7 +198,7 @@ public class FloatingModMenuService extends Service {
         textView.setTextColor(Color.parseColor("#82CAFD"));
         textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setTextSize(20.0f);
-        textView.setPadding(10, 25, 10, 5);
+        textView.setPadding(10, 10, 10, 5);
         LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-2, -2);
         layoutParams2.gravity = 17;
         textView.setLayoutParams(layoutParams2);

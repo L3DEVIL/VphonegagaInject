@@ -33,7 +33,7 @@ JNIEXPORT jstring JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(
         JNIEnv *env,
         jobject activityObject) {
-    jstring str = env->NewStringUTF("Modded by LGL Team");
+    jstring str = env->NewStringUTF("Modded by (yourname)");
     return str;
 }
 
@@ -41,7 +41,7 @@ JNIEXPORT jstring JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Heading(
         JNIEnv *env,
         jobject activityObject) {
-    std::string toast_text = "Put your website or notes here | www.example.com";
+    std::string toast_text = "Put your website or notes here";
     return env->NewStringUTF(toast_text.c_str());
 }
 
@@ -68,7 +68,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Toast(
         JNIEnv *env,
         jclass clazz) {
 
-    return env->NewStringUTF("Modded by LGL");
+    return env->NewStringUTF("Title title");
 }
 
 JNIEXPORT jobjectArray  JNICALL
@@ -77,10 +77,27 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
         jobject activityObject) {
     jobjectArray ret;
 
-    const char *features[] = {"Toggle_God mode", "Toggle_Enemy 0 hp", "Toggle_No cooldown",
-                              "Toggle_Invincible",
-                              "SeekBar_Speed hack hook_0_10", "SeekBar_Speed hack kittymemory_0_3",
-                              "SeekBar_Slider_0_500"};
+    // Category_(text)
+    // Toggle_(mod feature)
+    // Spinner_(mod feature)_(Items e.g. item1_item2_item3)...
+    // SeekBar_(mod feature)_(min)_(max)
+    const char *features[] = {
+            "Category_Category 1",
+            "Toggle_God mode",
+            "Toggle_No cooldown",
+            "Toggle_Enemy 0 hp",
+            "Category_Category 2",
+            "Spinner_Spinner 1_Honda_Mazda_Bmw",
+            "Spinner_Spinner 2_1_2_3_4_5",
+            "Spinner_Spinner 3_Hey_ya_all",
+            "Category_Category 3",
+            "SeekBar_Speed hack hook_0_10",
+            "SeekBar_Speed hack kittymemory_0_3",
+            "SeekBar_Slider_0_500",
+            "Category_Category 4",
+            "Button_Instant win",
+            "Button_Button 2",
+            "Button_Button 3"};
 
     int Total_Feature = (sizeof features /
                          sizeof features[0]); //Now you dont have to manually update the number everytime;
@@ -93,47 +110,29 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
     return (ret);
 }
 
-const char *libName = "libil2cpp.so";
 
 JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_changeSeekBar(
+Java_uk_lgl_modmenu_FloatingModMenuService_changeSpinner(
         JNIEnv *env,
         jobject activityObject,
-        jint feature, jint sliderValue) {
-    //__android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
-    //__android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "sliderValue = %d", sliderValue);
-    int i = (int) feature;
-    switch (i) {
-        case 4:
-            //LOGD("Speed hack");
-            //Speed hack in hook
-            speedHack = sliderValue;
-            break;
+        jint feature,
+        jint item) {
+
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Spinner = %d | item = %d", feature, item);
+
+    switch (feature) {
         case 5:
-            //Speed hack in KittyMemory
-            if (sliderValue == 0)
-            {
-                my_cool_Patches.SpeedHack.Restore();
+            switch (item) {
+                case 0:
+                    LOGI("Selected item Honda");
+                    break;
+                case 1:
+                    LOGI("Selected item Mazda");
+                    break;
+                case 2:
+                    LOGI("Selected item Bmw");
+                    break;
             }
-            else if (sliderValue == 1)
-            {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
-                                                        "\x02\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
-            }
-            else if (sliderValue == 2)
-            {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
-                                                        "\x03\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
-            }
-            else if (sliderValue == 3)
-            {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
-                                                        "\x04\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
-            }
-            //LOGD("feature 5");
             break;
     }
 }
@@ -144,20 +143,27 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
         jobject activityObject,
         jint feature) {
     // LOGD("changeToggle");
-    //__android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
 
-    int i = (int) feature;
-    switch (i) {
+    switch (feature) {
 
         // Must count from 0
         case 0:
             KMHack1 = !KMHack1;
             if (KMHack1) {
                 LOGD("Feature 1 ON");
-                my_cool_Patches.GodMode.Modify();
+                // modify & print bytes
+                if (my_cool_Patches.GodMode.Modify()) {
+                    LOGD("GodMode has been modified successfully");
+                    LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
+                }
             } else {
                 LOGD("Feature 1 OFF");
-                my_cool_Patches.GodMode.Restore();
+                //restore & print bytes
+                 if (my_cool_Patches.GodMode.Restore()) {
+                    LOGD("canShowInMinimap has been restored successfully");
+                    LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
+                }
             }
             break;
         case 1:
@@ -171,9 +177,9 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
         case 2:
             HookHack1 = !HookHack1;
             if (HookHack1) {
-              //  LOGD("Feature 3 OFF");
+                //  LOGD("Feature 3 OFF");
             } else {
-               // LOGD("Feature 3 ON");
+                // LOGD("Feature 3 ON");
             }
             break;
         case 3:
@@ -181,6 +187,62 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
             break;
         case 4:
             HookHack3 = !HookHack3;
+            break;
+    }
+}
+
+JNIEXPORT void JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_changeButton(
+        JNIEnv *env,
+        jobject activityObject,
+        jint feature) {
+
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Button = %d", feature);
+
+    switch (feature) {
+        case 14:
+            LOGI("Test btn");
+            break;
+        case 15:
+            LOGI("Test btn 2");
+            break;
+    }
+}
+
+const char *libName = "libil2cpp.so";
+
+JNIEXPORT void JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_changeSeekBar(
+        JNIEnv *env,
+        jobject activityObject,
+        jint feature, jint sliderValue) {
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "sliderValue = %d", sliderValue);
+
+    switch (feature) {
+        case 9:
+            //LOGD("Speed hack");
+            //Speed hack in hook
+            speedHack = sliderValue;
+            break;
+        case 10:
+            //Speed hack in KittyMemory
+            if (sliderValue == 0) {
+                my_cool_Patches.SpeedHack.Restore();
+            } else if (sliderValue == 1) {
+                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                                                        "\x02\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
+                my_cool_Patches.SpeedHack.Modify();
+            } else if (sliderValue == 2) {
+                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                                                        "\x03\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
+                my_cool_Patches.SpeedHack.Modify();
+            } else if (sliderValue == 3) {
+                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                                                        "\x04\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
+                my_cool_Patches.SpeedHack.Modify();
+            }
+            //LOGD("feature 5");
             break;
     }
 }
@@ -214,19 +276,10 @@ float (*old_get_MoveSpeedUpRate)(void *instance);
 float get_MoveSpeedUpRate(void *instance) {
     if (instance != NULL && speedHack > 1) {
         //LOGI("get_MoveSpeedUpRate hacked");
-        return (float)speedHack;
+        return (float) speedHack;
     }
-   // LOGI("get_MoveSpeedUpRate");
+    // LOGI("get_MoveSpeedUpRate");
     return old_get_MoveSpeedUpRate(instance);
-}
-
-bool (*old_get_IsCheatUserExist)(void *instance);
-bool get_IsCheatUserExist(void *instance) {
-    if (instance != NULL) {
-        return false;
-    }
-    //LOGI("get_IsCheatUserExist");
-    return old_get_IsCheatUserExist(instance);
 }
 
 void (*old_GameManager_LateUpdate)(void *instance);
@@ -241,13 +294,12 @@ void GameManager_LateUpdate(void *instance) {
             GameManagerLateUpdateHookInitialized = true;
             //LOGI("GameManager_LateUpdate hooked");
         }
-        //Your code here
     }
     old_GameManager_LateUpdate(instance);
 }
 
 // we will run our patches in a new thread so our while loop doesn't block process main thread
-// Don't forget to remove or comment out logs before you compile it. It is to make leeching quite harder
+// Don't forget to remove or comment out logs before you compile it.
 void *hack_thread(void *) {
     LOGI("I have been loaded. Mwuahahahaha");
 
@@ -264,7 +316,7 @@ void *hack_thread(void *) {
     // let's say our patches are meant for an arm library
     // http://shell-storm.org/online/Online-Assembler-and-Disassembler/
     /*
-    * mov r0, #1
+    * mov r0, #0
     * bx lr
     */
     // address = 0x6A6144
@@ -278,31 +330,20 @@ void *hack_thread(void *) {
     LOGD("Patch Size: %zu", my_cool_Patches.GodMode.get_PatchSize());
     LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
 
-    // modify & print bytes
-    /*if (my_cool_Patches.GodMode.Modify()) {
-        LOGD("GodMode has been modified successfully");
-        LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
-    }*/
-    // restore & print bytes
-    //  if (my_cool_Patches.canShowInMinimap.Restore()) {
-    //     LOGD("canShowInMinimap has been restored successfully");
-    //     LOGD("Current Bytes: %s", my_cool_Patches.canShowInMinimap.ToHexString().c_str());
-    // }
-    //LOGD("Loaded kittymemory...");
-    //LOGD("===========================");
+    LOGD("Loaded kittymemory...");
+    LOGD("===========================");
 
     // loop until our target library is found
 
     // ---------- Hook ---------- //
-    LOGI("I found the il2cpp lib. Address is: %p", (void*)findLibrary(libName));
+    LOGI("I found the il2cpp lib. Address is: %p", (void *) findLibrary(libName));
 
-    MSHookFunction((void*)getAbsoluteAddress(libName, 0x7000DCCD0), (void*)GameManager_LateUpdate, (void**)&old_GameManager_LateUpdate);
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0x185A330), (void *) get_Cooltime, (void **) &old_get_Cooltime);
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible, (void **) &old_get_IsInvincible);
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate, (void **) &old_get_MoveSpeedUpRate);
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0x12624A0), (void *) get_IsCheatUserExist, (void **) &old_get_IsCheatUserExist);
+    //MSHookFunction((void*)getAbsoluteAddress(libName, 0x7000DCCD0), (void*)GameManager_LateUpdate, (void**)&old_GameManager_LateUpdate);
+    //MSHookFunction((void *) getAbsoluteAddress(libName, 0x185A330), (void *) get_Cooltime, (void **) &old_get_Cooltime);
+    //MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible, (void **) &old_get_IsInvincible);
+    //MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate, (void **) &old_get_MoveSpeedUpRate);
 
-    //LOGD("Loaded hook...");
+    LOGD("Loaded hook...");
     return NULL;
 }
 

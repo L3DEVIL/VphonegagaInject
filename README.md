@@ -10,7 +10,7 @@ Support both KittyMemory and MSHook and support Android 4.2.x way up to Android 
 
 - -- Apktool.jar: https://ibotpeaches.github.io/Apktool/
 
-Or
+- Or
 
 - -- APK Easy Tool: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
 

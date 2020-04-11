@@ -3,6 +3,14 @@ Simple floating mod menu to il2cpp and other native android games. Compare to th
 
 Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. MSHook does not support ARM64 but KittyMemory support ARM64
 
+This is how it looks like:
+
+![](https://i.imgur.com/R9mod1I.gif)
+
+This is how it looks like in the game:
+
+![](https://i.imgur.com/XwHsquV.png)
+
 # What will you need?
 - Android Studio 3 and up: https://developer.android.com/studio
 
@@ -37,9 +45,15 @@ See the user guide: https://developer.android.com/studio/install
 # Install NDK
 Open Android Studio, you will be welcomed
 
+![](https://i.imgur.com/Cy1SQgI.png)
+
 At the bottom-right corner, click on Configure and SDK Manager
 
+![](https://i.imgur.com/xBP1bCE.png)
+
 Select **Android SDK**, check **NDK (Side by side)** and click OK. It will download and install
+
+![](https://i.imgur.com/FcAd2Px.png)
 
 # Open the mod menu template project 
 Once you've downloaded all the necessary files, extract the template project to the folder without any spaces. If any folder has spaces, it will cause problem
@@ -48,7 +62,7 @@ On Android Studio on the welcome screen, choose **"Open an existing Android Stud
 
 Navigate to the extracted project and open it
 
- 
+![](https://i.imgur.com/3etm4qX.png)
 
 It will index and Gradle will sync the project fir the first time. Please wait for a while, it will take around 5 minutes depending your computer performance
 
@@ -56,7 +70,7 @@ After it's done, you can start working!
 
 On the left side, you see the Project view. Default view is Android
 
- 
+![](https://i.imgur.com/YT71Y6B.png)
 
 If this is somewhat confusing, change the view to Project
 
@@ -152,7 +166,7 @@ Enjoy working with the menu =D
 
 If you have your device with adb enabled, connected your PC or your emulator with adb enabled. Android Studio will detect and you can click Play to run your app onto your device/emulator
 
-
+![](https://i.imgur.com/ZegjeM8.png)
 
 To use adb, you must enable USB debugging in the device system settings, under Developer options.
 
@@ -167,11 +181,11 @@ After you finished the menu, you can build the project to APK file.
 
 If no errors occured, you did everything right and build will succed. You will be notified that it build successfully
 
- 
+![](https://i.imgur.com/WpSKV1L.png)
 
 Click on **locate** to show you the location of **build.apk**. It is stored at `(your-project)\app\build\outputs\apk\ app-debug.apk`
 
-
+![](https://i.imgur.com/wBTPSLi.png)
 
 Now you will need to decompile **app-debug.apk**. Decompile the target game as well
 
@@ -181,7 +195,7 @@ Add the permission besides other permissions
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 ```
 
- 
+![](https://i.imgur.com/XOxLU91.png)
 
 And add the service below the application tag (change the package name if you had changed it)
 ```
@@ -197,11 +211,11 @@ Now we are looking for main activity, it is ususally written under application t
 
 Be sure to enable Word wrap so it is easier to read
 
- 
+![](https://i.imgur.com/7DzU8d0.png)
 
 Or open the apk in APK Easy Tool and look for main activity
 
- 
+![](https://i.imgur.com/ohp0zk1.png)
 
 In this case, the path to main activity was `com.funcube.loa.MainActivity`. I would navigate to `(decompiled game)/smali/com/funcube/loa/` and you will see **MainActivity.smali**. If the game have multi dex, find out which smali folder has the main activity, it should be in one of these folders.
 
@@ -210,12 +224,13 @@ Open the main acitivity's smali file, search for OnCreate method and paste this 
     invoke-static {p0}, Luk/lgl/modmenu/StaticActivity;->Start(Landroid/content/Context;)V
 ```
  
+![](https://i.imgur.com/7CxTCl8.png)
 
 Save the file
 
 Copy your mod menu from decompiled app-debug.apk smali to the game's smali folder. Example mine is uk.lgl.modmenu, I copy the `uk` folder from **app-debug** `(app-debug\smali\uk)` to the game's decompiled directory `(game name)\smali`
 
-
+![](https://i.imgur.com/aO6eEab.png)
  
 Very important for multi dex games. Let's say if main activity is located in **smali_classes2**, I would put my mod menu in **smali_classes2**
 
@@ -225,23 +240,18 @@ Putting the .so on a wrong architecture will result a crash
 
 **MSHook does not support ARM64 but KittyMemory support ARM64**
  
-
 Now compile and sign the apk
 If compile fail, read the log and look up at Google
 
 Your result should look like this in game:
 
- 
-
-Congratz!
+If the mod menu appears and the hack are working, congratz!
 
 If you face any problem, be sure to add your LOGD's in your code, recompile and capture the logcat. See what part of your code faced the problem
 
-Thanks for reading the tutorial, if you need any help, feel free to ask =D
+Thanks for reading the tutorial, if you need any help, feel free to ask me via Telegram https://t.me/RadidasG =D
 
 Do not forget to check my template again. I may change it anytime =D
-
-
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu

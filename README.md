@@ -1,18 +1,21 @@
-# FloatingModMenu
-Simple floating mod menu to il2cpp and other native android games. Compare to the other menus, this is the most efficient and fastest way to work and to implement menu in the game
+# Android Mod Menu
+Simple floating mod menu to il2cpp and other native android games. The mod menu is based on Octowolve/Escanor and Van's template. This template is the most efficient and fastest way to work and to implement menu in the game
 
 Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. MSHook does not support ARM64 but KittyMemory support ARM64
 
 This is how it looks like:
 
-![](https://i.imgur.com/R9mod1I.gif)
+![](https://i.imgur.com/PxuZ2cq.gif)
 
 This is how it looks like in the game:
 
 ![](https://i.imgur.com/XwHsquV.png)
 
+This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, and also ARM and ARM64 assembly, hex patching and hooking. If you don't have the knowledge, this tutorial will be hard for you, and I won't spoon feeding
+
 # What will you need?
 - Android Studio 3 and up: https://developer.android.com/studio
+- Git (Optional) - If you want to clone a project though Android Studio: https://git-scm.com/download
 
 - Apktool:
 
@@ -104,53 +107,44 @@ Decode base64 and write to file to a target directory
 
 In this file, you will mostly use it to edit features, credits, icon, and implement your code for KittyMemory or MS Hooking.
 
-- Title:
-Big text
+- Title: Big text
 
-- Heading:
-Little text
+- Heading: Little text
 
-- Icon:
-Compressed image that is encoded to base64
+- Delay: Delaying before the menu appearing. The number is milliseconds. Example 4000 ms is 4 secs
 
-- IconSize:
-Mod menu icon size 
+- Icon: Compressed image that is encoded to base64
 
-- Toast:
-To get text from c++ in order to show toast in java
+- IconSize: Mod menu icon size 
 
-- changeSeekBar:
-Change the value with slider in real time using sliderValue. This is useful for hooking. Features MUST be count from 0
+- Toast: To get text from c++ in order to show toast in java
 
-- changeToggle:
-To enable/disable the mods. Features MUST be count from 0
+- Changes: Get changes of toggles, seekbars, spinner and buttons to do modding. Features MUST be count from 0
 
-- FeatureList:
-Here you add the mod features
+- getFeatureList: Here you add the mod features
 
 Usage:
 
 ```
 Toggle_[feature name]
 SeekBar_[feature name]_[min value]_[max value]
-Spinner_(mod feature)_(Items e.g. item1_item2_item3)...
-SeekBar_(mod feature)_(min)_(max)
+Spinner_[feature name]_[Items e.g. item1_item2_item3]
+Button_[feature name]
 ```
 
 Example:
 
-```Toggle_Mod 1
-Toggle_Mod 2
+```Toggle_God mode
 SeekBar_Damage_0_1000
+Spinner_Weapons_AK47_9mm_Knife
+Button_Add 9999 money
 ```
 
 Do not forget to count your features from 0 and remember them
 
-- hack_thread:
-Here you add your code for hacking with KittyMemory or Hooking. I will not teach, you must have learned it already
+- hack_thread: Here you add your code for hacking with KittyMemory or Hooking. I will not teach, you must have learned it already
 
-- JNI_OnLoad:
-Initialize when the library loads
+- JNI_OnLoad: Initialize when the library loads
 
 **Android.mk**
 
@@ -247,18 +241,18 @@ Your result should look like this in game:
 
 If the mod menu appears and the hack are working, congratz!
 
-If you face any problem, be sure to add your LOGD's in your code, recompile and capture the logcat. See what part of your code faced the problem
+If you face any problem, be sure to add the log `LOGD("whatever");` in your codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat will also tell you if hooking fails (lib crash)
 
-Thanks for reading the tutorial, if you need any help, feel free to ask me via Telegram https://t.me/RadidasG =D
+Thanks for reading the tutorial, if you need any help, feel free to talk to me via Telegram https://t.me/RadidasG =D
 
 Do not forget to check my template again. I may change it anytime =D
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu
 
-* Octowolve - https://github.com/z3r0Sec/Substrate-Hooking-Example and https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu
-
-* VanHoevenTR A.K.A Nixi - https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
+* Octowolve/Escanor - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu and Hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
+ 
+* VanHoevenTR - Mod menu - https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
 
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 
@@ -269,3 +263,5 @@ Thanks to the following individuals whose code helped me develop this mod menu
 The following websites were also very helpful
 
 * Stackoverflow - https://stackoverflow.com/
+
+* Guided hacking - https://guidedhacking.com/forums/android-game-hacking.438/

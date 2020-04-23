@@ -16,18 +16,6 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/Logger.h"
 
-// fancy struct for patches
-struct My_Patches {
-    // let's assume we have patches for these functions for whatever game
-    // like show in miniMap boolean function
-    MemoryPatch GodMode, Enemy0Hp, SpeedHack;
-    // etc...
-} my_cool_Patches;
-
-bool KMHack1 = false, KMHack2 = false, HookHack1 = false, HookHack2 = false, HookHack3 = false;
-
-int speedHack = 0;
-
 extern "C" {
 JNIEXPORT jstring JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(
@@ -56,6 +44,14 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Icon(
     return env->NewStringUTF(str.c_str());
 }
 
+// Delay is being used on StaticActivity.java
+JNIEXPORT jint JNICALL
+Java_uk_lgl_modmenu_StaticActivity_Delay(
+        JNIEnv *env,
+        jclass activityObject) {
+        return 4000; //4 seconds
+}
+
 JNIEXPORT jint JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_IconSize(
         JNIEnv *env,
@@ -77,27 +73,22 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
         jobject activityObject) {
     jobjectArray ret;
 
+    // Note: Do not translate the first text
+    // Usage:
     // Category_(text)
-    // Toggle_(mod feature)
-    // Spinner_(mod feature)_(Items e.g. item1_item2_item3)...
-    // SeekBar_(mod feature)_(min)_(max)
+    // Toggle_[feature name]
+    // SeekBar_[feature name]_[min value]_[max value]
+    // Spinner_[feature name]_[Items e.g. item1_item2_item3]
+    // Button_[feature name]
     const char *features[] = {
-            "Category_Category 1",
-            "Toggle_God mode",
-            "Toggle_No cooldown",
-            "Toggle_Enemy 0 hp",
-            "Category_Category 2",
-            "Spinner_Spinner 1_Honda_Mazda_Bmw",
-            "Spinner_Spinner 2_1_2_3_4_5",
-            "Spinner_Spinner 3_Hey_ya_all",
-            "Category_Category 3",
-            "SeekBar_Speed hack hook_0_10",
-            "SeekBar_Speed hack kittymemory_0_3",
-            "SeekBar_Slider_0_500",
-            "Category_Category 4",
-            "Button_Instant win",
-            "Button_Button 2",
-            "Button_Button 3"};
+            "Category_Category 1", // 0
+            "Toggle_The toggle", // 1
+            "Toggle_The toggle 2", // 2
+            "Spinner_The spinner_Items 1_Items 2_Items 3", // 3
+            "Category_Category 2", // 4
+            "SeekBar_The slider hook example_0_100", // 5
+            "SeekBar_The slider kittymemory example_0_3", // 6
+            "Button_The button"}; // 7
 
     int Total_Feature = (sizeof features /
                          sizeof features[0]); //Now you dont have to manually update the number everytime;
@@ -110,47 +101,34 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
     return (ret);
 }
 
+// fancy struct for patches for kittyMemory
+struct My_Patches {
+    // let's assume we have patches for these functions for whatever game
+    // like show in miniMap boolean function
+    MemoryPatch GodMode, SpeedHack, Patch1;
+    // etc...
+} my_cool_Patches;
+
+bool feature1 = false, feature2 = false, feature3 = false;
+int speedHack = 0;
+
+const char *libName = "libil2cpp.so";
 
 JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_changeSpinner(
+Java_uk_lgl_modmenu_FloatingModMenuService_Changes(
         JNIEnv *env,
         jobject activityObject,
         jint feature,
-        jint item) {
+        jint value) {
 
-    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Spinner = %d | item = %d", feature, item);
-
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature: = %d", feature);
+    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Value: = %d", value);
+    // You must count your features from 0, not 1
     switch (feature) {
-        case 5:
-            switch (item) {
-                case 0:
-                    LOGI("Selected item Honda");
-                    break;
-                case 1:
-                    LOGI("Selected item Mazda");
-                    break;
-                case 2:
-                    LOGI("Selected item Bmw");
-                    break;
-            }
-            break;
-    }
-}
-
-JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
-        JNIEnv *env,
-        jobject activityObject,
-        jint feature) {
-    // LOGD("changeToggle");
-    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
-
-    switch (feature) {
-
-        // Must count from 0
-        case 0:
-            KMHack1 = !KMHack1;
-            if (KMHack1) {
+        // The category was 0 so "case 0" is not needed
+        case 1: // Switch
+            feature1 = !feature1;
+            if (feature1) {
                 LOGD("Feature 1 ON");
                 // modify & print bytes
                 if (my_cool_Patches.GodMode.Modify()) {
@@ -160,93 +138,56 @@ Java_uk_lgl_modmenu_FloatingModMenuService_changeToggle(
             } else {
                 LOGD("Feature 1 OFF");
                 //restore & print bytes
-                 if (my_cool_Patches.GodMode.Restore()) {
+                if (my_cool_Patches.GodMode.Restore()) {
                     LOGD("canShowInMinimap has been restored successfully");
                     LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
                 }
             }
             break;
-        case 1:
-            KMHack2 = !KMHack2;
-            if (KMHack2) {
-                my_cool_Patches.Enemy0Hp.Modify();
-            } else {
-                my_cool_Patches.Enemy0Hp.Restore();
+        case 2: // Switch 2
+            __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Value of the switcher 2: = %d",
+                                feature2);
+            feature2 = !feature2;
+            break;
+        case 3: // Spinner
+            switch (value) {
+                case 0:
+                    LOGI("Selected item 1");
+                    break;
+                case 1:
+                    LOGI("Selected item 2");
+                    break;
+                case 2:
+                    LOGI("Selected item 3");
+                    break;
             }
             break;
-        case 2:
-            HookHack1 = !HookHack1;
-            if (HookHack1) {
-                //  LOGD("Feature 3 OFF");
-            } else {
-                // LOGD("Feature 3 ON");
-            }
+            // The another category was 4 so "case 4" is not needed
+        case 5: // Slider in hook example
+            speedHack = value;
             break;
-        case 3:
-            HookHack2 = !HookHack2;
-            break;
-        case 4:
-            HookHack3 = !HookHack3;
-            break;
-    }
-}
-
-JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_changeButton(
-        JNIEnv *env,
-        jobject activityObject,
-        jint feature) {
-
-    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Button = %d", feature);
-
-    switch (feature) {
-        case 14:
-            LOGI("Test btn");
-            break;
-        case 15:
-            LOGI("Test btn 2");
-            break;
-    }
-}
-
-const char *libName = "libil2cpp.so";
-
-JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_changeSeekBar(
-        JNIEnv *env,
-        jobject activityObject,
-        jint feature, jint sliderValue) {
-    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature = %d", feature);
-    __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "sliderValue = %d", sliderValue);
-
-    switch (feature) {
-        case 9:
-            //LOGD("Speed hack");
-            //Speed hack in hook
-            speedHack = sliderValue;
-            break;
-        case 10:
-            //Speed hack in KittyMemory
-            if (sliderValue == 0) {
+        case 6: // Slider in KittyMemory example
+            if (value == 0) {
                 my_cool_Patches.SpeedHack.Restore();
-            } else if (sliderValue == 1) {
+            } else if (value == 1) {
                 my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x02\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
                 my_cool_Patches.SpeedHack.Modify();
-            } else if (sliderValue == 2) {
+            } else if (value == 2) {
                 my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x03\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
                 my_cool_Patches.SpeedHack.Modify();
-            } else if (sliderValue == 3) {
+            } else if (value == 3) {
                 my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x04\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
                 my_cool_Patches.SpeedHack.Modify();
             }
-            //LOGD("feature 5");
+            break;
+        case 7: // Button
+            LOGI("Button pressed");
             break;
     }
 }
-
 }
 
 bool exampleBooleanForToggle = false;
@@ -254,18 +195,9 @@ bool GameManagerLateUpdateHookInitialized = false;
 
 // ---------- Hooking ---------- //
 
-int (*old_get_Cooltime)(void *instance);
-int get_Cooltime(void *instance) {
-    if (instance != NULL && HookHack1) {
-        return 0;
-    }
-    //LOGI("get_Cooltime");
-    return old_get_Cooltime(instance);
-}
-
 bool (*old_get_IsInvincible)(void *instance);
 bool get_IsInvincible(void *instance) {
-    if (instance != NULL && HookHack2) {
+    if (instance != NULL && feature2) {
         return true;
     }
     //LOGI("get_IsInvincible");
@@ -315,16 +247,27 @@ void *hack_thread(void *) {
     // now here we do our stuff
     // let's say our patches are meant for an arm library
     // http://shell-storm.org/online/Online-Assembler-and-Disassembler/
-    /*
-    * mov r0, #0
-    * bx lr
+    /* Armv7:
+     * mov r0, #0
+     * bx lr
+     * Arm64:
+     * mov x0, #0x0
+     * ret
     */
-    // address = 0x6A6144
     // bytes len = 8
+
+    // This is to tell the compiler to compile that code for arm64 only if compiling arm64 lib.
+    // And else, compile for armv7 lib only
+    // You may wonder why there is no target for x86.
+    // x86 is not our high priority and it is being deprecated
+    #if defined(__aarch64__) //Patch for arm64 lib
+    my_cool_Patches.GodMode = MemoryPatch(libName, 0xA672EE,
+                                          "\x00\x00\x80\xD2\xC0\x03\x5F\xD6", 8);
+    #else //Patch for armv7 lib. Do not worry about greyed out highlighting code, it still works
     my_cool_Patches.GodMode = MemoryPatch(libName, 0xFCAA6C,
                                           "\x00\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-    my_cool_Patches.Enemy0Hp = MemoryPatch(libName, 0xFCAA5C,
-                                           "\x00\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
+    #endif
+
     LOGD("===== New Patch Entry =====");
     LOGD("Patch Address: %p", (void *) my_cool_Patches.GodMode.get_TargetAddress());
     LOGD("Patch Size: %zu", my_cool_Patches.GodMode.get_PatchSize());
@@ -337,11 +280,12 @@ void *hack_thread(void *) {
 
     // ---------- Hook ---------- //
     LOGI("I found the il2cpp lib. Address is: %p", (void *) findLibrary(libName));
-
-    //MSHookFunction((void*)getAbsoluteAddress(libName, 0x7000DCCD0), (void*)GameManager_LateUpdate, (void**)&old_GameManager_LateUpdate);
-    //MSHookFunction((void *) getAbsoluteAddress(libName, 0x185A330), (void *) get_Cooltime, (void **) &old_get_Cooltime);
-    //MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible, (void **) &old_get_IsInvincible);
-    //MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate, (void **) &old_get_MoveSpeedUpRate);
+    MSHookFunction((void *) getAbsoluteAddress(libName, 0x7000DCCD0),
+                   (void *) GameManager_LateUpdate, (void **) &old_GameManager_LateUpdate);
+    MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible,
+                   (void **) &old_get_IsInvincible);
+    MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate,
+                   (void **) &old_get_MoveSpeedUpRate);
 
     LOGD("Loaded hook...");
     return NULL;
@@ -352,6 +296,7 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *globalEnv;
     vm->GetEnv((void **) &globalEnv, JNI_VERSION_1_6);
 
+    // Create a new thread so it does not block the main thread, means the game would not freeze
     pthread_t ptid;
     pthread_create(&ptid, NULL, hack_thread, NULL);
 
@@ -367,4 +312,3 @@ void initializer() {
     pthread_t ptid;
     pthread_create(&ptid, NULL, my_test_thread, NULL);
 }*/
-

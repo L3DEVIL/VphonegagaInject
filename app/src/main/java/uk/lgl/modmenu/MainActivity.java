@@ -2,6 +2,7 @@ package uk.lgl.modmenu;
 
 import android.app.Activity;
 import android.os.Bundle;
+
 import uk.lgl.modmenu.R;
 
 public class MainActivity extends Activity {

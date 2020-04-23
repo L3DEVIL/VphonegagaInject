@@ -7,11 +7,12 @@ android {
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         ndk {
             abiFilters 'armeabi-v7a', 'arm64-v8a'
         }
+        signingConfig signingConfigs.debug
     }
     buildTypes {
         release {
@@ -28,9 +29,8 @@ android {
             path file('src/main/jni/Android.mk')
         }
     }
-    ndkVersion = '21.0.6113669'
+
     dependencies {
         implementation fileTree(dir: 'libs', include: ['*.jar'])
-        implementation 'com.android.support:support-v4:28.0.0'
     }
 }

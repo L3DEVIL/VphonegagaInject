@@ -20,14 +20,14 @@ import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.internal.view.SupportMenu;
-import android.support.v4.view.ViewCompat;
+
 import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
@@ -90,13 +90,7 @@ public class FloatingModMenuService extends Service {
 
     private native int IconSize();
 
-    public native void changeSeekBar(int feature, int value);
-
-    public native void changeToggle(int feature);
-
-    public native void changeButton(int feature);
-
-    public native void changeSpinner(int feature, int item);
+    public native void Changes(int feature, int value);
 
     private native String[] getFeatureList();
 
@@ -117,10 +111,6 @@ public class FloatingModMenuService extends Service {
         //A little message for the user when he opens the app
         //Toast.makeText(this, Toast(), Toast.LENGTH_LONG).show();
         //Init Lib
-
-        // When you change the lib name, change also on Android.mk file
-        // Both must have same name
-        System.loadLibrary("LGLTeam");
 
         initFloating();
 
@@ -187,11 +177,11 @@ public class FloatingModMenuService extends Service {
         this.mExpanded.setAlpha(0.95f);
         this.mExpanded.setGravity(17);
         this.mExpanded.setOrientation(LinearLayout.VERTICAL);
-        this.mExpanded.setPadding(3, 0, 3, 0);
+        this.mExpanded.setPadding(0, 0, 0, 0);
         this.mExpanded.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
 
         ScrollView scrollView = new ScrollView(getBaseContext());
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(190)));
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(200)));
         scrollView.setBackgroundColor(Color.parseColor("#171E24"));
 
         this.view1.setLayoutParams(new LinearLayout.LayoutParams(-1, 5));
@@ -316,7 +306,7 @@ public class FloatingModMenuService extends Service {
         this.kill.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 //FloatingModMenuService.this.stopSelf();
-               // view2.setVisibility(View.VISIBLE)
+                // view2.setVisibility(View.VISIBLE)
                 view2.setVisibility(View.VISIBLE);
                 view2.setAlpha(0);
                 view3.setVisibility(View.GONE);
@@ -343,7 +333,7 @@ public class FloatingModMenuService extends Service {
                 final int feature = i;
                 addSwitch(str.replace("Toggle_", ""), new InterfaceBool() {
                     public void OnWrite(boolean z) {
-                        FloatingModMenuService.this.changeToggle(feature);
+                        FloatingModMenuService.this.Changes(feature, 0);
                     }
                 });
             } else if (str.contains("SeekBar_")) {
@@ -351,7 +341,7 @@ public class FloatingModMenuService extends Service {
                 String[] split = str.split("_");
                 addSeekBar(split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]), new InterfaceInt() {
                     public void OnWrite(int i) {
-                        FloatingModMenuService.this.changeSeekBar(feature, i);
+                        FloatingModMenuService.this.Changes(feature, i);
                     }
                 });
             } else if (str.contains("Category_")) {
@@ -360,7 +350,7 @@ public class FloatingModMenuService extends Service {
                 final int feature = i;
                 addButton(str.replace("Button_", ""), new InterfaceBtn() {
                     public void OnWrite() {
-                        FloatingModMenuService.this.changeButton(feature);
+                        FloatingModMenuService.this.Changes(feature, 0);
                     }
                 });
             } else if (str.contains("Spinner_")) {
@@ -368,7 +358,7 @@ public class FloatingModMenuService extends Service {
                 addSpinner(str.replace("Spinner_", ""), new InterfaceInt() {
                     @Override
                     public void OnWrite(int i) {
-                        FloatingModMenuService.this.changeSpinner(feature, i);
+                        FloatingModMenuService.this.Changes(feature, i);
                     }
                 });
             }
@@ -395,28 +385,30 @@ public class FloatingModMenuService extends Service {
         // If spinner had the setBackgroundColor set, there would be no arrow symbol
         LinearLayout linearLayout2 = new LinearLayout(this);
         LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-1, -1);
-        layoutParams2.setMargins(10,2,10,5);
+        layoutParams2.setMargins(10, 2, 10, 5);
         linearLayout2.setOrientation(LinearLayout.VERTICAL);
         linearLayout2.setGravity(17);
         linearLayout2.setBackgroundColor(Color.parseColor("#1C262D"));
         linearLayout2.setLayoutParams(layoutParams2);
 
         Spinner spinner = new Spinner(this);
-        spinner.setPadding(25, 10, 25, 10);
+        spinner.setPadding(5, 10, 5, 8);
         spinner.setLayoutParams(layoutParams2);
-
+        spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP); //trick to show white down arrow color
         //Creating the ArrayAdapter instance having the list
         list.remove(0);
-        ArrayAdapter aa = new ArrayAdapter(this,android.R.layout.simple_spinner_item,list);
+        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, list);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Setting the ArrayAdapter data on the Spinner
         spinner.setAdapter(aa);
-        spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                ((TextView) parentView.getChildAt(0)).setTextColor(Color.parseColor("#f5f5f5"));
                 interInt.OnWrite(position);
                 playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
             }
+
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
 
@@ -485,7 +477,7 @@ public class FloatingModMenuService extends Service {
         linearLayout.setLayoutParams(layoutParams);
         linearLayout.setBackgroundColor(Color.parseColor("#171E24"));
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + feature +": <font color='#41c300'>" + prog + "</font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + prog + "</font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(25, 10, 35, 10);

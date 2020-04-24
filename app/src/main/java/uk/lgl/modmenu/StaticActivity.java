@@ -29,17 +29,12 @@ public class StaticActivity {
     private static final String TAG = "Mod Menu";
     public static String cacheDir;
 
-    private static native int Delay();
-
     public static void Start(final Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
             context.startActivity(new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION",
                     Uri.parse("package:" + context.getPackageName())));
             Process.killProcess(Process.myPid());
         } else {
-            // When you change the lib name, change also on Android.mk file
-            // Both must have same name
-            System.loadLibrary("LGLTeam");
 
             // Delay starting service to prevent function pointer issue
             // Arcording to Guided Hacking:
@@ -53,7 +48,7 @@ public class StaticActivity {
                 public void run() {
                     context.startService(new Intent(context, FloatingModMenuService.class));
                 }
-            }, Delay());
+            }, 5000);
         }
 
         cacheDir = context.getCacheDir().getPath() + "/";

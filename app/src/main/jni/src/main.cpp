@@ -44,14 +44,6 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Icon(
     return env->NewStringUTF(str.c_str());
 }
 
-// Delay is being used on StaticActivity.java
-JNIEXPORT jint JNICALL
-Java_uk_lgl_modmenu_StaticActivity_Delay(
-        JNIEnv *env,
-        jclass activityObject) {
-        return 4000; //4 seconds
-}
-
 JNIEXPORT jint JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_IconSize(
         JNIEnv *env,

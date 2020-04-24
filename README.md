@@ -111,8 +111,6 @@ In this file, you will mostly use it to edit features, credits, icon, and implem
 
 - Heading: Little text
 
-- Delay: Delaying before the menu appearing. The number is milliseconds. Example 4000 ms is 4 secs
-
 - Icon: Compressed image that is encoded to base64
 
 - IconSize: Mod menu icon size 

@@ -70,7 +70,8 @@ Navigate to the extracted project and open it
 It will index and Gradle will sync the project fir the first time. Please wait for a while, it will take around 5 minutes depending your computer performance
 
 If you encounter an error 
-NDK not configured. Download it with SDK manager. Preferred NDK version is '20.0.5594570'
+
+```NDK not configured. Download it with SDK manager. Preferred NDK version is '20.0.5594570'```
 
 Click File and Project Structure
 

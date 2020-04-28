@@ -182,6 +182,7 @@ public class FloatingModMenuService extends Service {
         this.mExpanded.setGravity(17);
         this.mExpanded.setOrientation(LinearLayout.VERTICAL);
         this.mExpanded.setPadding(0, 0, 0, 0);
+        //Auto size. To set size manually, change the width and height example 500, 500
         this.mExpanded.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
 
         ScrollView scrollView = new ScrollView(getBaseContext());
@@ -203,10 +204,10 @@ public class FloatingModMenuService extends Service {
         textView.setTextColor(Color.parseColor("#82CAFD"));
         textView.setTypeface(Typeface.DEFAULT_BOLD);
         textView.setTextSize(20.0f);
-        textView.setPadding(10, 10, 10, 5);
+        textView.setPadding(0, 10, 0, 5);
         LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-2, -2);
         layoutParams2.gravity = 17;
-        textView.setLayoutParams(layoutParams2);
+        //textView.setLayoutParams(layoutParams2);
 
         //Heading text
         TextView textView2 = new TextView(getBaseContext());
@@ -218,6 +219,7 @@ public class FloatingModMenuService extends Service {
 
         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(-2, -2);
         layoutParams3.gravity = 17;
+        textView.setLayoutParams(layoutParams2);
         textView2.setLayoutParams(layoutParams3);
         new LinearLayout.LayoutParams(-1, dp(25)).topMargin = dp(2);
         this.rootFrame.addView(this.mRootContainer);

@@ -112,11 +112,11 @@ public class FloatingModMenuService extends Service {
         //Toast.makeText(this, Toast(), Toast.LENGTH_LONG).show();
         //Init Lib
 
-        initFloating();
-
         // When you change the lib name, change also on Android.mk file
         // Both must have same name
         System.loadLibrary("LGLTeam");
+
+        initFloating();
 
         final Handler handler = new Handler();
         handler.post(new Runnable() {

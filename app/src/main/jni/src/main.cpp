@@ -17,6 +17,13 @@
 #include "Includes/Logger.h"
 
 extern "C" {
+JNIEXPORT jboolean JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_EnableSounds(
+        JNIEnv *env,
+        jobject activityObject) {
+    return true;
+}
+
 JNIEXPORT jstring JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(
         JNIEnv *env,
@@ -72,6 +79,8 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
     // SeekBar_[feature name]_[min value]_[max value]
     // Spinner_[feature name]_[Items e.g. item1_item2_item3]
     // Button_[feature name]
+    // Button_OnOff_[feature name]
+    // InputValue_[feature name]
     const char *features[] = {
             "Category_Category 1", // 0
             "Toggle_The toggle", // 1
@@ -80,7 +89,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(
             "Category_Category 2", // 4
             "SeekBar_The slider hook example_0_100", // 5
             "SeekBar_The slider kittymemory example_0_3", // 6
-            "Button_The button"}; // 7
+            "Button_The button", // 7
+            "Button_OnOff_The On/Off button",
+            "InputValue_Number",
+            "InputValue_Number 2"}; // 7
 
     int Total_Feature = (sizeof features /
                          sizeof features[0]); //Now you dont have to manually update the number everytime;
@@ -115,6 +127,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Changes(
 
     __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Feature: = %d", feature);
     __android_log_print(ANDROID_LOG_VERBOSE, "Mod Menu", "Value: = %d", value);
+
     // You must count your features from 0, not 1
     switch (feature) {
         // The category was 0 so "case 0" is not needed
@@ -188,6 +201,7 @@ bool GameManagerLateUpdateHookInitialized = false;
 // ---------- Hooking ---------- //
 
 bool (*old_get_IsInvincible)(void *instance);
+
 bool get_IsInvincible(void *instance) {
     if (instance != NULL && feature2) {
         return true;
@@ -197,6 +211,7 @@ bool get_IsInvincible(void *instance) {
 }
 
 float (*old_get_MoveSpeedUpRate)(void *instance);
+
 float get_MoveSpeedUpRate(void *instance) {
     if (instance != NULL && speedHack > 1) {
         //LOGI("get_MoveSpeedUpRate hacked");
@@ -207,6 +222,7 @@ float get_MoveSpeedUpRate(void *instance) {
 }
 
 void (*old_GameManager_LateUpdate)(void *instance);
+
 void GameManager_LateUpdate(void *instance) {
     //Check if instance is NULL to prevent crashes!  If the instance object is NULL,
     //this is what the call to update would look like in C++:
@@ -252,13 +268,13 @@ void *hack_thread(void *) {
     // And else, compile for armv7 lib only
     // You may wonder why there is no target for x86.
     // x86 is not our high priority and it is being deprecated
-    #if defined(__aarch64__) //Patch for arm64 lib
+#if defined(__aarch64__) //Patch for arm64 lib
     my_cool_Patches.GodMode = MemoryPatch(libName, 0xA672EE,
                                           "\x00\x00\x80\xD2\xC0\x03\x5F\xD6", 8);
-    #else //Patch for armv7 lib. Do not worry about greyed out highlighting code, it still works
+#else //Patch for armv7 lib. Do not worry about greyed out highlighting code, it still works
     my_cool_Patches.GodMode = MemoryPatch(libName, 0xFCAA6C,
                                           "\x00\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-    #endif
+#endif
 
     LOGD("===== New Patch Entry =====");
     LOGD("Patch Address: %p", (void *) my_cool_Patches.GodMode.get_TargetAddress());

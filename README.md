@@ -1,15 +1,11 @@
 # Android Mod Menu
-Simple floating mod menu to il2cpp and other native android games. The mod menu is based on Octowolve/Escanor and Van's template. This template is the most efficient and fastest way to work and to implement menu in the game
+Simple floating mod menu to il2cpp and other native android games with Android/material UI sounds. The mod menu is based on Octowolve/Escanor and Van's template. This template is the most efficient and fastest way to work and to implement menu in the game
 
 Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. MSHook does not support ARM64 but KittyMemory support ARM64
 
 This is how it looks like:
 
-![](https://i.imgur.com/PxuZ2cq.gif)
-
-This is how it looks like in the game:
-
-![](https://i.imgur.com/XwHsquV.png)
+![](https://i.imgur.com/W63wVTj.gif)
 
 This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, and also ARM and ARM64 assembly, hex patching and hooking. If you don't have the knowledge, this tutorial will be hard for you, and I won't spoon feeding
 
@@ -95,9 +91,6 @@ I will explain each of the files for you
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
-- soundEnabled:
-Change to false if you don't want it to play sounds
-
 **MainActivity.java:**
 
 Starts the main activity. It won't be used if you implement the menu in the game
@@ -118,6 +111,8 @@ Decode base64 and write to file to a target directory
 **main.cpp**
 
 In this file, you will mostly use it to edit features, credits, icon, and implement your code for KittyMemory or MS Hooking.
+
+- EnableSounds: Change to false if you don't want it to play sounds
 
 - Title: Big text
 
@@ -140,14 +135,15 @@ Toggle_[feature name]
 SeekBar_[feature name]_[min value]_[max value]
 Spinner_[feature name]_[Items e.g. item1_item2_item3]
 Button_[feature name]
+Button_OnOff_[feature name]
+InputValue_[feature name]
 ```
 
-Example:
+Examples:
 
 ```Toggle_God mode
-SeekBar_Damage_0_1000
 Spinner_Weapons_AK47_9mm_Knife
-Button_Add 9999 money
+Button_OnOff_God mode
 ```
 
 Do not forget to count your features from 0 and remember them
@@ -253,7 +249,8 @@ If the mod menu appears and the hack are working, congratz!
 
 If you face any problem, be sure to add the log `LOGD("whatever");` in your codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat will also tell you if hooking fails (lib crash)
 
-Thanks for reading the tutorial, if you need any help, feel free to talk to me via Telegram https://t.me/RadidasG =D
+Thanks for reading the tutorial, if you need any help, feel free to talk to me via Telegram https://t.me/RadidasG
+I may only help for experience modders only, and no begging please =D
 
 Do not forget to check my template again. I may change it anytime =D
 
@@ -266,9 +263,11 @@ Thanks to the following individuals whose code helped me develop this mod menu
 
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 
-* AndnixSH - GTA V Sound effects - https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
-
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
+
+* Google - Android UI sounds
+
+* Material.io - https://material.io/design/sound/sound-resources.html#
 
 The following websites were also very helpful
 

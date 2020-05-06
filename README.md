@@ -165,7 +165,8 @@ KittyMemory usage:
 
 [Struct].get_TargetAddress();
 [Struct].get_PatchSize();
-[Struct].get_CurrBytes().c_str();```
+[Struct].get_CurrBytes().c_str();
+```
 
 Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
 

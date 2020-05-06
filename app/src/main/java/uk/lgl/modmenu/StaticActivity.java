@@ -60,6 +60,7 @@ public class StaticActivity {
         writeToFile("SliderDecrease.ogg", Sounds.SliderDecrease());
         writeToFile("On.ogg", Sounds.On());
         writeToFile("Off.ogg", Sounds.Off());
+
        /* AssetManager assets = context.getAssets();
         String str2 = cacheDir + "/Slider-Switch.ogg";
         try {

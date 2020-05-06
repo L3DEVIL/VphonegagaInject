@@ -5,7 +5,7 @@
  * And hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
  * VanHoevenTR A.K.A Nixi: https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
  * MrIkso - Mod menu: https://github.com/MrIkso/FloatingModMenu
- * AndnixSH - GTA V Sound effects: https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
+ * Rprop - https://github.com/Rprop/And64InlineHook
  * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
  * */
 
@@ -126,7 +126,7 @@ public class FloatingModMenuService extends Service {
 
         // When you change the lib name, change also on Android.mk file
         // Both must have same name
-        System.loadLibrary("LGLTeam");
+        System.loadLibrary("MyLibName");
 
         initFloating();
         initAlertDiag();
@@ -712,7 +712,7 @@ public class FloatingModMenuService extends Service {
                 FXPlayer = MediaPlayer.create(this, uri);
                 if (FXPlayer != null)
                     //Volume reduced so sounds are not too loud
-                    FXPlayer.setVolume(0.4f, 0.4f);
+                    FXPlayer.setVolume(0.5f, 0.5f);
                 FXPlayer.start();
 
                 Handler handler = new Handler();

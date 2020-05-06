@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 # Here is the name of your lib.
 # When you change the lib name, change also on System.loadLibrary("") under OnCreate method on StaticActivity.java
 # Both must have same name
-LOCAL_MODULE    := LGLTeam
+LOCAL_MODULE    := MyLibName
 
 # Code optimization
 LOCAL_ARM_MODE := arm
@@ -22,7 +22,10 @@ LOCAL_SRC_FILES := src/main.cpp \
 	src/Substrate/SubstrateHook.cpp \
 	src/Substrate/SubstratePosixMemory.cpp \
 	src/KittyMemory/KittyMemory.cpp \
-	src/KittyMemory/MemoryPatch.cpp
+	src/KittyMemory/MemoryPatch.cpp \
+    src/KittyMemory/MemoryBackup.cpp \
+    src/KittyMemory/KittyUtils.cpp \
+	src/And64InlineHook/And64InlineHook.cpp
 
 LOCAL_LDLIBS := -llog -landroid
 

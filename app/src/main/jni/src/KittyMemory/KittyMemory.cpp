@@ -10,6 +10,24 @@ using KittyMemory::Memory_Status;
 using KittyMemory::ProcMap;
 
 
+struct mapsCache {
+    std::string identifier;
+    ProcMap map;
+};
+
+static std::vector<mapsCache> __mapsCache;
+static ProcMap findMapInCache(std::string id){
+    ProcMap ret;
+    for(int i = 0; i < __mapsCache.size(); i++){
+        if(__mapsCache[i].identifier.compare(id) == 0){
+            ret = __mapsCache[i].map;
+            break;
+        }
+    }
+    return ret;
+}
+
+
 bool KittyMemory::ProtectAddr(void *addr, size_t length, int protection) {
    uintptr_t pageStart = _PAGE_START_OF_(addr);
    uintptr_t pageLen   = _PAGE_LEN_OF_(addr, length);
@@ -64,7 +82,7 @@ std::string KittyMemory::read2HexStr(const void *addr, size_t len) {
     char buffer[bufferLen];
     memset(buffer, 0, bufferLen);
 
-    std::string ret = "0x";
+    std::string ret;
 
     if (memRead(temp, addr, len) != SUCCESS)
         return ret;
@@ -85,7 +103,7 @@ ProcMap KittyMemory::getLibraryMap(const char *libraryName) {
     if (fp != NULL) {
         while (fgets(line, sizeof(line), fp)) {
             if (strstr(line, libraryName)) {
-                char tmpPerms[5] = {0}, tmpDev[12] = {0}, tmpPathname[666] = {0};
+                char tmpPerms[5] = {0}, tmpDev[12] = {0}, tmpPathname[444] = {0};
                 // parse a line in maps file
                 // (format) startAddress-endAddress perms offset dev inode pathname
                 sscanf(line, "%llx-%llx %s %ld %s %d %s",
@@ -97,6 +115,7 @@ ProcMap KittyMemory::getLibraryMap(const char *libraryName) {
                 retMap.perms = tmpPerms;
                 retMap.dev = tmpDev;
                 retMap.pathname = tmpPathname;
+
                 break;
             }
         }
@@ -105,9 +124,25 @@ ProcMap KittyMemory::getLibraryMap(const char *libraryName) {
     return retMap;
 }
 
-uintptr_t KittyMemory::getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr) {
-    ProcMap libMap = getLibraryMap(libraryName);
+uintptr_t KittyMemory::getAbsoluteAddress(const char *libraryName, uintptr_t relativeAddr, bool useCache) {
+    ProcMap libMap;
+
+    if(useCache){
+        libMap = findMapInCache(libraryName);
+        if(libMap.isValid())
+        return (reinterpret_cast<uintptr_t>(libMap.startAddr) + relativeAddr);
+    }
+       
+    libMap = getLibraryMap(libraryName);
     if (!libMap.isValid())
         return 0;
+
+    if(useCache){
+        mapsCache cachedMap;
+        cachedMap.identifier = libraryName;
+        cachedMap.map        = libMap;
+        __mapsCache.push_back(cachedMap);
+    }
+
     return (reinterpret_cast<uintptr_t>(libMap.startAddr) + relativeAddr);
 }

@@ -1,18 +1,24 @@
 /*
- * Credit:
+ * Credits:
  *
  * Octowolve - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu
  * And hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
  * VanHoevenTR A.K.A Nixi: https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
  * MrIkso - Mod menu: https://github.com/MrIkso/FloatingModMenu
- * AndnixSH - GTA V Sound effects: https://github.com/AndnixSH/Substrate-Template-With-Mod-Menu
+ * Rprop - https://github.com/Rprop/And64InlineHook
  * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
  * */
 
 #include <pthread.h>
 #include <jni.h>
 #include <src/Includes/Utils.h>
+
+#if defined(__aarch64__) //Compile for arm64 lib only
+#include <src/And64InlineHook/And64InlineHook.hpp>
+#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 #include <src/Substrate/SubstrateHook.h>
+#endif
+
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/Logger.h"
 
@@ -111,7 +117,7 @@ struct My_Patches {
     // like show in miniMap boolean function
     MemoryPatch GodMode, SpeedHack, Patch1;
     // etc...
-} my_cool_Patches;
+} hexPatches;
 
 bool feature1 = false, feature2 = false, feature3 = false;
 int speedHack = 0;
@@ -134,19 +140,24 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Changes(
         case 1: // Switch
             feature1 = !feature1;
             if (feature1) {
+                //Remove LOGD before you release the mod
                 LOGD("Feature 1 ON");
                 // modify & print bytes
-                if (my_cool_Patches.GodMode.Modify()) {
+                if (hexPatches.GodMode.Modify()) {
                     LOGD("GodMode has been modified successfully");
-                    LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
+                    LOGD("Current Bytes: %s", hexPatches.GodMode.get_CurrBytes().c_str());
                 }
+                //Or
+                hexPatches.GodMode.Modify();
             } else {
                 LOGD("Feature 1 OFF");
                 //restore & print bytes
-                if (my_cool_Patches.GodMode.Restore()) {
+                if (hexPatches.GodMode.Restore()) {
                     LOGD("canShowInMinimap has been restored successfully");
-                    LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
+                    LOGD("Current Bytes: %s", hexPatches.GodMode.get_CurrBytes().c_str());
                 }
+                //Or
+                hexPatches.GodMode.Restore();
             }
             break;
         case 2: // Switch 2
@@ -173,19 +184,19 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Changes(
             break;
         case 6: // Slider in KittyMemory example
             if (value == 0) {
-                my_cool_Patches.SpeedHack.Restore();
+                hexPatches.SpeedHack.Restore();
             } else if (value == 1) {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                hexPatches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x02\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
+                hexPatches.SpeedHack.Modify();
             } else if (value == 2) {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                hexPatches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x03\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
+                hexPatches.SpeedHack.Modify();
             } else if (value == 3) {
-                my_cool_Patches.SpeedHack = MemoryPatch(libName, 0x10000,
+                hexPatches.SpeedHack = MemoryPatch(libName, 0x10000,
                                                         "\x04\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-                my_cool_Patches.SpeedHack.Modify();
+                hexPatches.SpeedHack.Modify();
             }
             break;
         case 7: // Button
@@ -243,8 +254,6 @@ void GameManager_LateUpdate(void *instance) {
 void *hack_thread(void *) {
     LOGI("I have been loaded. Mwuahahahaha");
 
-    // ---------- Kitty memory ---------- //
-
     // loop until our target library is found
     ProcMap il2cppMap;
     do {
@@ -268,34 +277,52 @@ void *hack_thread(void *) {
     // And else, compile for armv7 lib only
     // You may wonder why there is no target for x86.
     // x86 is not our high priority and it is being deprecated
-#if defined(__aarch64__) //Patch for arm64 lib
-    my_cool_Patches.GodMode = MemoryPatch(libName, 0xA672EE,
+
+    // by default MemoryPatch will cache library map for faster lookup when use getAbsoluteAddress
+    // You can disable this by passing false for last argument
+    //gPatches.canShowInMinimap = MemoryPatch("libil2cpp.so", 0x6A6144, "\x01\x00\xA0\xE3\x1E\xFF\x2F\xE1", 8, false);
+
+#if defined(__aarch64__) //Compile for arm64 lib only
+    hexPatches.GodMode = MemoryPatch(libName, 0xA672EE,
                                           "\x00\x00\x80\xD2\xC0\x03\x5F\xD6", 8);
-#else //Patch for armv7 lib. Do not worry about greyed out highlighting code, it still works
-    my_cool_Patches.GodMode = MemoryPatch(libName, 0xFCAA6C,
-                                          "\x00\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
-#endif
+    // also possible with hex & no need to specify len
+    hexPatches.GodMode = MemoryPatch::createWithHex("libil2cpp.so", 0xA672EE, "000080D2C0035FD6");
 
-    LOGD("===== New Patch Entry =====");
-    LOGD("Patch Address: %p", (void *) my_cool_Patches.GodMode.get_TargetAddress());
-    LOGD("Patch Size: %zu", my_cool_Patches.GodMode.get_PatchSize());
-    LOGD("Current Bytes: %s", my_cool_Patches.GodMode.ToHexString().c_str());
-
-    LOGD("Loaded kittymemory...");
-    LOGD("===========================");
-
-    // loop until our target library is found
+    // spaces are fine too
+    hexPatches.GodMode = MemoryPatch::createWithHex("libil2cpp.so", 0xA672EE, "00 00 80 D2 C0 03 5F D6");
 
     // ---------- Hook ---------- //
     LOGI("I found the il2cpp lib. Address is: %p", (void *) findLibrary(libName));
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0x7000DCCD0),
+    A64HookFunction((void *) getAbsoluteAddress(libName, 0x2BA06F2),
+                   (void *) GameManager_LateUpdate, (void **) &old_GameManager_LateUpdate);
+    A64HookFunction((void *) getAbsoluteAddress(libName, 0x1B44263), (void *) get_IsInvincible,
+                   (void **) &old_get_IsInvincible);
+
+#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
+    hexPatches.GodMode = MemoryPatch(libName, 0xFCAA6C,
+                                          "\x00\x00\xa0\xE3\x1E\xFF\x2F\xE1", 8);
+
+    // also possible with hex & no need to specify len
+    hexPatches.GodMode = MemoryPatch::createWithHex("libil2cpp.so", 0xA672EE, "0000A0E31EFF2FE1");
+
+    // spaces are fine too
+    hexPatches.GodMode = MemoryPatch::createWithHex("libil2cpp.so", 0xA672EE, "00 00 A0 E3 1E FF 2F E1");
+
+    // ---------- Hook ---------- //
+    MSHookFunction((void *) getAbsoluteAddress(libName, 0x70DCCD0),
                    (void *) GameManager_LateUpdate, (void **) &old_GameManager_LateUpdate);
     MSHookFunction((void *) getAbsoluteAddress(libName, 0xA62284), (void *) get_IsInvincible,
                    (void **) &old_get_IsInvincible);
-    MSHookFunction((void *) getAbsoluteAddress(libName, 0xA5A3E4), (void *) get_MoveSpeedUpRate,
-                   (void **) &old_get_MoveSpeedUpRate);
 
-    LOGD("Loaded hook...");
+#endif
+    LOGI("I found the il2cpp lib. Address is: %p", (void *) findLibrary(libName));
+
+    LOGD("===== New KittyMemory Patch Entry =====");
+    LOGD("Patch Address: %p", (void *) hexPatches.GodMode.get_TargetAddress());
+    LOGD("Patch Size: %zu", hexPatches.GodMode.get_PatchSize());
+    LOGD("Current Bytes: %s", hexPatches.GodMode.get_CurrBytes().c_str());
+
+    LOGD("Loaded...");
     return NULL;
 }
 
@@ -313,10 +340,3 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
 
 JNIEXPORT void JNICALL
 JNI_OnUnload(JavaVM *vm, void *reserved) {}
-
-/*´´
-__attribute__((constructor))
-void initializer() {
-    pthread_t ptid;
-    pthread_create(&ptid, NULL, my_test_thread, NULL);
-}*/

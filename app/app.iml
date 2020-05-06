@@ -35,6 +35,7 @@
     <output-test url="file://$MODULE_DIR$/build/intermediates/javac/debugUnitTest/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/main/jni/src/And64InlineHook" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni/src/KittyMemory" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni/src/Substrate" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/jni/src" isTestSource="false" />

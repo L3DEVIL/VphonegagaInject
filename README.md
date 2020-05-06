@@ -1,13 +1,13 @@
 # Android Mod Menu
 Simple floating mod menu to il2cpp and other native android games with Android/material UI sounds. The mod menu is based on Octowolve/Escanor and Van's template. This template is the most efficient and fastest way to work and to implement menu in the game
 
-Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. MSHook does not support ARM64 but KittyMemory support ARM64
+Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. Hook and KittyMemory support both ARMv7 and ARM64
 
 This is how it looks like:
 
 ![](https://i.imgur.com/W63wVTj.gif)
 
-This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, and also ARM and ARM64 assembly, hex patching and hooking. If you don't have the knowledge, this tutorial will be hard for you, and I won't spoon feeding
+**This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, and also ARM and ARM64 assembly, hex patching and hooking. If you don't have the knowledge, this tutorial will be hard for you, and I won't spoon feeding**
 
 # What will you need?
 - Android Studio 3 and up: https://developer.android.com/studio
@@ -158,6 +158,24 @@ The make file for the c++ compiler. In that file, you can change the lib name on
 When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on FloatingModMenuService.java
 Both must have same name
 
+KittyMemory usage:
+```MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
+[Struct].get_CurrBytes().Modify();
+[Struct].get_CurrBytes().Restore();
+
+[Struct].get_TargetAddress();
+[Struct].get_PatchSize();
+[Struct].get_CurrBytes().c_str();```
+
+Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
+
+Hook usage:
+ARM64:
+```A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
+
+ARMv7/x86:
+```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
+
 Other than that, find out yourself. It's a lot easier if you already have the knowledge 
 Most codes have the comments that will explain for you 
 Enjoy working with the menu =D
@@ -237,17 +255,15 @@ Very important for multi dex games. Let's say if main activity is located in **s
 Copy the library file (.so) from **app-debug.apk** to the target game. Make sure to copy .so to the correct architecture
 armeabi-v7a is armeabi-v7a, arm64-v8a is arm64-v8a, and so on.
 Putting the .so on a wrong architecture will result a crash
-
-**MSHook does not support ARM64 but KittyMemory support ARM64**
+ 
+![](https://i.imgur.com/oZq1Wq7.png)
  
 Now compile and sign the apk
 If compile fail, read the log and look up at Google
 
-Your result should look like this in game:
-
 If the mod menu appears and the hack are working, congratz!
 
-If you face any problem, be sure to add the log `LOGD("whatever");` in your codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat will also tell you if hooking fails (lib crash)
+If you face any problem, be sure to check the logcat, and if it was native related, write the log such as `LOGD("whatever");` in your cpp codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat will also tell you if hooking fails (lib crash)
 
 Thanks for reading the tutorial, if you need any help, feel free to talk to me via Telegram https://t.me/RadidasG
 I may only help for experience modders only, and no begging please =D
@@ -264,6 +280,8 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
+
+* Rprop - https://github.com/Rprop/And64InlineHook
 
 * Google - Android UI sounds
 

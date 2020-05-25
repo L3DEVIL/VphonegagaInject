@@ -43,6 +43,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -97,6 +99,8 @@ public class FloatingModMenuService extends Service {
     private native String Heading();
 
     private native String Icon();
+
+    private native String IconWebViewData();
 
     private native boolean EnableSounds();
 
@@ -188,6 +192,18 @@ public class FloatingModMenuService extends Service {
         startimage.setImageAlpha(200);
         ((ViewGroup.MarginLayoutParams) startimage.getLayoutParams()).topMargin = convertDipToPixels(10);
 
+        WebView wView = new WebView(this);
+        wView.loadData("<html><head><body style=\"margin: 0; padding: 0\"><img src=\"" + IconWebViewData() + "\" width=\"" + IconSize() + "\" height=\"" + IconSize() + "\"</body></html>", "text/html", "utf-8");
+        wView.setBackgroundColor(0x00000000);
+        wView.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
+        wView.getLayoutParams().height = applyDimension;
+        wView.getLayoutParams().width = applyDimension;
+        wView.requestLayout();
+        wView.setAlpha(0.9f);
+        wView.getSettings().setAppCachePath("/data/data/" + getPackageName() + "/cache");
+        wView.getSettings().setAppCacheEnabled(true);
+        wView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
         mExpanded.setVisibility(View.GONE);
         mExpanded.setBackgroundColor(Color.parseColor("#1C2A35"));
         mExpanded.setAlpha(0.95f);
@@ -237,7 +253,13 @@ public class FloatingModMenuService extends Service {
         rootFrame.addView(mRootContainer);
         mRootContainer.addView(mCollapsed);
         mRootContainer.addView(mExpanded);
-        mCollapsed.addView(startimage);
+
+        if (IconWebViewData() != null) {
+            mCollapsed.addView(wView);
+        } else {
+            mCollapsed.addView(startimage);
+        }
+
         mExpanded.addView(textView);
         mExpanded.addView(textView2);
         mExpanded.addView(view1);
@@ -261,6 +283,7 @@ public class FloatingModMenuService extends Service {
         LinearLayout linearLayout = mExpanded;
         mFloatingView.setOnTouchListener(onTouchListener());
         startimage.setOnTouchListener(onTouchListener());
+        wView.setOnTouchListener(onTouchListener());
         initMenuButton(relativeLayout2, linearLayout);
         CreateMenuList();
     }

@@ -1,13 +1,11 @@
-**This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, ARM and ARM64 assembly, and be able to patch hex and hook. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
+**This template is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, ARM and ARM64 assembly, and be able to patch hex and hook. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
 
 **If you don't like this project, do not use. Please do not spread hate and insult against me, especially the smaller kids community. Instead, tell me why you don't like and what I can improve**
 
 # Introduction
-Simple floating mod menu with sounds for il2cpp and other native android games. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in java/smali and does not need to be stored under assets folder
+Simple floating mod menu with sounds for il2cpp and other native android games, KittyMemory, MSHook, and And64InlineHook included. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in java/smali and does not need to be stored under assets folder.
 
-Comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
-
-Comes with KittyMemory, MSHook, and And64InlineHook
+It comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
 
 Support Android 4.2.x way up to Android R preview. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
 
@@ -302,19 +300,33 @@ And uncomment the isToastCalled check in hack_thread function
 
 # FAQ
 Q: ERROR: executing external native build for ndkBuild
+
 A: Install NDK first
 
+
 Q: I have a problem decompiling and compiling APK file
+
 A: Check if apk is not protected. If not, search for the related issues: https://github.com/iBotPeaches/Apktool/issues
 
+
 Q: Getting strange issues on Android Studio or Gradle
+
 A: If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
 
+
 Q: Can I load lib without mod menu?
+
 A: Yes you can, just put this code
 
+
 Q: I'm getting an error "Unsigned short value out of range: 65536" if I compile
+
 A: The method index can't fit into an unsigned 16-bit value, means you have too many methods above 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
+
+
+Q: How to get older version of the template?
+
+A: Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
 # Contact
 

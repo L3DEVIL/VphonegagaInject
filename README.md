@@ -18,7 +18,7 @@ Preview:
 ![](https://i.imgur.com/sZaDZvO.gif)
 
 # What will you need?
-- Android Studio 3 and up: https://developer.android.com/studio
+- Android Studio 4 and up: https://developer.android.com/studio
 - Git if you want to clone a project though Android Studio (Optional): https://git-scm.com/download
 - [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
 - Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
@@ -27,18 +27,22 @@ Preview:
 - Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
 - This template of course
 
-# Install Android Studio
-If you have Android Studio installed, you can skip this step 
-
-Setting up Android Studio takes just a few clicks.
-
-See the user guide: https://developer.android.com/studio/install
-
-# Install NDK
-Open Android Studio, you will be welcomed
+# Download/Clone
+Click on the green button that says Code, the click Download ZIP
 
 ![](https://i.imgur.com/Cy1SQgI.png)
 
+Or clone through Android Studio itself (Requires Git to be installed on your machine and be configured in Android Studio)
+
+Click on "Get from Version Control"
+
+![](https://i.imgur.com/y8haBYN.png)
+
+Input the git url and Clone
+
+![](https://i.imgur.com/z8KkW8S.png)
+
+# Install NDK
 At the bottom-right corner, click on Configure and SDK Manager
 
 ![](https://i.imgur.com/xBP1bCE.png)

@@ -4,6 +4,7 @@
 //  Created by MJ (Ruit) on 1/1/19.
 //
 
+#include <src/Includes/obfuscate.h>
 #include "KittyMemory.h"
 
 using KittyMemory::Memory_Status;
@@ -77,7 +78,7 @@ Memory_Status KittyMemory::memRead(void *buffer, const void *addr, size_t len) {
 std::string KittyMemory::read2HexStr(const void *addr, size_t len) {
     char temp[len];
     memset(temp, 0, len);
-	
+
     const size_t bufferLen = len * 2 + 1;
     char buffer[bufferLen];
     memset(buffer, 0, bufferLen);
@@ -99,7 +100,7 @@ ProcMap KittyMemory::getLibraryMap(const char *libraryName) {
     ProcMap retMap;
     char line[512] = {0};
 
-    FILE *fp = fopen("/proc/self/maps", "rt");
+    FILE *fp = fopen(OBFUSCATE("/proc/self/maps"), OBFUSCATE("rt"));
     if (fp != NULL) {
         while (fgets(line, sizeof(line), fp)) {
             if (strstr(line, libraryName)) {
@@ -132,7 +133,7 @@ uintptr_t KittyMemory::getAbsoluteAddress(const char *libraryName, uintptr_t rel
         if(libMap.isValid())
         return (reinterpret_cast<uintptr_t>(libMap.startAddr) + relativeAddr);
     }
-       
+
     libMap = getLibraryMap(libraryName);
     if (!libMap.isValid())
         return 0;

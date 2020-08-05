@@ -10,19 +10,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Process;
 import android.provider.Settings;
-import android.telephony.TelephonyManager;
-import android.text.Html;
 import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class StaticActivity {
 
@@ -35,20 +28,17 @@ public class StaticActivity {
                     Uri.parse("package:" + context.getPackageName())));
             Process.killProcess(Process.myPid());
         } else {
+            // When you change the lib name, change also on Android.mk file
+            // Both must have same name
+            System.loadLibrary("MyLibName");
 
-            // Delay starting service to prevent function pointer issue
-            // Arcording to Guided Hacking:
-            // https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/#post-90490
-            // The il2cpp lib sometimes don't loaded first which caused crash when declaring the function pointer.
-            // Instead splitting the function pointer, delay the service. The Il2Cpp will load first
-            // before the service start
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     context.startService(new Intent(context, FloatingModMenuService.class));
                 }
-            }, 5000);
+            }, 2000);
         }
 
         cacheDir = context.getCacheDir().getPath() + "/";
@@ -60,14 +50,6 @@ public class StaticActivity {
         writeToFile("SliderDecrease.ogg", Sounds.SliderDecrease());
         writeToFile("On.ogg", Sounds.On());
         writeToFile("Off.ogg", Sounds.Off());
-
-       /* AssetManager assets = context.getAssets();
-        String str2 = cacheDir + "/Slider-Switch.ogg";
-        try {
-            copyFile(assets.open("Slider-Switch.ogg"), new FileOutputStream(str2));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
     }
 
     private static void writeToFile(String name, String base64) {
@@ -84,16 +66,4 @@ public class StaticActivity {
             Log.e(TAG, e.getMessage());
         }
     }
-
-    /*private static void copyFile(InputStream inputStream, OutputStream outputStream) throws IOException {
-        byte[] bArr = new byte[1024];
-        while (true) {
-            int read = inputStream.read(bArr);
-            if (read != -1) {
-                outputStream.write(bArr, 0, read);
-            } else {
-                return;
-            }
-        }
-    }*/
 }

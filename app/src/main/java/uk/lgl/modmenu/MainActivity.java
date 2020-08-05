@@ -3,7 +3,7 @@ package uk.lgl.modmenu;
 import android.app.Activity;
 import android.os.Bundle;
 
-import uk.lgl.modmenu.R;
+import uk.lgl.loadlib.LoadLib;
 
 public class MainActivity extends Activity {
     @Override
@@ -12,5 +12,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         StaticActivity.Start(this);
+        //LoadLib.Start(this);
     }
 }

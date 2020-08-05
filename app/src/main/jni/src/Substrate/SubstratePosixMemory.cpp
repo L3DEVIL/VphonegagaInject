@@ -28,6 +28,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <src/Includes/obfuscate.h>
 
 extern "C" void __clear_cache (void *beg, void *end);
 
@@ -44,7 +45,7 @@ struct __SubstrateMemory {
 
 extern "C" SubstrateMemoryRef SubstrateMemoryCreate(SubstrateAllocatorRef allocator, SubstrateProcessRef process, void *data, size_t size) {
     if (allocator != NULL) {
-        MSLog(MSLogLevelError, "MS:Error:allocator != %d", 0);
+        MSLog(MSLogLevelError, OBFUSCATE("MS:Error:allocator != %d"), 0);
         return NULL;
     }
 
@@ -58,7 +59,7 @@ extern "C" SubstrateMemoryRef SubstrateMemoryCreate(SubstrateAllocatorRef alloca
     void *address(reinterpret_cast<void *>(base));
 
     if (mprotect(address, width, PROT_READ | PROT_WRITE | PROT_EXEC) == -1) {
-        MSLog(MSLogLevelError, "MS:Error:mprotect() = %d", errno);
+        MSLog(MSLogLevelError, OBFUSCATE("MS:Error:mprotect() = %d"), errno);
         return NULL;
     }
 

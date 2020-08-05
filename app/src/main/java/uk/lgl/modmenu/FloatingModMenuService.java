@@ -11,17 +11,14 @@
 
 package uk.lgl.modmenu;
 
-import android.annotation.TargetApi;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.media.MediaPlayer;
@@ -35,14 +32,11 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
-import android.util.Log;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.AdapterView;
@@ -92,7 +86,7 @@ public class FloatingModMenuService extends Service {
     private static final String TAG = "Mod Menu";
 
     //initialize methods from the native library
-    public static native String Toast();
+    public native void ToastStartup();
 
     private native String Title();
 
@@ -124,13 +118,9 @@ public class FloatingModMenuService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        //A little message for the user when he opens the app
-        //Toast.makeText(this, Toast(), Toast.LENGTH_LONG).show();
-        //Init Lib
 
-        // When you change the lib name, change also on Android.mk file
-        // Both must have same name
-        System.loadLibrary("MyLibName");
+        //A little message for the user when he opens the app
+        ToastStartup();
 
         initFloating();
         initAlertDiag();
@@ -161,7 +151,7 @@ public class FloatingModMenuService extends Service {
 
         kill = new Button(this);
         kill.setBackgroundColor(Color.parseColor("#1C2A35"));
-        kill.setText("HIDE");
+        kill.setText("HIDE/KILL (Hold)");
         kill.setTextColor(Color.parseColor("#82CAFD"));
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(-2, -2);
@@ -355,6 +345,14 @@ public class FloatingModMenuService extends Service {
                 playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
             }
         });
+        kill.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View view) {
+                Toast.makeText(view.getContext(), "Menu service killed", Toast.LENGTH_LONG).show();
+                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
+                FloatingModMenuService.this.stopSelf();
+                return false;
+            }
+        });
         close.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
                 view2.setVisibility(View.VISIBLE);
@@ -372,7 +370,6 @@ public class FloatingModMenuService extends Service {
             final int feature = i;
             String str = listFT[i];
             if (str.contains("Toggle_")) {
-
                 addSwitch(str.replace("Toggle_", ""), new InterfaceBool() {
                     public void OnWrite(boolean z) {
                         Changes(feature, 0);
@@ -789,7 +786,6 @@ public class FloatingModMenuService extends Service {
         super.onTaskRemoved(intent);
     }
 
-    /* access modifiers changed from: private */
     public void Thread() {
         if (mFloatingView == null) {
             return;

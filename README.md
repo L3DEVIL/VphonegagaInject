@@ -1,41 +1,34 @@
-# Android Mod Menu
-Simple floating mod menu to il2cpp and other native android games with Android/material UI sounds. The mod menu is based on Octowolve/Escanor and Van's template. This template is the most efficient and fastest way to work and to implement menu in the game
+**This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, ARM and ARM64 assembly, and be able to patch hex and hook. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
 
-Support both KittyMemory and MSHook and support Android 4.2.x way up to Android R preview. Sound effects included. Hook and KittyMemory support both ARMv7 and ARM64
+**If you don't like this project, do not use. Please do not spread hate and insult against me, especially the smaller kids community. Instead, tell me why you don't like and what I can improve**
 
-This is how it looks like:
+# Introduction
+Simple floating mod menu with sounds for il2cpp and other native android games. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in java/smali and does not need to be stored under assets folder
 
-![](https://i.imgur.com/W63wVTj.gif)
+Comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
 
-**This tutorial is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, and also ARM and ARM64 assembly, hex patching and hooking. If you don't have the knowledge, this tutorial will be hard for you, and I won't spoon feeding**
+Comes with KittyMemory, MSHook, and And64InlineHook
+
+Support Android 4.2.x way up to Android R preview. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
+
+Mod menu is based on Octowolve/Escanor and Van's template. 
+
+Preview:
+
+![](https://i.imgur.com/sZaDZvO.gif)
 
 # What will you need?
 - Android Studio 3 and up: https://developer.android.com/studio
-- Git (Optional) - If you want to clone a project though Android Studio: https://git-scm.com/download
-
-- Apktool:
-
-- -- Apktool.jar: https://ibotpeaches.github.io/Apktool/
-
-- Or
-
-- -- APK Easy Tool: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
-
-- Notepad:
-
-- -- Notepad++ https://notepad-plus-plus.org/downloads/
-
-- Or
-
-- -- Sublime Text: https://www.sublimetext.com/
-
-- Compress png - to compress your png file: https://compresspng.com/ 
-- Base64 encode - to encode your file: https://www.base64encode.org/
-- XMedia Recode - to convert your sound files to .ogg https://www.xmedia-recode.de/en/download.php
-- Template: https://github.com/LGLTeam/Android-Mod-Menu
+- Git if you want to clone a project though Android Studio (Optional): https://git-scm.com/download
+- [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
+- Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
+- Any png compression to compress your png file: https://compresspng.com/
+- Any base64 encoding to encode your file: https://www.base64encode.org/
+- Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
+- This template of course
 
 # Install Android Studio
-If you have Android Studio installed, you can skip this steps 
+If you have Android Studio installed, you can skip this step 
 
 Setting up Android Studio takes just a few clicks.
 
@@ -87,17 +80,21 @@ If this is somewhat confusing, change the view to Project
 
 I will explain each of the files for you
 
+**LoadLib.java:**
+
+To call toast if you load lib without mod menu
+
 **FloatingModMenuService.java:**
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
 **MainActivity.java:**
 
-Starts the main activity. It won't be used if you implement the menu in the game
+Starts the main activity. It doesn't need to be used if you implement the menu in the game
 
 **Sounds.java:**
 
-Basically the 'GTA V' sounds, have been converted to .ogg using XMedia Recode and encoded to base64. They are automatically decoded and stored into /data/data/(package name)/cache upon startup. See StaticActivity
+Basically the menu sounds, that have been converted to .ogg using XMedia Recode and encoded to base64. They are automatically decoded and stored into /data/data/(package name)/cache upon startup (See StaticActivity). Remember, we want to avoid storing files under assets as possible
 
 **StaticActivity.java:**
 
@@ -108,9 +105,9 @@ Start() will be called when implementing the menu to the game. We will explain l
 - writeToFile:
 Decode base64 and write to file to a target directory
 
-**main.cpp**
+**menu.cpp**
 
-In this file, you will mostly use it to edit features, credits, icon, and implement your code for KittyMemory or MS Hooking.
+This is menu related
 
 - EnableSounds: Change to false if you don't want it to play sounds
 
@@ -120,13 +117,32 @@ In this file, you will mostly use it to edit features, credits, icon, and implem
 
 - Icon: Compressed image that is encoded to base64
 
+- IconWebViewData: Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
+
+```From internet: (Requires android.permission.INTERNET)
+return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif"); 
+
+From assets folder: (Requires android.permission.INTERNET)
+return env->NewStringUTF("file:///android_asset/example.gif"); 
+
+Base64 html:
+return env->NewStringUTF("data:image/png;base64, <encoded base64 here>");
+
+Nothing:
+return NULL
+```
+
 - IconSize: Mod menu icon size 
 
 - Toast: To get text from c++ in order to show toast in java
 
-- Changes: Get changes of toggles, seekbars, spinner and buttons to do modding. Features MUST be count from 0
-
 - getFeatureList: Here you add the mod features
+
+**main.cpp**
+
+In this file, you will mostly do implementation with your codes for modding
+
+- Changes: Get changes of toggles, seekbars, spinner and buttons to do modding. Features MUST be count from 0
 
 Usage:
 
@@ -177,9 +193,10 @@ ARM64:
 ARMv7/x86:
 ```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
 
-Other than that, find out yourself. It's a lot easier if you already have the knowledge 
-Most codes have the comments that will explain for you 
 Enjoy working with the menu =D
+
+# String obfuscation
+We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
 # Testing the mod menu 
 
@@ -198,7 +215,7 @@ On some devices, the Developer options screen might be located or named differen
 After you finished the menu, you can build the project to APK file.
 **Build** -> **Build Bundle(s)/APK(s)** -> **Build APK(s)**
 
-If no errors occured, you did everything right and build will succed. You will be notified that it build successfully
+If no errors occured, you did everything right and build will succeded. You will be notified that it build successfully
 
 ![](https://i.imgur.com/WpSKV1L.png)
 
@@ -260,16 +277,56 @@ Putting the .so on a wrong architecture will result a crash
 ![](https://i.imgur.com/oZq1Wq7.png)
  
 Now compile and sign the apk
-If compile fail, read the log and look up at Google
+If compile fail, read the log and look up on Google
 
 If the mod menu appears and the hack are working, congratz!
 
-If you face any problem, be sure to check the logcat, and if it was native related, write the log such as `LOGD("whatever");` in your cpp codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat will also tell you if hooking fails (lib crash)
+If you face any problem, be sure to check the logcat, and if it was native related, write the log such as `LOGD("whatever");` in your cpp codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat may also tell you if hooking fails (lib crash)
 
-Thanks for reading the tutorial, if you need any help, feel free to talk to me via Telegram https://t.me/RadidasG
-I may only help for experience modders only, and no begging please =D
+Thanks for reading the tutorial
 
 Do not forget to check my template again. I may change it anytime =D
+
+# Load lib without mod menu
+
+Just call the LoadLib in the OnCreate method
+```
+    invoke-static {p0}, Luk/lgl/loadlib/LoadLib;->Start(Landroid/content/Context;)V
+```
+
+And uncomment the isToastCalled check in hack_thread function
+
+# FAQ
+Q: ERROR: executing external native build for ndkBuild
+A: Install NDK first
+
+Q: I have a problem decompiling and compiling APK file
+A: Check if apk is not protected. If not, search for the related issues: https://github.com/iBotPeaches/Apktool/issues
+
+Q: Getting strange issues on Android Studio or Gradle
+A: If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
+
+Q: Can I load lib without mod menu?
+A: Yes you can, just put this code
+
+Q: I'm getting an error "Unsigned short value out of range: 65536" if I compile
+A: The method index can't fit into an unsigned 16-bit value, means you have too many methods above 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
+
+# Contact
+
+- Telegram: @Radidas
+- Discord: LGL#2184
+
+Newbies are the lowest priority, I may not be able to respond at all. You will be blocked if you beg me to teach/spoonfeed. Don't define me a teacher, i'm not a teacher :P
+
+# Useful links
+* https://piin.dev/basic-hooking-tutorial-t19.html
+
+* https://iosgods.com/topic/65529-instance-variables-and-function-pointers/
+
+* https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+
+* http://www.cydiasubstrate.com/api/c/MSHookFunction/
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu
@@ -287,9 +344,3 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * Google - Android UI sounds
 
 * Material.io - https://material.io/design/sound/sound-resources.html#
-
-The following websites were also very helpful
-
-* Stackoverflow - https://stackoverflow.com/
-
-* Guided hacking - https://guidedhacking.com/forums/android-game-hacking.438/

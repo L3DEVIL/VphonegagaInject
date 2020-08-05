@@ -4,6 +4,7 @@
 //  Created by MJ (Ruit) on 1/1/19.
 //
 
+#include <src/Includes/obfuscate.h>
 #include "MemoryPatch.h"
 
 
@@ -129,7 +130,7 @@ MemoryPatch::MemoryPatch(uintptr_t absolute_address,
 
   std::string MemoryPatch::get_CurrBytes() {
     if (!isValid()) 
-      _hexString = std::string("0xInvalid");
+      _hexString = std::string(OBFUSCATE("0xInvalid"));
       else 
       _hexString = KittyMemory::read2HexStr(reinterpret_cast<const void *>(_address), _size);
 

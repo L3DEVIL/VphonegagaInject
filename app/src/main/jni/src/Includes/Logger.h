@@ -11,7 +11,7 @@ enum daLogType {
 };
 
 //Change this to another Log Tag if ya want. IN the batch script I provide you change the log tag then too
-#define TAG "Mod Menu"
+#define TAG OBFUSCATE("Mod Menu")
 
 #define LOGD(...) ((void)__android_log_print(daDEBUG, TAG, __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(daERROR, TAG, __VA_ARGS__))

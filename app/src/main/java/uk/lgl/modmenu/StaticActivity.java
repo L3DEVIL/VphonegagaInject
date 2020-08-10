@@ -26,7 +26,8 @@ public class StaticActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
             context.startActivity(new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION",
                     Uri.parse("package:" + context.getPackageName())));
-            Process.killProcess(Process.myPid());
+            Toast.makeText(context.getApplicationContext(), "Please allow overlay permission in order to display the mod menu", Toast.LENGTH_LONG).show();
+            //Process.killProcess(Process.myPid());
         } else {
             // When you change the lib name, change also on Android.mk file
             // Both must have same name
@@ -39,17 +40,17 @@ public class StaticActivity {
                     context.startService(new Intent(context, FloatingModMenuService.class));
                 }
             }, 2000);
+
+            cacheDir = context.getCacheDir().getPath() + "/";
+
+            writeToFile("OpenMenu.ogg", Sounds.OpenMenu());
+            writeToFile("Back.ogg", Sounds.Back());
+            writeToFile("Select.ogg", Sounds.Select());
+            writeToFile("SliderIncrease.ogg", Sounds.SliderIncrease());
+            writeToFile("SliderDecrease.ogg", Sounds.SliderDecrease());
+            writeToFile("On.ogg", Sounds.On());
+            writeToFile("Off.ogg", Sounds.Off());
         }
-
-        cacheDir = context.getCacheDir().getPath() + "/";
-
-        writeToFile("OpenMenu.ogg", Sounds.OpenMenu());
-        writeToFile("Back.ogg", Sounds.Back());
-        writeToFile("Select.ogg", Sounds.Select());
-        writeToFile("SliderIncrease.ogg", Sounds.SliderIncrease());
-        writeToFile("SliderDecrease.ogg", Sounds.SliderDecrease());
-        writeToFile("On.ogg", Sounds.On());
-        writeToFile("Off.ogg", Sounds.Off());
     }
 
     private static void writeToFile(String name, String base64) {

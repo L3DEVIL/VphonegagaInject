@@ -21,6 +21,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
@@ -65,23 +66,34 @@ import static uk.lgl.modmenu.StaticActivity.cacheDir;
 
 public class FloatingModMenuService extends Service {
     private MediaPlayer FXPlayer;
-    public View mFloatingView;
-    private Button close;
-    private Button kill;
-    private LinearLayout mButtonPanel;
     public RelativeLayout mCollapsed;
     public LinearLayout mExpanded;
     private RelativeLayout mRootContainer;
     public WindowManager mWindowManager;
     public WindowManager.LayoutParams params;
     private LinearLayout patches;
-    private FrameLayout rootFrame;
     private ImageView startimage;
-    private LinearLayout view1;
-    private LinearLayout view2;
-
+    private FrameLayout rootFrame;
     private AlertDialog alert;
     private EditText edittextvalue;
+
+    //For alert dialog
+    private TextView textView2;
+    private String featureNameExt;
+    private int featureNum;
+    private EditTextValue txtValue;
+
+    public class EditTextValue {
+        private int val;
+
+        public void setValue(int i) {
+            val = i;
+        }
+
+        public int getValue() {
+            return val;
+        }
+    }
 
     private static final String TAG = "Mod Menu";
 
@@ -124,6 +136,7 @@ public class FloatingModMenuService extends Service {
 
         initFloating();
         initAlertDiag();
+
         final Handler handler = new Handler();
         handler.post(new Runnable() {
             public void run() {
@@ -136,40 +149,63 @@ public class FloatingModMenuService extends Service {
     //Here we write the code for our Menu
     private void initFloating() {
         rootFrame = new FrameLayout(getBaseContext()); // Global markup
+        rootFrame.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
+        rootFrame.setOnTouchListener(onTouchListener());
         mRootContainer = new RelativeLayout(getBaseContext()); // Markup on which two markups of the icon and the menu itself will be placed
+        mRootContainer.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
         mCollapsed = new RelativeLayout(getBaseContext()); // Markup of the icon (when the menu is minimized)
+        mCollapsed.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
+        mCollapsed.setVisibility(View.VISIBLE);
         mExpanded = new LinearLayout(getBaseContext()); // Menu markup (when the menu is expanded)
-        view1 = new LinearLayout(getBaseContext());
         patches = new LinearLayout(getBaseContext());
-        view2 = new LinearLayout(getBaseContext());
-        mButtonPanel = new LinearLayout(getBaseContext()); // Layout of option buttons (when the menu is expanded)
 
         RelativeLayout relativeLayout = new RelativeLayout(this);
         relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(-2, -1));
-        relativeLayout.setPadding(3, 0, 3, 3);
+        relativeLayout.setPadding(10, 3, 10, 3);
         relativeLayout.setVerticalGravity(16);
 
-        kill = new Button(this);
-        kill.setBackgroundColor(Color.parseColor("#1C2A35"));
-        kill.setText("HIDE/KILL (Hold)");
-        kill.setTextColor(Color.parseColor("#82CAFD"));
+        //**********  Hide/Kill button **********
+        Button hideBtn = new Button(this);
+        hideBtn.setBackgroundColor(Color.TRANSPARENT);
+        hideBtn.setText("HIDE/KILL (Hold)");
+        hideBtn.setTextColor(Color.parseColor("#82CAFD"));
+        hideBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mCollapsed.setVisibility(View.VISIBLE);
+                mCollapsed.setAlpha(0);
+                mExpanded.setVisibility(View.GONE);
+                Toast.makeText(view.getContext(), "Icon hidden. Remember the hidden icon position", Toast.LENGTH_LONG).show();
+                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
+            }
+        });
+        hideBtn.setOnLongClickListener(new View.OnLongClickListener() {
+            public boolean onLongClick(View view) {
+                Toast.makeText(view.getContext(), "Menu service killed", Toast.LENGTH_LONG).show();
+                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
+                FloatingModMenuService.this.stopSelf();
+                return false;
+            }
+        });
 
+        //********** Close button **********
+        Button closeBtn = new Button(this);
+        closeBtn.setBackgroundColor(Color.TRANSPARENT);
+        closeBtn.setText("CLOSE");
+        closeBtn.setTextColor(Color.parseColor("#82CAFD"));
+        closeBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mCollapsed.setVisibility(View.VISIBLE);
+                mCollapsed.setAlpha(0.95f);
+                mExpanded.setVisibility(View.GONE);
+                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
+                //Log.i("LGL", "Close");
+            }
+        });
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(-2, -2);
         layoutParams.addRule(11);
+        closeBtn.setLayoutParams(layoutParams);
 
-        close = new Button(this);
-        close.setBackgroundColor(Color.parseColor("#1C2A35"));
-        close.setText("CLOSE");
-        close.setTextColor(Color.parseColor("#82CAFD"));
-        close.setLayoutParams(layoutParams);
-
-        relativeLayout.addView(kill);
-        relativeLayout.addView(close);
-
-        rootFrame.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
-        mRootContainer.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
-        mCollapsed.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
-        mCollapsed.setVisibility(View.VISIBLE);
+        //********** The icon to open mod menu **********
         startimage = new ImageView(getBaseContext());
         startimage.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
         int applyDimension = (int) TypedValue.applyDimension(1, (float) IconSize(), getResources().getDisplayMetrics());
@@ -181,7 +217,16 @@ public class FloatingModMenuService extends Service {
         startimage.setImageBitmap(BitmapFactory.decodeByteArray(decode, 0, decode.length));
         startimage.setImageAlpha(200);
         ((ViewGroup.MarginLayoutParams) startimage.getLayoutParams()).topMargin = convertDipToPixels(10);
+        //Initialize event handlers for buttons, etc.
+        startimage.setOnTouchListener(onTouchListener());
+        startimage.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mCollapsed.setVisibility(View.GONE);
+                mExpanded.setVisibility(View.VISIBLE);
+            }
+        });
 
+        //********** Webview **********
         WebView wView = new WebView(this);
         wView.loadData("<html><head><body style=\"margin: 0; padding: 0\"><img src=\"" + IconWebViewData() + "\" width=\"" + IconSize() + "\" height=\"" + IconSize() + "\"</body></html>", "text/html", "utf-8");
         wView.setBackgroundColor(0x00000000);
@@ -193,7 +238,9 @@ public class FloatingModMenuService extends Service {
         wView.getSettings().setAppCachePath("/data/data/" + getPackageName() + "/cache");
         wView.getSettings().setAppCacheEnabled(true);
         wView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        wView.setOnTouchListener(onTouchListener());
 
+        //********** The box of the mod menu **********
         mExpanded.setVisibility(View.GONE);
         mExpanded.setBackgroundColor(Color.parseColor("#1C2A35"));
         mExpanded.setAlpha(0.95f);
@@ -202,80 +249,136 @@ public class FloatingModMenuService extends Service {
         mExpanded.setPadding(0, 0, 0, 0);
         //Auto size. To set size manually, change the width and height example 500, 500
         mExpanded.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        GradientDrawable gradientdrawable = new GradientDrawable();
+        gradientdrawable.setCornerRadius(20); //Set corner
+        gradientdrawable.setColor(Color.parseColor("#1C2A35")); //Set background color
+        //gradientdrawable.setStroke(1, Color.parseColor("#32cb00")); //Set border
+        mExpanded.setBackground(gradientdrawable); //Apply GradientDrawable to it
 
+        //********** Mod menu feature list **********
         ScrollView scrollView = new ScrollView(getBaseContext());
         scrollView.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(200)));
         scrollView.setBackgroundColor(Color.parseColor("#171E24"));
 
-        view1.setLayoutParams(new LinearLayout.LayoutParams(-1, 5));
-        view1.setBackgroundColor(Color.parseColor("#1C2A35"));
         patches.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
         patches.setOrientation(LinearLayout.VERTICAL);
-        view2.setLayoutParams(new LinearLayout.LayoutParams(-1, 5));
-        view2.setBackgroundColor(Color.parseColor("#1C2A35"));
-        view2.setPadding(0, 0, 0, 10);
-        mButtonPanel.setLayoutParams(new LinearLayout.LayoutParams(-2, -2));
 
-        //Title text
-        TextView textView = new TextView(getBaseContext());
-        textView.setText(Title());
-        textView.setTextColor(Color.parseColor("#82CAFD"));
-        textView.setTypeface(Typeface.DEFAULT_BOLD);
-        textView.setTextSize(20.0f);
-        textView.setPadding(0, 10, 0, 5);
+        //********** Title text **********
+        TextView title = new TextView(getBaseContext());
+        title.setText(Title());
+        title.setTextColor(Color.parseColor("#82CAFD"));
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setTextSize(20.0f);
+        title.setPadding(0, 10, 0, 5);
         LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-2, -2);
         layoutParams2.gravity = 17;
-        //textView.setLayoutParams(layoutParams2);
+        title.setLayoutParams(layoutParams2);
 
-        //Heading text
-        TextView textView2 = new TextView(getBaseContext());
-        textView2.setText(Html.fromHtml(Heading()));
-        textView2.setTextColor(Color.parseColor("#82CAFD"));
-        textView2.setTypeface(Typeface.DEFAULT_BOLD);
-        textView2.setTextSize(10.0f);
-        textView2.setPadding(10, 5, 10, 10);
-
+        //********** Heading text **********
+        TextView heading = new TextView(getBaseContext());
+        heading.setText(Html.fromHtml(Heading()));
+        heading.setTextColor(Color.parseColor("#82CAFD"));
+        heading.setTypeface(Typeface.DEFAULT_BOLD);
+        heading.setTextSize(10.0f);
+        heading.setPadding(10, 5, 10, 10);
         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(-2, -2);
         layoutParams3.gravity = 17;
-        textView.setLayoutParams(layoutParams2);
-        textView2.setLayoutParams(layoutParams3);
-        new LinearLayout.LayoutParams(-1, dp(25)).topMargin = dp(2);
-        rootFrame.addView(mRootContainer);
-        mRootContainer.addView(mCollapsed);
-        mRootContainer.addView(mExpanded);
+        heading.setLayoutParams(layoutParams3);
 
-        if (IconWebViewData() != null) {
-            mCollapsed.addView(wView);
-        } else {
-            mCollapsed.addView(startimage);
-        }
-
-        mExpanded.addView(textView);
-        mExpanded.addView(textView2);
-        mExpanded.addView(view1);
-        mExpanded.addView(scrollView);
-        scrollView.addView(patches);
-        mExpanded.addView(view2);
-        mExpanded.addView(relativeLayout);
-        mFloatingView = rootFrame;
+        //********** Params **********
         if (Build.VERSION.SDK_INT >= 26) {
             params = new WindowManager.LayoutParams(-2, -2, 2038, 8, -3);
         } else {
             params = new WindowManager.LayoutParams(-2, -2, 2002, 8, -3);
         }
-        WindowManager.LayoutParams layoutParams4 = params;
-        layoutParams4.gravity = 51;
-        layoutParams4.x = 0;
-        layoutParams4.y = 100;
+        params.gravity = 51;
+        params.x = 0;
+        params.y = 100;
+
+        //********** Adding view components **********
+        rootFrame.addView(mRootContainer);
+        mRootContainer.addView(mCollapsed);
+        mRootContainer.addView(mExpanded);
+        if (IconWebViewData() != null) {
+            mCollapsed.addView(wView);
+        } else {
+            mCollapsed.addView(startimage);
+        }
+        mExpanded.addView(title);
+        mExpanded.addView(heading);
+        mExpanded.addView(scrollView);
+        scrollView.addView(patches);
+        relativeLayout.addView(hideBtn);
+        relativeLayout.addView(closeBtn);
+        mExpanded.addView(relativeLayout);
+
         mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-        mWindowManager.addView(mFloatingView, params);
-        RelativeLayout relativeLayout2 = mCollapsed;
-        LinearLayout linearLayout = mExpanded;
-        mFloatingView.setOnTouchListener(onTouchListener());
-        startimage.setOnTouchListener(onTouchListener());
-        wView.setOnTouchListener(onTouchListener());
-        initMenuButton(relativeLayout2, linearLayout);
+        mWindowManager.addView(rootFrame, params);
+
+        //********** Create menu list **********
         CreateMenuList();
+    }
+
+    private void initAlertDiag() {
+        LinearLayout linearLayout1 = new LinearLayout(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
+        linearLayout1.setPadding(10, 5, 0, 5);
+        linearLayout1.setOrientation(LinearLayout.VERTICAL);
+        linearLayout1.setGravity(17);
+        linearLayout1.setLayoutParams(layoutParams);
+        linearLayout1.setBackgroundColor(Color.parseColor("#171E24"));
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
+        linearLayout.setBackgroundColor(Color.parseColor("#14171f"));
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        FrameLayout frameLayout = new FrameLayout(this);
+        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+        frameLayout.addView(linearLayout);
+
+        final TextView textView = new TextView(this);
+        textView.setText(Html.fromHtml("<font face='roboto'>Tap OK to apply changes. Tap outside to cancel</font>"));
+        textView.setTextColor(Color.parseColor("#DEEDF6"));
+        textView.setLayoutParams(layoutParams);
+
+        edittextvalue = new EditText(this);
+        edittextvalue.setLayoutParams(layoutParams);
+        edittextvalue.setMaxLines(1);
+        edittextvalue.setWidth(convertDipToPixels(300));
+        edittextvalue.setTextColor(Color.parseColor("#93a6ae"));
+        edittextvalue.setTextSize(13.0f);
+        edittextvalue.setHintTextColor(Color.parseColor("#434d52"));
+        edittextvalue.setInputType(InputType.TYPE_CLASS_NUMBER);
+        edittextvalue.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
+
+        InputFilter[] FilterArray = new InputFilter[1];
+        FilterArray[0] = new InputFilter.LengthFilter(10);
+        edittextvalue.setFilters(FilterArray);
+
+        Button button = new Button(this);
+        button.setBackgroundColor(Color.parseColor("#1C262D"));
+        button.setTextColor(Color.parseColor("#D5E3EB"));
+        button.setText("OK");
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Changes(featureNum, Integer.parseInt(edittextvalue.getText().toString()));
+                txtValue.setValue(Integer.parseInt(edittextvalue.getText().toString()));
+                textView2.setText(Html.fromHtml("<font face='roboto'>" + featureNameExt + ": <font color='#41c300'>" + edittextvalue.getText().toString() + "</font></font>"));
+                alert.dismiss();
+                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
+                //interStr.OnWrite(editText.getText().toString());
+            }
+        });
+
+        alert = new AlertDialog.Builder(this, 2).create();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            Objects.requireNonNull(alert.getWindow()).setType(Build.VERSION.SDK_INT >= 26 ? 2038 : 2002);
+        }
+        linearLayout1.addView(textView);
+        linearLayout1.addView(edittextvalue);
+        linearLayout1.addView(button);
+        alert.setView(linearLayout1);
     }
 
     private View.OnTouchListener onTouchListener() {
@@ -315,53 +418,14 @@ public class FloatingModMenuService extends Service {
                         //Calculate the X and Y coordinates of the view.
                         params.x = initialX + ((int) (motionEvent.getRawX() - initialTouchX));
                         params.y = initialY + ((int) (motionEvent.getRawY() - initialTouchY));
-
                         //Update the layout with new X & Y coordinate
-                        mWindowManager.updateViewLayout(mFloatingView, params);
+                        mWindowManager.updateViewLayout(rootFrame, params);
                         return true;
                     default:
                         return false;
                 }
             }
         };
-    }
-
-    //Initialize event handlers for buttons, etc.
-    private void initMenuButton(final View view2, final View view3) {
-        startimage.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                view2.setVisibility(View.GONE);
-                view3.setVisibility(View.VISIBLE);
-            }
-        });
-        kill.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                //FloatingModMenuService.stopSelf();
-                // view2.setVisibility(View.VISIBLE)
-                view2.setVisibility(View.VISIBLE);
-                view2.setAlpha(0);
-                view3.setVisibility(View.GONE);
-                Toast.makeText(view.getContext(), "Icon hidden. Remember the hidden icon position", Toast.LENGTH_LONG).show();
-                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
-            }
-        });
-        kill.setOnLongClickListener(new View.OnLongClickListener() {
-            public boolean onLongClick(View view) {
-                Toast.makeText(view.getContext(), "Menu service killed", Toast.LENGTH_LONG).show();
-                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
-                FloatingModMenuService.this.stopSelf();
-                return false;
-            }
-        });
-        close.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                view2.setVisibility(View.VISIBLE);
-                view2.setAlpha(0.95f);
-                view3.setVisibility(View.GONE);
-                playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
-                //Log.i("LGL", "Close");
-            }
-        });
     }
 
     private void CreateMenuList() {
@@ -405,23 +469,6 @@ public class FloatingModMenuService extends Service {
                     }
                 });
             }
-        }
-    }
-
-    private TextView textView2;
-    private String featureNameExt;
-    private int featureNum;
-    private EditTextValue txtValue;
-
-    public class EditTextValue {
-        private int val;
-
-        public void setValue(int i) {
-            val = i;
-        }
-
-        public int getValue() {
-            return val;
         }
     }
 
@@ -469,69 +516,6 @@ public class FloatingModMenuService extends Service {
         relativeLayout2.addView(textView);
         relativeLayout2.addView(button2);
         patches.addView(relativeLayout2);
-    }
-
-    private void initAlertDiag() {
-        LinearLayout linearLayout1 = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
-        linearLayout1.setPadding(10, 5, 0, 5);
-        linearLayout1.setOrientation(LinearLayout.VERTICAL);
-        linearLayout1.setGravity(17);
-        linearLayout1.setLayoutParams(layoutParams);
-        linearLayout1.setBackgroundColor(Color.parseColor("#171E24"));
-
-        int i = Build.VERSION.SDK_INT >= 26 ? 2038 : 2002;
-        LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
-        linearLayout.setBackgroundColor(Color.parseColor("#14171f"));
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        FrameLayout frameLayout = new FrameLayout(this);
-        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
-        frameLayout.addView(linearLayout);
-
-        final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>Tap OK to apply changes. Tap outside to cancel</font>"));
-        textView.setTextColor(Color.parseColor("#DEEDF6"));
-        textView.setLayoutParams(layoutParams);
-
-        edittextvalue = new EditText(this);
-        edittextvalue.setLayoutParams(layoutParams);
-        edittextvalue.setMaxLines(1);
-        edittextvalue.setWidth(convertDipToPixels(300));
-        edittextvalue.setTextColor(Color.parseColor("#93a6ae"));
-        edittextvalue.setTextSize(13.0f);
-        edittextvalue.setHintTextColor(Color.parseColor("#434d52"));
-        edittextvalue.setInputType(InputType.TYPE_CLASS_NUMBER);
-        edittextvalue.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
-
-        InputFilter[] FilterArray = new InputFilter[1];
-        FilterArray[0] = new InputFilter.LengthFilter(10);
-        edittextvalue.setFilters(FilterArray);
-
-        Button button = new Button(this);
-        button.setBackgroundColor(Color.parseColor("#1C262D"));
-        button.setTextColor(Color.parseColor("#D5E3EB"));
-        button.setText("OK");
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Changes(featureNum, Integer.parseInt(edittextvalue.getText().toString()));
-                txtValue.setValue(Integer.parseInt(edittextvalue.getText().toString()));
-                textView2.setText(Html.fromHtml("<font face='roboto'>" + featureNameExt + ": <font color='#41c300'>" + edittextvalue.getText().toString() + "</font></font>"));
-                alert.dismiss();
-                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
-                //interStr.OnWrite(editText.getText().toString());
-            }
-        });
-
-        alert = new AlertDialog.Builder(this, 2).create();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            Objects.requireNonNull(alert.getWindow()).setType(i);
-        }
-        linearLayout1.addView(textView);
-        linearLayout1.addView(edittextvalue);
-        linearLayout1.addView(button);
-        alert.setView(linearLayout1);
     }
 
     private void addSpinner(String feature, final InterfaceInt interInt) {
@@ -597,11 +581,11 @@ public class FloatingModMenuService extends Service {
         textView.setTextSize(14.0f);
         textView.setTextColor(Color.parseColor("#DEEDF6"));
         textView.setTypeface(null, Typeface.BOLD);
-        textView.setPadding(10, 5, 0, 5);
+        textView.setPadding(0, 5, 0, 5);
         patches.addView(textView);
     }
 
-    public void addButton(String feature, final InterfaceBtn interfaceBtn) {
+    private void addButton(String feature, final InterfaceBtn interfaceBtn) {
         final Button button = new Button(this);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
         layoutParams.setMargins(7, 5, 7, 5);
@@ -675,16 +659,16 @@ public class FloatingModMenuService extends Service {
         linearLayout.setGravity(17);
         linearLayout.setLayoutParams(layoutParams);
         linearLayout.setBackgroundColor(Color.parseColor("#171E24"));
+
         final TextView textView = new TextView(this);
         textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + prog + "</font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
+
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(25, 10, 35, 10);
         seekBar.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
         seekBar.setMax(max);
         seekBar.setProgress(prog);
-
-        final TextView textView2 = textView;
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
@@ -705,7 +689,6 @@ public class FloatingModMenuService extends Service {
                 if (i < prog) {
                     seekBar.setProgress(prog);
                     interInt.OnWrite(prog);
-                    TextView textView = textView2;
                     textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + prog + "</font>"));
                     return;
                 }
@@ -721,6 +704,7 @@ public class FloatingModMenuService extends Service {
 
     boolean delayed;
 
+    //Play sounds
     public void playSound(Uri uri) {
         if (EnableSounds()) {
             if (!delayed) {
@@ -747,7 +731,7 @@ public class FloatingModMenuService extends Service {
     }
 
     public boolean isViewCollapsed() {
-        return mFloatingView == null || mCollapsed.getVisibility() == View.VISIBLE;
+        return rootFrame == null || mCollapsed.getVisibility() == View.VISIBLE;
     }
 
     //For our image a little converter
@@ -762,7 +746,7 @@ public class FloatingModMenuService extends Service {
     //Destroy our View
     public void onDestroy() {
         super.onDestroy();
-        View view = mFloatingView;
+        View view = rootFrame;
         if (view != null) {
             mWindowManager.removeView(view);
         }
@@ -787,13 +771,13 @@ public class FloatingModMenuService extends Service {
     }
 
     public void Thread() {
-        if (mFloatingView == null) {
+        if (rootFrame == null) {
             return;
         }
         if (isNotInGame()) {
-            mFloatingView.setVisibility(View.INVISIBLE);
+            rootFrame.setVisibility(View.INVISIBLE);
         } else {
-            mFloatingView.setVisibility(View.VISIBLE);
+            rootFrame.setVisibility(View.VISIBLE);
         }
     }
 

@@ -13,7 +13,7 @@ Mod menu is based on Octowolve/Escanor and Van's template.
 
 Preview:
 
-![](https://i.imgur.com/sZaDZvO.gif)
+![](https://i.imgur.com/lSNYzOA.gif)
 
 # What will you need?
 - Android Studio 4 and up: https://developer.android.com/studio
@@ -80,19 +80,35 @@ On the left side, you see the Project view. Default view is Android
 
 If this is somewhat confusing, change the view to Project
 
-I will explain each of the files for you
+# Making changes
 
 **LoadLib.java:**
 
 To call toast if you load lib without mod menu
 
+**MainActivity.java:**
+
+Starts the main activity. No need to use if you implement the menu in the APK file
+
 **FloatingModMenuService.java:**
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
-**MainActivity.java:**
+- GradientDrawable
 
-Starts the main activity. It doesn't need to be used if you implement the menu in the game
+A code for setting corner and stroke/inner border. Works for any View Components
+```
+GradientDrawable gradientdrawable = new GradientDrawable();
+gradientdrawable.setCornerRadius(20); //Set corner
+gradientdrawable.setColor(Color.parseColor("#1C2A35")); //Set background color
+gradientdrawable.setStroke(1, Color.parseColor("#32cb00")); //Set border
+```
+
+Set the gradient drawable to the component
+
+```
+[name of your view component].setBackground(gradientdrawable);
+```
 
 **Sounds.java:**
 
@@ -107,7 +123,7 @@ Start() will be called when implementing the menu to the game. We will explain l
 - writeToFile:
 Decode base64 and write to file to a target directory
 
-**menu.cpp**
+**Menu.cpp**
 
 This is menu related
 
@@ -140,7 +156,7 @@ return NULL
 
 - getFeatureList: Here you add the mod features
 
-**main.cpp**
+**Main.cpp**
 
 In this file, you will mostly do implementation with your codes for modding
 
@@ -195,9 +211,8 @@ ARM64:
 ARMv7/x86:
 ```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
 
-Enjoy working with the menu =D
+**String obfuscation**
 
-# String obfuscation
 We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
 # Testing the mod menu 

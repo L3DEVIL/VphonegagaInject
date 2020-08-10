@@ -12,7 +12,7 @@ public class Sounds {
 
     //Use https://www.base64encode.org/ to encode your files to base64
 
-    //Note to myself xd: Click View -> Active Editor -> Soft warp
+    //Word wrap: Click View -> Active Editor -> Soft warp
 
     //system/media/audio/ui/NFCFailure.ogg
     public static String Back() {

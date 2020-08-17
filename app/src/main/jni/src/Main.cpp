@@ -15,6 +15,7 @@
 #include "Includes/Logger.h"
 #include "Includes/Utils.h"
 #include "Includes/obfuscate.h"
+#include "Toast.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <src/And64InlineHook/And64InlineHook.hpp>
@@ -36,28 +37,13 @@ struct My_Patches {
 bool feature1 = false, featureHookToggle = false;
 int sliderValue = 0;
 
-#define libName OBFUSCATE("libil2cpp.so")
-
 extern "C" {
-//Can be used if you want to load lib without menu. Call it from LoadLibWithoutMenu.java
-//isToastCalled is used in hack_thread. Call bad function if false
-bool isToastCalled = false;
-JNIEXPORT void JNICALL
-Java_uk_lgl_loadlib_LoadLib_Toast(JNIEnv *env, jobject thiz, jobject obj) {
-    MakeToast(env, obj, OBFUSCATE("Lib loaded. Modded by LGL"), Toast::LENGTH_LONG);
-    MakeToast(env, obj, OBFUSCATE("Lib loaded. Modded by LGL"), Toast::LENGTH_LONG);
-    isToastCalled = true;
-}
-
 JNIEXPORT void JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Changes(JNIEnv *env, jobject obj,
                                                    jint feature, jint value) {
-
-    LOGD(OBFUSCATE("Feature: = %d"), feature);
-    LOGD(OBFUSCATE("Value: = %d"), value);
+    LOGD(OBFUSCATE("Feature: = %d | Int value: = %d"), feature, value);
 
     // You must count your features from 0 (YES, I MEAN ZERO), not 1
-
     switch (feature) {
         // The category was 0 so "case 0" is not used
         case 0:
@@ -130,6 +116,8 @@ float get_FloatExample(void *instance) {
     return old_get_FloatExample(instance);
 }
 
+#define libName OBFUSCATE("libil2cpp.so")
+
 // we will run our patches in a new thread so our while loop doesn't block process main thread
 // Don't forget to remove or comment out logs before you compile it.
 
@@ -138,9 +126,6 @@ float get_FloatExample(void *instance) {
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("Lib have been loaded"));
 
-//    do {
-//        sleep(1);
-//    } while (!isLibraryLoaded(libName));
 
 #if defined(__aarch64__) //Compile for arm64 lib only
     // possible with hex & no need to specify len
@@ -181,13 +166,12 @@ void *hack_thread(void *) {
     LOGI(OBFUSCATE("Hooked"));
 #endif
 
-    //Call bad function if isToastCalled is false. Only use with LoadLibWithoutMenu
-    /*
-    sleep(3);
+    //Call bad function if isToastCalled is false
+    sleep(10);
     if (!isToastCalled){
         int *p = 0;
         *p = 0;
-    }*/
+    }
 
     return NULL;
 }

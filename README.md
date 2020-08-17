@@ -1,4 +1,4 @@
-**This template is not for newbies/noobs. You need basic knowledge of C++, Java, dalvik opcodes, ARM and ARM64 assembly, and be able to patch hex and hook. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
+**This template is not for newbies/noobs, it is for experience modder only. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
 
 **If you don't like this project, do not use. Please do not spread hate and insult against me, especially the smaller kids community. Instead, tell me why you don't like and what I can improve**
 
@@ -14,6 +14,11 @@ Mod menu is based on Octowolve/Escanor and Van's template.
 Preview:
 
 ![](https://i.imgur.com/lSNYzOA.gif)
+
+# Pre-requisites:
+- Basic knowledge of C++, Java, dalvik opcodes (smali), ARM and ARM64 assembly. x86 is optional
+- Be able to patch hex and hook
+- Understanding how Android development works
 
 # What will you need?
 - Android Studio 4 and up: https://developer.android.com/studio
@@ -327,11 +332,6 @@ A: Check if apk is not protected. If not, search for the related issues: https:/
 Q: Getting strange issues on Android Studio or Gradle
 
 A: If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
-
-
-Q: Can I load lib without mod menu?
-
-A: Yes you can, just put this code
 
 
 Q: I'm getting an error "Unsigned short value out of range: 65536" if I compile

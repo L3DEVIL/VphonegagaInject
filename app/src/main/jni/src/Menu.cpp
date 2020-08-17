@@ -7,7 +7,7 @@
 
 bool titleValid = false, headingValid = false, iconValid = false, featureListValid = false;
 
-//Check if text has been changed via java/smali
+//Anti-leech: Check if text has been changed via java/smali
 void *antiLeech(void *) {
     //bad function
 
@@ -38,6 +38,7 @@ extern "C" {
 JNIEXPORT jboolean
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_EnableSounds(JNIEnv *env, jobject thiz) {
+    //Note: some games don't like sounds, which caused crash. Please turn it off if it happens
     return true;
 }
 
@@ -95,12 +96,6 @@ JNIEXPORT jint
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_IconSize(JNIEnv *env, jobject thiz) {
     return 70;
-}
-
-JNIEXPORT void
-JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_ToastStartup(JNIEnv *env, jobject thiz) {
-    MakeToast(env, thiz, OBFUSCATE("Menu loaded. Modded by LGL"), Toast::LENGTH_LONG);
 }
 
 JNIEXPORT jobjectArray

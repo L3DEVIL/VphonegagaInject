@@ -714,10 +714,11 @@ public class FloatingModMenuService extends Service {
                     FXPlayer.release();
                 }
                 FXPlayer = MediaPlayer.create(this, uri);
-                if (FXPlayer != null)
+                if (FXPlayer != null){
                     //Volume reduced so sounds are not too loud
                     FXPlayer.setVolume(0.5f, 0.5f);
-                FXPlayer.start();
+                    FXPlayer.start();
+                }
 
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {

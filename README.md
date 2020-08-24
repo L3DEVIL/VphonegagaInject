@@ -2,6 +2,21 @@
 
 **If you don't like this project, do not use. Please do not spread hate and insult against me, especially the smaller kids community. Instead, tell me why you don't like and what I can improve**
 
+# Quick links
+- [Pre-requisites](#pre-requisites)
+- [What will you need?](#what-will-you-need)
+- [download/clone](#downloadclone)
+- [Install NDK](#install-ndk)
+- [Open the project](#open-the-project)
+- [Making changes](#making-changes)
+- [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
+- [Loading lib without mod menu](#loading-lib-without-mod-menu)
+- [FAQ](#faq)
+- [Reporting issues](#reporting-issues)
+- [Contact](#contact)
+- [Useful links](#useful-links)
+- [Credits/Acknowledgements](#creditsacknowledgements)
+
 # Introduction
 Simple floating mod menu with sounds for il2cpp and other native android games, KittyMemory, MSHook, and And64InlineHook included. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in java/smali and does not need to be stored under assets folder.
 
@@ -54,7 +69,7 @@ Select **Android SDK**, check **NDK (Side by side)** and click OK. It will downl
 
 ![](https://i.imgur.com/FcAd2Px.png)
 
-# Open the mod menu template project 
+# Open the project 
 Once you've downloaded all the necessary files, extract the template project to the folder without any spaces. If any folder has spaces, it will cause problem
 
 On Android Studio on the welcome screen, choose **"Open an existing Android Studio project"**
@@ -220,7 +235,9 @@ ARMv7/x86:
 
 We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
-# Testing the mod menu 
+**Encoding **
+
+# Testing
 
 If you have your device with adb enabled, connected your PC or your emulator with adb enabled. Android Studio will detect and you can click Play to run your app onto your device/emulator
 
@@ -232,7 +249,7 @@ On Android 4.2 and higher, the Developer options screen is hidden by default. To
 
 On some devices, the Developer options screen might be located or named differently.
 
-# Implementing the menu in the target game 
+# Implementing the menu to the target game
 
 After you finished the menu, you can build the project to APK file.
 **Build** -> **Build Bundle(s)/APK(s)** -> **Build APK(s)**
@@ -255,7 +272,7 @@ Add the permission besides other permissions
 
 ![](https://i.imgur.com/XOxLU91.png)
 
-And add the service below the application tag (change the package name if you had changed it)
+Add the service below the start of application tag (change the package name of your menu if you had changed it)
 ```
 <service
            android:name="uk.lgl.modmenu.FloatingModMenuService"
@@ -309,7 +326,7 @@ Thanks for reading the tutorial
 
 Do not forget to check my template again. I may change it anytime =D
 
-# Load lib without mod menu
+# Loading lib without mod menu
 
 Just call the LoadLib in the OnCreate method
 ```
@@ -318,30 +335,44 @@ Just call the LoadLib in the OnCreate method
 
 And uncomment the isToastCalled check in hack_thread function
 
+Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
+
 # FAQ
-Q: ERROR: executing external native build for ndkBuild
+### ERROR: executing external native build for ndkBuild
 
-A: Install NDK first
+Install NDK first
 
+### I have a problem decompiling and compiling APK file
 
-Q: I have a problem decompiling and compiling APK file
+Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
-A: Check if apk is not protected. If not, search for the related issues: https://github.com/iBotPeaches/Apktool/issues
+### Getting strange issues on Android Studio or Gradle
 
+If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
 
-Q: Getting strange issues on Android Studio or Gradle
+### I'm getting an error "Unsigned short value out of range: 65536" if I compile
 
-A: If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
+The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
 
+### How can I protect my dex and/or lib?
 
-Q: I'm getting an error "Unsigned short value out of range: 65536" if I compile
+There are only chinese based tools I heard so far but they are super slow and I never manage to use them. I highly suggest to not use them, because we don't know if they contain malwares, spywares, you know, rumours about chinese spying. Protecting APK may end up including additional spywares and may result getting flagged by some anti-virus, so use it are your own risk. Do not be offended, i'm just warning
 
-A: The method index can't fit into an unsigned 16-bit value, means you have too many methods above 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
+I will not mention their service names and please don't ask me for it.
 
+But there is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
 
-Q: How to get older version of the template?
+### How to get older version of the template?
 
-A: Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
+Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
+
+# Reporting issues
+
+You can report it here https://github.com/LGLTeam/Android-Mod-Menu/issues
+
+Please give link to the APK and provide logcat from Android Studio as possible
+
+Best way is to contact me privately. See below
 
 # Contact
 

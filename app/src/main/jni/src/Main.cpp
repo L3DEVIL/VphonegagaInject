@@ -128,11 +128,10 @@ void *hack_thread(void *) {
 
 
 #if defined(__aarch64__) //Compile for arm64 lib only
-    // possible with hex & no need to specify len
-    hexPatches.GodMode = MemoryPatch::createWithHex(libName, string2Offset(OBFUSCATE_KEY("0x123456", 'a')), OBFUSCATE("000080D2C0035FD6"));
-
-    // spaces are fine too
-    hexPatches.GodMode = MemoryPatch::createWithHex(libName, string2Offset(OBFUSCATE_KEY("0x123456", 'b')), OBFUSCATE("00 00 80 D2 C0 03 5F D6"));
+    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
+    hexPatches.GodMode = MemoryPatch::createWithHex(libName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
+                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
 
     // Offset Hook example
     A64HookFunction((void *) getAbsoluteAddress(libName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
@@ -143,12 +142,8 @@ void *hack_thread(void *) {
                    (void **) &old_get_BoolExample);
 
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
-    // possible with hex & no need to specify len
-    hexPatches.GodMode = MemoryPatch::createWithHex(libName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", 'a')),
-                                                    OBFUSCATE("0000A0E31EFF2FE1"));
 
-    // spaces are fine too
+    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
     hexPatches.GodMode = MemoryPatch::createWithHex(libName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '-')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
@@ -167,7 +162,7 @@ void *hack_thread(void *) {
 #endif
 
     //Call bad function if isToastCalled is false
-    sleep(10);
+    sleep(15);
     if (!isToastCalled){
         int *p = 0;
         *p = 0;

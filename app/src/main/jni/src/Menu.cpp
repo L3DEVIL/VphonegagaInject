@@ -11,7 +11,7 @@ bool titleValid = false, headingValid = false, iconValid = false, featureListVal
 void *antiLeech(void *) {
     //bad function
 
-    sleep(5);
+    sleep(15);
 
     if (!titleValid) {
         //Bad function to make it crash

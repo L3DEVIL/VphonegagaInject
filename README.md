@@ -376,8 +376,7 @@ Best way is to contact me privately. See below
 
 # Contact
 
-- Telegram: (Temporary removed due to huge amount of annoying messages about Free Fire. A new name will be shown here once it is under control)
-- Discord: LGL#2184
+Temporary removed due to huge amount of annoying messages about Free Fire modding. Get the fuck off Free Fire kids
 
 Newbies are the lowest priority, I may not be able to respond at all. You will be blocked if you beg me to teach/spoonfeed. Don't define me a teacher, i'm not a teacher :P
 

@@ -19,4 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--dontobfuscate
+#-dontobfuscate
+-keepclassmembers class ** {
+   public static void Start (***);
+}
+-keep public class uk.lgl.modmenu.StaticActivity

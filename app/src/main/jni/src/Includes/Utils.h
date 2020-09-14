@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include "Logger.h"
 
+extern const char* libName;
+
 typedef unsigned long DWORD;
 static uintptr_t libBase;
 
@@ -23,6 +25,8 @@ void MakeToast(JNIEnv *env, jobject thiz, const char *text, int length);
 std::string s(const std::string &str);
 
 uintptr_t string2Offset(const char *c);
+
+void writeToFile(std::string dir, std::string buf);
 
 namespace Toast {
     inline const int LENGTH_LONG = 1;

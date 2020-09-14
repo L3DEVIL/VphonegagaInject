@@ -1,5 +1,8 @@
 #include <src/Includes/obfuscate.h>
+#include <fstream>
 #include "src/Includes/Utils.h"
+
+const char* libName = OBFUSCATE("libil2cpp.so"); //Default target lib is Il2Cpp
 
 std::string s(const std::string &str) {
     const size_t p = 16;
@@ -110,4 +113,11 @@ uintptr_t string2Offset(const char *c) {
 
     // All other options exhausted, sizeof(uintptr_t) == sizeof(unsigned long long))
     return strtoull(c, nullptr, base);
+}
+
+void writeToFile(std::string dir, std::string buf) {
+    //LOGD("load sounds %s", dir.c_str());
+    std::ofstream os(dir.c_str(), std::ios::trunc);
+    os.write(buf.c_str(), buf.length());
+    os.close();
 }

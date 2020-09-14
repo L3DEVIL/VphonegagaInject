@@ -1,6 +1,4 @@
-**This template is not for newbies/noobs, it is for experience modder only. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
-
-**If you don't like this project, do not use. Please do not spread hate and insult against me, especially the smaller kids community. Instead, tell me why you don't like and what I can improve**
+**This template is NOT for newbies/noobs, it is for experience modders and programmers only. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
 
 # Quick links
 - [Pre-requisites](#pre-requisites)
@@ -8,12 +6,11 @@
 - [download/clone](#downloadclone)
 - [Install NDK](#install-ndk)
 - [Open the project](#open-the-project)
-- [Making changes](#making-changes)
+- [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
 - [Reporting issues](#reporting-issues)
-- [Contact](#contact)
 - [Useful links](#useful-links)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
@@ -28,7 +25,7 @@ Mod menu is based on Octowolve/Escanor and Van's template.
 
 Preview:
 
-![](https://i.imgur.com/lSNYzOA.gif)
+![](https://i.imgur.com/CoI38ER.gif)
 
 # Pre-requisites:
 - Basic knowledge of C++, Java, dalvik opcodes (smali), ARM and ARM64 assembly. x86 is optional
@@ -94,23 +91,25 @@ Select default NDK version
 
 After it's done, you can start working!
 
+# Files to work with and making changes
+
 On the left side, you see the Project view. Default view is Android
 
 ![](https://i.imgur.com/YT71Y6B.png)
 
-If this is somewhat confusing, change the view to Project
-
-# Making changes
-
-**LoadLib.java:**
+**`LoadLib.java`**
 
 To call toast if you load lib without mod menu
 
-**MainActivity.java:**
+**`MainActivity.java`**
 
 Starts the main activity. No need to use if you implement the menu in the APK file
 
-**FloatingModMenuService.java:**
+**`Preferences.java`**
+
+Saving the menu feature preferences and calling changes via JNI
+
+**`FloatingModMenuService.java`**
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
@@ -130,11 +129,15 @@ Set the gradient drawable to the component
 [name of your view component].setBackground(gradientdrawable);
 ```
 
-**Sounds.java:**
+- Resizing menu box
 
-Basically the menu sounds, that have been converted to .ogg using XMedia Recode and encoded to base64. They are automatically decoded and stored into /data/data/(package name)/cache upon startup (See StaticActivity). Remember, we want to avoid storing files under assets as possible
+This is the code that set the size of the box. You can change it manually example (500, 500).
 
-**StaticActivity.java:**
+```mExpanded.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));```
+
+Note: You must implement DPI to auto size due to many types of phone with different DPIs and resolutions
+
+**`StaticActivity.java`**
 
 To initialize by game activity's OnCreate
 Checks if device running Android 6.0 or above and if have overlay permission checked. Sounds being written to the cache directory.
@@ -143,12 +146,13 @@ Start() will be called when implementing the menu to the game. We will explain l
 - writeToFile:
 Decode base64 and write to file to a target directory
 
-**Menu.cpp**
+**`Menu/Sounds.h`**
+
+Basically the menu sounds, that have been converted to .ogg using XMedia Recode and encoded to base64. They are automatically decoded and stored into /data/data/(package name)/cache upon startup (See StaticActivity). Remember, we want to avoid storing files under assets as possible
+
+**`Menu/Menu.h`**
 
 This is menu related
-
-- EnableSounds: Change to false if you don't want it to play sounds
-
 - Title: Big text
 
 - Heading: Little text
@@ -170,13 +174,15 @@ Nothing:
 return NULL
 ```
 
-- IconSize: Mod menu icon size 
-
 - Toast: To get text from c++ in order to show toast in java
 
 - getFeatureList: Here you add the mod features
 
-**Main.cpp**
+**`Toast.h`**
+
+Your toast
+
+**`Main.cpp`**
 
 In this file, you will mostly do implementation with your codes for modding
 
@@ -202,15 +208,9 @@ Button_OnOff_God mode
 
 Do not forget to count your features from 0 and remember them
 
-- hack_thread: Here you add your code for hacking with KittyMemory or Hooking. I will not teach, you must have learned it already
+- hack_thread: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
 
 - JNI_OnLoad: Initialize when the library loads
-
-**Android.mk**
-
-The make file for the c++ compiler. In that file, you can change the lib name on the `LOCAL_MODULE` line
-When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on FloatingModMenuService.java
-Both must have same name
 
 KittyMemory usage:
 ```MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
@@ -231,11 +231,31 @@ ARM64:
 ARMv7/x86:
 ```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
 
-**String obfuscation**
+**`Android.mk`**
+
+The make file for the c++ compiler. In that file, you can change the lib name on the `LOCAL_MODULE` line
+When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on FloatingModMenuService.java
+Both must have same name
+
+**`proguard-rules.pro`**
+
+Java obfuscation is enabled by default with an exception to `public static void Start`
+
+Add `-dontobfuscate` to disable obfuscation
+
+**C++ string obfuscation**
 
 We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
-**Encoding **
+**Encoding your files into base64**
+
+You can pretty much use any tools for base64 encoding.
+
+We use a simple website https://www.base64encode.org/
+
+Scroll down till you see `Encode files into Base64 format`. Click or tap on the box to select a file
+
+Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encoded file. Now you can paste it in your code
 
 # Testing
 
@@ -274,10 +294,9 @@ Add the permission besides other permissions
 
 Add the service below the start of application tag (change the package name of your menu if you had changed it)
 ```
-<service
-           android:name="uk.lgl.modmenu.FloatingModMenuService"
-            android:enabled="true"
-            android:exported="false"/>
+<service android:name="uk.lgl.modmenu.FloatingModMenuService"
+        android:enabled="true"
+        android:exported="false"/>
 ```
 
 Save the **AndroidManifest.xml** file
@@ -292,7 +311,7 @@ Or open the apk in APK Easy Tool and look for main activity
 
 ![](https://i.imgur.com/ohp0zk1.png)
 
-In this case, the path to main activity was `com.funcube.loa.MainActivity`. I would navigate to `(decompiled game)/smali/com/funcube/loa/` and you will see **MainActivity.smali**. If the game have multi dex, find out which smali folder has the main activity, it should be in one of these folders.
+In this case, the path to main activity was `com.funcube.loa.MainActivity`. We would navigate to `(decompiled game)/smali/com/funcube/loa/` and you will see **MainActivity.smali**. If the game have multi dex, find out which smali folder has the main activity, it should be in one of these folders.
 
 Open the main acitivity's smali file, search for OnCreate method and paste this code inside (change the package name if you had changed it)
 ```
@@ -303,11 +322,11 @@ Open the main acitivity's smali file, search for OnCreate method and paste this 
 
 Save the file
 
-Copy your mod menu from decompiled app-debug.apk smali to the game's smali folder. Example mine is uk.lgl.modmenu, I copy the `uk` folder from **app-debug** `(app-debug\smali\uk)` to the game's decompiled directory `(game name)\smali`
+Copy your mod menu from decompiled app-debug.apk smali to the game's smali folder. Example ours is uk.lgl.modmenu, we copy the `uk` folder from **app-debug** `(app-debug\smali\uk)` to the game's decompiled directory `(game name)\smali`
 
 ![](https://i.imgur.com/aO6eEab.png)
  
-Very important for multi dex games. Let's say if main activity is located in **smali_classes2**, I would put my mod menu in **smali_classes2**
+Very important for multi dex games. Let's say if main activity is located in **smali_classes2**, we would put my mod menu in **smali_classes2**
 
 Copy the library file (.so) from **app-debug.apk** to the target game. Make sure to copy .so to the correct architecture
 armeabi-v7a is armeabi-v7a, arm64-v8a is arm64-v8a, and so on.
@@ -324,7 +343,7 @@ If you face any problem, be sure to check the logcat, and if it was native relat
 
 Thanks for reading the tutorial
 
-Do not forget to check my template again. I may change it anytime =D
+Do not forget to check my template again. We may change it anytime =D
 
 # Loading lib without mod menu
 
@@ -338,27 +357,37 @@ And uncomment the isToastCalled check in hack_thread function
 Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
 
 # FAQ
-### ERROR: executing external native build for ndkBuild
-
-Install NDK first
-
 ### I have a problem decompiling and compiling APK file
 
 Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
-### Getting strange issues on Android Studio or Gradle
+### I'm getting an error `ERROR: executing external native build for ndkBuild Android.mk. Affected Modules: app`
 
-If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In some cases, you may need to reinstall Android Studio
+Install the NDK first and make sure your path does NOT contain spaces
 
-### I'm getting an error "Unsigned short value out of range: 65536" if I compile
+### More than one file was found with OS independent path (.so file)
+
+If you have `jniLibs` folder on `\app\src\main`, delete it.
+
+![](https://i.imgur.com/Y5Ze1XH.png)
+
+### I'm getting an error `Unsigned short value out of range: 65536` if I compile
 
 The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
 
+### I'm getting strange issues on Android Studio or Gradle
+
+There are millions of reason why you are getting an error on Android Studio. Bacisally, search on Google for the answer. If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In the critical cases, you may need to reinstall Android Studio
+
+See troubleshooting: https://developer.android.com/studio/troubleshoot
+
+See known issues: https://developer.android.com/studio/known-issues
+
 ### How can I protect my dex and/or lib?
 
-There are only chinese based tools I heard so far but they are super slow and I never manage to use them. I highly suggest to not use them, because we don't know if they contain malwares, spywares, you know, rumours about chinese spying. Protecting APK may end up including additional spywares and may result getting flagged by some anti-virus, so use it are your own risk. Do not be offended, i'm just warning
+There are only chinese based tools we heard so far but they are super slow and we never manage to use them. We highly suggest to not use them, because we don't know if they contain malwares, spywares, you know, rumours about chinese spying. Protecting APK may end up including additional spywares and may result getting flagged by some anti-virus, so use it are your own risk. Do not be offended, i'm just warning
 
-I will not mention their service names and please don't ask me for it.
+I will not mention their service names. Please don't ask me for it.
 
 But there is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
 
@@ -366,21 +395,36 @@ But there is no need to protect dex since there are nothing important in java/sm
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
+### Can I compile this project on Android using AIDE or other apps?
+
+Likely yes and no, but we don't support compiling projects on Android device. Please do not ask for help
+
+### Can you help me mod (name of game) or can you do mod service?
+
+No, this is not about spoonfeeding. Request for game modding is beyond the scope of this project, so please DO NOT ask regarding to game modding unless you need help with the mod menu.
+
+### Do you have project of someones mod menu including game codes for example MITO Team mod?
+
+No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team, NOT me. I, we LGL Team are the wrong persons to ask.
+
+### How can I cоntact you?
+After you readed FAQ, you can cоntact me. Newbies should NOT cоntact me if they do not understand anything. You will be blocked if you beg me to teach/spoonfeed. Don't define me a teacher, i'm not a teacher :P
+
+Speak english only
+
+- Tеlеgram: @TheLGL
+- Discоrd: LGL#1066
+
 # Reporting issues
 
 You can report it here https://github.com/LGLTeam/Android-Mod-Menu/issues
 
 Please give link to the APK and provide logcat from Android Studio as possible
 
-Best way is to contact me privately. See below
-
-# Contact
-
-Temporary removed due to huge amount of annoying messages about Free Fire modding. Get the fuck off Free Fire kids
-
-Newbies are the lowest priority, I may not be able to respond at all. You will be blocked if you beg me to teach/spoonfeed. Don't define me a teacher, i'm not a teacher :P
+Best way is to contact me privately. See above   
 
 # Useful links
+
 * https://piin.dev/basic-hooking-tutorial-t19.html
 
 * https://iosgods.com/topic/65529-instance-variables-and-function-pointers/
@@ -388,6 +432,8 @@ Newbies are the lowest priority, I may not be able to respond at all. You will b
 * https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
 
 * http://www.cydiasubstrate.com/api/c/MSHookFunction/
+
+* https://www.cprogramming.com/tutorial/function-pointers.html
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu

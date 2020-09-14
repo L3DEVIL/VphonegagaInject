@@ -6,4 +6,3 @@ APP_CPPFLAGS := -std=c++14 -fno-rtti -fno-exceptions -DNDEBUG -Wall -fpermissive
 APP_LDFLAGS := -llog
 APP_THIN_ARCHIVE := true
 APP_PIE 		:= true
-

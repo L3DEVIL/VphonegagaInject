@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -33,7 +34,9 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,42 +65,32 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import static uk.lgl.modmenu.StaticActivity.cacheDir;
+import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class FloatingModMenuService extends Service {
     private MediaPlayer FXPlayer;
-    public RelativeLayout mCollapsed;
-    public LinearLayout mExpanded;
-    private RelativeLayout mRootContainer;
+    public RelativeLayout mCollapsed, mRootContainer;
+    public LinearLayout mExpanded, patches, mSettings;
     public WindowManager mWindowManager;
     public WindowManager.LayoutParams params;
-    private LinearLayout patches;
     private ImageView startimage;
     private FrameLayout rootFrame;
     private AlertDialog alert;
     private EditText edittextvalue;
-
+    private ScrollView scrollView;
     //For alert dialog
-    private TextView textView2;
-    private String featureNameExt;
-    private int featureNum;
-    private EditTextValue txtValue;
+    private TextView inputFieldTextView;
+    private String inputFieldFeatureName;
+    private int inputFieldFeatureNum;
+    private EditTextValue inputFieldTxtValue;
 
-    public class EditTextValue {
-        private int val;
-
-        public void setValue(int i) {
-            val = i;
-        }
-
-        public int getValue() {
-            return val;
-        }
-    }
-
-    private static final String TAG = "Mod Menu";
+    boolean soundDelayed;
+    public String cacheDir;
 
     //initialize methods from the native library
+    public static native void LoadSounds(String dir);
+
     public native void ToastStartup();
 
     private native String Title();
@@ -108,12 +101,6 @@ public class FloatingModMenuService extends Service {
 
     private native String IconWebViewData();
 
-    private native boolean EnableSounds();
-
-    private native int IconSize();
-
-    public native void Changes(int feature, int value);
-
     private native String[] getFeatureList();
 
     @Override
@@ -121,16 +108,13 @@ public class FloatingModMenuService extends Service {
         return null;
     }
 
-    //Override our Start Command so the Service doesnt try to recreate itself when the App is closed
-    public int onStartCommand(Intent intent, int i, int i2) {
-        return Service.START_NOT_STICKY;
-    }
-
     //When this Class is called the code in this function will be executed
     @Override
     public void onCreate() {
         super.onCreate();
-
+        Preferences.context = getApplicationContext();
+        cacheDir = getCacheDir().getPath() + "/";
+        LoadSounds(cacheDir);
         //A little message for the user when he opens the app
         ToastStartup();
 
@@ -158,6 +142,7 @@ public class FloatingModMenuService extends Service {
         mCollapsed.setVisibility(View.VISIBLE);
         mExpanded = new LinearLayout(getBaseContext()); // Menu markup (when the menu is expanded)
         patches = new LinearLayout(getBaseContext());
+        mSettings = new LinearLayout(getBaseContext());
 
         RelativeLayout relativeLayout = new RelativeLayout(this);
         relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(-2, -1));
@@ -190,7 +175,7 @@ public class FloatingModMenuService extends Service {
         //********** Close button **********
         Button closeBtn = new Button(this);
         closeBtn.setBackgroundColor(Color.TRANSPARENT);
-        closeBtn.setText("CLOSE");
+        closeBtn.setText("MINIMIZE");
         closeBtn.setTextColor(Color.parseColor("#82CAFD"));
         closeBtn.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -198,17 +183,16 @@ public class FloatingModMenuService extends Service {
                 mCollapsed.setAlpha(0.95f);
                 mExpanded.setVisibility(View.GONE);
                 playSound(Uri.fromFile(new File(cacheDir + "Back.ogg")));
-                //Log.i("LGL", "Close");
             }
         });
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(-2, -2);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         layoutParams.addRule(11);
         closeBtn.setLayoutParams(layoutParams);
 
         //********** The icon to open mod menu **********
         startimage = new ImageView(getBaseContext());
         startimage.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
-        int applyDimension = (int) TypedValue.applyDimension(1, (float) IconSize(), getResources().getDisplayMetrics());
+        int applyDimension = (int) TypedValue.applyDimension(1, 50, getResources().getDisplayMetrics()); //Icon size 50
         startimage.getLayoutParams().height = applyDimension;
         startimage.getLayoutParams().width = applyDimension;
         startimage.requestLayout();
@@ -227,10 +211,10 @@ public class FloatingModMenuService extends Service {
         });
 
         //********** Webview **********
-        WebView wView = new WebView(this);
-        wView.loadData("<html><head><body style=\"margin: 0; padding: 0\"><img src=\"" + IconWebViewData() + "\" width=\"" + IconSize() + "\" height=\"" + IconSize() + "\"</body></html>", "text/html", "utf-8");
-        wView.setBackgroundColor(0x00000000);
-        wView.setLayoutParams(new RelativeLayout.LayoutParams(-2, -2));
+        WebView wView = new WebView(this); //Icon size width=\"50\" height=\"50\"
+        wView.loadData("<html><head><body style=\"margin: 0; padding: 0\"><img src=\"" + IconWebViewData() + "\" width=\"50\" height=\"50\"</body></html>", "text/html", "utf-8");
+        wView.setBackgroundColor(0x00000000); //Transparent
+        wView.setLayoutParams(new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         wView.getLayoutParams().height = applyDimension;
         wView.getLayoutParams().width = applyDimension;
         wView.requestLayout();
@@ -248,7 +232,7 @@ public class FloatingModMenuService extends Service {
         mExpanded.setOrientation(LinearLayout.VERTICAL);
         mExpanded.setPadding(0, 0, 0, 0);
         //Auto size. To set size manually, change the width and height example 500, 500
-        mExpanded.setLayoutParams(new LinearLayout.LayoutParams(-1, -2));
+        mExpanded.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));
         GradientDrawable gradientdrawable = new GradientDrawable();
         gradientdrawable.setCornerRadius(20); //Set corner
         gradientdrawable.setColor(Color.parseColor("#1C2A35")); //Set background color
@@ -256,23 +240,30 @@ public class FloatingModMenuService extends Service {
         mExpanded.setBackground(gradientdrawable); //Apply GradientDrawable to it
 
         //********** Mod menu feature list **********
-        ScrollView scrollView = new ScrollView(getBaseContext());
-        scrollView.setLayoutParams(new LinearLayout.LayoutParams(-1, dp(200)));
+        scrollView = new ScrollView(getBaseContext());
+        scrollView.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, dp(200)));
         scrollView.setBackgroundColor(Color.parseColor("#171E24"));
 
-        patches.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
+        patches.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         patches.setOrientation(LinearLayout.VERTICAL);
 
         //********** Title text **********
+        RelativeLayout titleText = new RelativeLayout(this);
+        titleText.setLayoutParams(new RelativeLayout.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
+        titleText.setPadding(10, 5, 10, 5);
+        titleText.setVerticalGravity(16);
+
         TextView title = new TextView(getBaseContext());
         title.setText(Title());
         title.setTextColor(Color.parseColor("#82CAFD"));
         title.setTypeface(Typeface.DEFAULT_BOLD);
         title.setTextSize(20.0f);
         title.setPadding(0, 10, 0, 5);
-        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-2, -2);
-        layoutParams2.gravity = 17;
-        title.setLayoutParams(layoutParams2);
+
+        RelativeLayout.LayoutParams rl = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        rl.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        title.setLayoutParams(rl);
+        layoutParams.addRule(11);
 
         //********** Heading text **********
         TextView heading = new TextView(getBaseContext());
@@ -281,15 +272,58 @@ public class FloatingModMenuService extends Service {
         heading.setTypeface(Typeface.DEFAULT_BOLD);
         heading.setTextSize(10.0f);
         heading.setPadding(10, 5, 10, 10);
-        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(-2, -2);
+        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
         layoutParams3.gravity = 17;
         heading.setLayoutParams(layoutParams3);
 
-        //********** Params **********
-        if (Build.VERSION.SDK_INT >= 26) {
-            params = new WindowManager.LayoutParams(-2, -2, 2038, 8, -3);
+        //********** Settings icon **********
+        TextView settings = new TextView(getBaseContext());
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            settings.setText("⚙");
         } else {
-            params = new WindowManager.LayoutParams(-2, -2, 2002, 8, -3);
+            settings.setText("\uD83D\uDD27"); //Android 5 and below can't display ⚙ emoji so display "🔧" instead
+        }
+        settings.setTextColor(Color.parseColor("#82CAFD"));
+        settings.setTypeface(Typeface.DEFAULT_BOLD);
+        settings.setTextSize(20.0f);
+        RelativeLayout.LayoutParams rlsettings = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        rlsettings.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        settings.setLayoutParams(rlsettings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
+                    scrollView.removeView(patches);
+                    scrollView.addView(mSettings);
+                } catch (IllegalStateException e) {
+
+                }
+            }
+        });
+
+        //********** Settings **********
+        mSettings.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
+        mSettings.setOrientation(LinearLayout.VERTICAL);
+        addSwitch(1000, "Sounds");
+        addSwitch(1001, "Save preferences");
+        addButton(1002, "Close");
+
+        //********** Params **********
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            params = new WindowManager.LayoutParams(
+                    WRAP_CONTENT,
+                    WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
+        } else {
+            params = new WindowManager.LayoutParams(
+                    WRAP_CONTENT,
+                    WRAP_CONTENT,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                    PixelFormat.TRANSLUCENT);
         }
         params.gravity = 51;
         params.x = 0;
@@ -304,38 +338,61 @@ public class FloatingModMenuService extends Service {
         } else {
             mCollapsed.addView(startimage);
         }
-        mExpanded.addView(title);
+        titleText.addView(title);
+        titleText.addView(settings);
+        mExpanded.addView(titleText);
         mExpanded.addView(heading);
         mExpanded.addView(scrollView);
         scrollView.addView(patches);
         relativeLayout.addView(hideBtn);
         relativeLayout.addView(closeBtn);
         mExpanded.addView(relativeLayout);
-
-        mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         mWindowManager.addView(rootFrame, params);
 
         //********** Create menu list **********
-        CreateMenuList();
+        String[] listFT = getFeatureList();
+        for (int i = 0; i < listFT.length; i++) {
+            final int feature = i;
+            String str = listFT[i];
+            if (str.contains("Toggle_")) {
+                addSwitch(feature, str.replace("Toggle_", ""));
+            } else if (str.contains("SeekBar_")) {
+                String[] split = str.split("_");
+                addSeekBar(feature, split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]));
+            } else if (str.contains("Button_")) {
+                addButton(feature, str.replace("Button_", ""));
+            } else if (str.contains("Spinner_")) {
+                addSpinner(feature, str.replace("Spinner_", ""));
+            } else if (str.contains("InputValue_")) {
+                addTextField(feature, str.replace("InputValue_", ""));
+            } else if (str.contains("Category_")) {
+                addCategory(str.replace("Category_", ""));
+            }
+        }
     }
 
+    //Dialog for changing value
     private void initAlertDiag() {
+        //LinearLayout
         LinearLayout linearLayout1 = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         linearLayout1.setPadding(10, 5, 0, 5);
         linearLayout1.setOrientation(LinearLayout.VERTICAL);
         linearLayout1.setGravity(17);
         linearLayout1.setLayoutParams(layoutParams);
         linearLayout1.setBackgroundColor(Color.parseColor("#171E24"));
-
         LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
+        linearLayout.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         linearLayout.setBackgroundColor(Color.parseColor("#14171f"));
         linearLayout.setOrientation(LinearLayout.VERTICAL);
+
+        //FrameLayout
         FrameLayout frameLayout = new FrameLayout(this);
-        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(-2, -2));
+        frameLayout.setLayoutParams(new FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
         frameLayout.addView(linearLayout);
 
+        //TextView
         final TextView textView = new TextView(this);
         textView.setText(Html.fromHtml("<font face='roboto'>Tap OK to apply changes. Tap outside to cancel</font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
@@ -355,6 +412,7 @@ public class FloatingModMenuService extends Service {
         FilterArray[0] = new InputFilter.LengthFilter(10);
         edittextvalue.setFilters(FilterArray);
 
+        //Button
         Button button = new Button(this);
         button.setBackgroundColor(Color.parseColor("#1C262D"));
         button.setTextColor(Color.parseColor("#D5E3EB"));
@@ -362,12 +420,11 @@ public class FloatingModMenuService extends Service {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Changes(featureNum, Integer.parseInt(edittextvalue.getText().toString()));
-                txtValue.setValue(Integer.parseInt(edittextvalue.getText().toString()));
-                textView2.setText(Html.fromHtml("<font face='roboto'>" + featureNameExt + ": <font color='#41c300'>" + edittextvalue.getText().toString() + "</font></font>"));
+                inputFieldTxtValue.setValue(Integer.parseInt(edittextvalue.getText().toString()));
+                inputFieldTextView.setText(Html.fromHtml("<font face='roboto'>" + inputFieldFeatureName + ": <font color='#41c300'>" + edittextvalue.getText().toString() + "</font></font>"));
                 alert.dismiss();
+                Preferences.changeFeatureInt(inputFieldFeatureName, inputFieldFeatureNum, Integer.parseInt(edittextvalue.getText().toString()));
                 playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
-                //interStr.OnWrite(editText.getText().toString());
             }
         });
 
@@ -408,10 +465,14 @@ public class FloatingModMenuService extends Service {
                             //When user clicks on the image view of the collapsed layout,
                             //visibility of the collapsed layout will be changed to "View.GONE"
                             //and expanded view will become visible.
-                            collapsedView.setVisibility(View.GONE);
-                            expandedView.setVisibility(View.VISIBLE);
-                            playSound(Uri.fromFile(new File(cacheDir + "OpenMenu.ogg")));
-                            //Toast.makeText(FloatingModMenuService.this, Html.fromHtml(Toast()), Toast.LENGTH_SHORT).show();
+                            try {
+                                collapsedView.setVisibility(View.GONE);
+                                expandedView.setVisibility(View.VISIBLE);
+                                playSound(Uri.fromFile(new File(cacheDir + "OpenMenu.ogg")));
+                                //Toast.makeText(FloatingModMenuService.this, Html.fromHtml(Toast()), Toast.LENGTH_SHORT).show();
+                            } catch (NullPointerException e) {
+
+                            }
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
@@ -428,216 +489,13 @@ public class FloatingModMenuService extends Service {
         };
     }
 
-    private void CreateMenuList() {
-        String[] listFT = getFeatureList();
-        for (int i = 0; i < listFT.length; i++) {
-            final int feature = i;
-            String str = listFT[i];
-            if (str.contains("Toggle_")) {
-                addSwitch(str.replace("Toggle_", ""), new InterfaceBool() {
-                    public void OnWrite(boolean z) {
-                        Changes(feature, 0);
-                    }
-                });
-            } else if (str.contains("SeekBar_")) {
-                String[] split = str.split("_");
-                addSeekBar(split[1], Integer.parseInt(split[2]), Integer.parseInt(split[3]), new InterfaceInt() {
-                    public void OnWrite(int i) {
-                        Changes(feature, i);
-                    }
-                });
-            } else if (str.contains("Category_")) {
-                addCategory(str.replace("Category_", ""));
-            } else if (str.contains("Button_")) {
-                addButton(str.replace("Button_", ""), new InterfaceBtn() {
-                    public void OnWrite() {
-                        Changes(feature, 0);
-                    }
-                });
-            } else if (str.contains("Spinner_")) {
-                addSpinner(str.replace("Spinner_", ""), new InterfaceInt() {
-                    @Override
-                    public void OnWrite(int i) {
-                        Changes(feature, i);
-                    }
-                });
-            } else if (str.contains("InputValue_")) {
-                addTextField(str.replace("InputValue_", ""), feature, new InterfaceInt() {
-                    @Override
-                    public void OnWrite(int i) {
-                        Changes(feature, 0);
-                    }
-                });
-            }
-        }
-    }
-
-    private void addTextField(final String featureName, final int feature, final InterfaceInt interInt) {
-        RelativeLayout relativeLayout2 = new RelativeLayout(this);
-        relativeLayout2.setLayoutParams(new RelativeLayout.LayoutParams(-2, -1));
-        relativeLayout2.setPadding(10, 5, 10, 5);
-        relativeLayout2.setVerticalGravity(16);
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(-2, -2);
-        layoutParams.topMargin = 10;
-
-        final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#fdd835'>Not set</font></font>"));
-        textView.setTextColor(Color.parseColor("#DEEDF6"));
-        textView.setLayoutParams(layoutParams);
-
-        final TextView textViewRem = new TextView(this);
-        textViewRem.setText("");
-
-        final EditTextValue edittextval = new EditTextValue();
-
-        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(-2, -2);
-        layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-        Button button2 = new Button(this);
-        button2.setLayoutParams(layoutParams2);
-        button2.setBackgroundColor(Color.parseColor("#1C262D"));
-        button2.setText("SET");
-        button2.setTextColor(Color.parseColor("#D5E3EB"));
-        button2.setGravity(17);
-        button2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alert.show();
-                textView2 = textView;
-                featureNum = feature;
-                featureNameExt = featureName;
-                txtValue = edittextval;
-
-                edittextvalue.setText(String.valueOf(edittextval.getValue()));
-            }
-        });
-
-        relativeLayout2.addView(textView);
-        relativeLayout2.addView(button2);
-        patches.addView(relativeLayout2);
-    }
-
-    private void addSpinner(String feature, final InterfaceInt interInt) {
-        List<String> list = new LinkedList<>(Arrays.asList(feature.split("_")));
-
-        LinearLayout linearLayout = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
-        linearLayout.setPadding(10, 5, 10, 5);
-        linearLayout.setOrientation(LinearLayout.VERTICAL);
-        linearLayout.setGravity(17);
-        linearLayout.setLayoutParams(layoutParams);
-        linearLayout.setBackgroundColor(Color.parseColor("#171E24"));
-
-        final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + list.get(0) + ": <font color='#41c300'></font>"));
-        textView.setTextColor(Color.parseColor("#DEEDF6"));
-
-        // Create another LinearLayout as a workaround to use it as a background
-        // and to keep the 'down' arrow symbol
-        // If spinner had the setBackgroundColor set, there would be no arrow symbol
-        LinearLayout linearLayout2 = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(-1, -1);
-        layoutParams2.setMargins(10, 2, 10, 5);
-        linearLayout2.setOrientation(LinearLayout.VERTICAL);
-        linearLayout2.setGravity(17);
-        linearLayout2.setBackgroundColor(Color.parseColor("#1C262D"));
-        linearLayout2.setLayoutParams(layoutParams2);
-
-        Spinner spinner = new Spinner(this);
-        spinner.setPadding(5, 10, 5, 8);
-        spinner.setLayoutParams(layoutParams2);
-        spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP); //trick to show white down arrow color
-        //Creating the ArrayAdapter instance having the list
-        list.remove(0);
-        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, list);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //Setting the ArrayAdapter data on the Spinner
-        spinner.setAdapter(aa);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                ((TextView) parentView.getChildAt(0)).setTextColor(Color.parseColor("#f5f5f5"));
-                interInt.OnWrite(position);
-                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
-            }
-        });
-        linearLayout.addView(textView);
-        linearLayout2.addView(spinner);
-        patches.addView(linearLayout);
-        patches.addView(linearLayout2);
-    }
-
-    private void addCategory(String text) {
-        TextView textView = new TextView(this);
-        textView.setBackgroundColor(Color.parseColor("#2F3D4C"));
-        textView.setText(text);
-        textView.setGravity(17);
-        textView.setTextSize(14.0f);
-        textView.setTextColor(Color.parseColor("#DEEDF6"));
-        textView.setTypeface(null, Typeface.BOLD);
-        textView.setPadding(0, 5, 0, 5);
-        patches.addView(textView);
-    }
-
-    private void addButton(String feature, final InterfaceBtn interfaceBtn) {
-        final Button button = new Button(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
-        layoutParams.setMargins(7, 5, 7, 5);
-        button.setLayoutParams(layoutParams);
-        button.setPadding(10, 5, 10, 5);
-        button.setTextSize(13.0f);
-        button.setTextColor(Color.parseColor("#D5E3EB"));
-        button.setGravity(17);
-
-        if (feature.contains("OnOff_")) {
-            feature = feature.replace("OnOff_", "");
-            button.setText(feature + ": OFF");
-            button.setBackgroundColor(Color.parseColor("#7f0000"));
-            final String feature2 = feature;
-            button.setOnClickListener(new View.OnClickListener() {
-                private boolean isActive = true;
-
-                public void onClick(View v) {
-                    interfaceBtn.OnWrite();
-                    if (isActive) {
-                        playSound(Uri.fromFile(new File(cacheDir + "On.ogg")));
-                        button.setText(feature2 + ": ON");
-                        button.setBackgroundColor(Color.parseColor("#003300"));
-                        isActive = false;
-                        return;
-                    }
-                    playSound(Uri.fromFile(new File(cacheDir + "Off.ogg")));
-                    button.setText(feature2 + ": OFF");
-                    button.setBackgroundColor(Color.parseColor("#7f0000"));
-                    isActive = true;
-                }
-            });
-        } else {
-            button.setText(feature);
-            button.setBackgroundColor(Color.parseColor("#1C262D"));
-            final String feature2 = feature;
-            button.setOnClickListener(new View.OnClickListener() {
-                public void onClick(View v) {
-                    interfaceBtn.OnWrite();
-                    playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
-                }
-            });
-        }
-        patches.addView(button);
-    }
-
-    private void addSwitch(String feature, final InterfaceBool sw) {
-        Switch switchR = new Switch(this);
+    private void addSwitch(final int featureNum, final String featureName) {
+        final Switch switchR = new Switch(this);
         switchR.setBackgroundColor(Color.parseColor("#171E24"));
-        switchR.setText(Html.fromHtml("<font face='roboto'>" + feature + "</font>"));
+        switchR.setText(Html.fromHtml("<font face='roboto'>" + featureName + "</font>"));
         switchR.setTextColor(Color.parseColor("#DEEDF6"));
         switchR.setPadding(10, 5, 0, 5);
+        switchR.setChecked(Preferences.loadPrefBoolean(featureName));
         switchR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean z) {
                 if (z) {
@@ -645,15 +503,20 @@ public class FloatingModMenuService extends Service {
                 } else {
                     playSound(Uri.fromFile(new File(cacheDir + "Off.ogg")));
                 }
-                sw.OnWrite(z);
+                Preferences.changeFeatureBoolean(featureName, featureNum, switchR.isChecked());
             }
         });
-        patches.addView(switchR);
+        Preferences.changeFeatureBoolean(featureName, featureNum, switchR.isChecked());
+        if (featureNum >= 1000)
+            mSettings.addView(switchR);
+        else
+            patches.addView(switchR);
     }
 
-    private void addSeekBar(final String feature, final int prog, int max, final InterfaceInt interInt) {
+    private void addSeekBar(final int featureNum, final String featureName, int prog, int max) {
+        prog = Preferences.loadPrefInt(featureName);
         LinearLayout linearLayout = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(-1, -1);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         linearLayout.setPadding(10, 5, 0, 5);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(17);
@@ -661,12 +524,12 @@ public class FloatingModMenuService extends Service {
         linearLayout.setBackgroundColor(Color.parseColor("#171E24"));
 
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + prog + "</font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + prog + "</font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
 
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(25, 10, 35, 10);
-        seekBar.setLayoutParams(new LinearLayout.LayoutParams(-1, -1));
+        seekBar.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT));
         seekBar.setMax(max);
         seekBar.setProgress(prog);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -686,37 +549,206 @@ public class FloatingModMenuService extends Service {
                 }
                 l = i;
 
-                if (i < prog) {
-                    seekBar.setProgress(prog);
-                    interInt.OnWrite(prog);
-                    textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + prog + "</font>"));
-                    return;
-                }
-                interInt.OnWrite(i);
-                textView.setText(Html.fromHtml("<font face='roboto'>" + feature + ": <font color='#41c300'>" + i + "</font>"));
+                Preferences.changeFeatureInt(featureName, featureNum, i);
+                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + i + "</font>"));
             }
         });
-
+        Preferences.changeFeatureInt(featureName, featureNum, prog);
         linearLayout.addView(textView);
         linearLayout.addView(seekBar);
         patches.addView(linearLayout);
     }
 
-    boolean delayed;
+    private boolean isActive = true;
+
+    private void addButton(final int featureNum, String featureName) {
+        final Button button = new Button(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        layoutParams.setMargins(7, 5, 7, 5);
+        button.setLayoutParams(layoutParams);
+        button.setPadding(10, 5, 10, 5);
+        button.setTextSize(13.0f);
+        button.setTextColor(Color.parseColor("#D5E3EB"));
+        button.setGravity(17);
+
+        if (featureName.contains("OnOff_")) {
+            featureName = featureName.replace("OnOff_", "");
+            final String finalFeatureName = featureName;
+            isActive = Preferences.loadPrefBoolean(featureName);
+            Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive);
+            if (isActive) {
+                button.setText(finalFeatureName + ": ON");
+                button.setBackgroundColor(Color.parseColor("#003300"));
+                isActive = false;
+            } else {
+                button.setText(finalFeatureName + ": OFF");
+                button.setBackgroundColor(Color.parseColor("#7f0000"));
+                isActive = true;
+            }
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive);
+                    if (isActive) {
+                        playSound(Uri.fromFile(new File(cacheDir + "On.ogg")));
+                        button.setText(finalFeatureName + ": ON");
+                        button.setBackgroundColor(Color.parseColor("#003300"));
+                        isActive = false;
+                    } else {
+                        playSound(Uri.fromFile(new File(cacheDir + "Off.ogg")));
+                        button.setText(finalFeatureName + ": OFF");
+                        button.setBackgroundColor(Color.parseColor("#7f0000"));
+                        isActive = true;
+                    }
+                }
+            });
+        } else {
+            button.setText(featureName);
+            button.setBackgroundColor(Color.parseColor("#1C262D"));
+            final String finalFeatureName1 = featureName;
+            button.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
+                    if (featureNum == 1002) {
+                        scrollView.removeView(mSettings);
+                        scrollView.addView(patches);
+                        return;
+                    } else
+                        Preferences.changeFeatureInt(finalFeatureName1, featureNum, 0);
+                }
+            });
+        }
+
+        if (featureNum >= 1000)
+            mSettings.addView(button);
+        else
+            patches.addView(button);
+    }
+
+    private void addSpinner(final int featureNum, String featureName) {
+        final List<String> list = new LinkedList<>(Arrays.asList(featureName.split("_")));
+
+        LinearLayout linearLayout = new LinearLayout(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        linearLayout.setPadding(10, 5, 10, 5);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.setGravity(17);
+        linearLayout.setLayoutParams(layoutParams);
+        linearLayout.setBackgroundColor(Color.parseColor("#171E24"));
+
+        final TextView textView = new TextView(this);
+        textView.setText(Html.fromHtml("<font face='roboto'>" + list.get(0) + ": <font color='#41c300'></font>"));
+        textView.setTextColor(Color.parseColor("#DEEDF6"));
+
+        // Create another LinearLayout as a workaround to use it as a background
+        // and to keep the 'down' arrow symbol
+        // If spinner had the setBackgroundColor set, there would be no arrow symbol
+        LinearLayout linearLayout2 = new LinearLayout(this);
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        layoutParams2.setMargins(10, 2, 10, 5);
+        linearLayout2.setOrientation(LinearLayout.VERTICAL);
+        linearLayout2.setGravity(17);
+        linearLayout2.setBackgroundColor(Color.parseColor("#1C262D"));
+        linearLayout2.setLayoutParams(layoutParams2);
+
+        Spinner spinner = new Spinner(this);
+        spinner.setPadding(5, 10, 5, 8);
+        spinner.setLayoutParams(layoutParams2);
+        spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP); //trick to show white down arrow color
+        //Creating the ArrayAdapter instance having the list
+        list.remove(0);
+        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, list);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //Setting the ArrayAdapter data on the Spinner
+        spinner.setAdapter(aa);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                Preferences.changeFeatureInt(list.get(0), featureNum, position);
+                ((TextView) parentView.getChildAt(0)).setTextColor(Color.parseColor("#f5f5f5"));
+                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                playSound(Uri.fromFile(new File(cacheDir + "Select.ogg")));
+            }
+        });
+        linearLayout.addView(textView);
+        linearLayout2.addView(spinner);
+        patches.addView(linearLayout);
+        patches.addView(linearLayout2);
+    }
+
+    private void addTextField(final int feature, final String featureName) {
+        RelativeLayout relativeLayout2 = new RelativeLayout(this);
+        relativeLayout2.setLayoutParams(new RelativeLayout.LayoutParams(WRAP_CONTENT, MATCH_PARENT));
+        relativeLayout2.setPadding(10, 5, 10, 5);
+        relativeLayout2.setVerticalGravity(16);
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        layoutParams.topMargin = 15;
+
+        final TextView textView = new TextView(this);
+        int num = Preferences.loadPrefInt(featureName);
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + num + "</font></font>"));
+        textView.setTextColor(Color.parseColor("#DEEDF6"));
+        textView.setLayoutParams(layoutParams);
+
+        Preferences.changeFeatureInt(featureName, feature, num);
+
+        final EditTextValue edittextval = new EditTextValue();
+
+        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT);
+        layoutParams2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        Button button2 = new Button(this);
+        button2.setLayoutParams(layoutParams2);
+        button2.setBackgroundColor(Color.parseColor("#1C262D"));
+        button2.setText("SET");
+        button2.setTextColor(Color.parseColor("#D5E3EB"));
+        button2.setGravity(17);
+        button2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alert.show();
+                inputFieldTextView = textView;
+                inputFieldFeatureNum = feature;
+                inputFieldFeatureName = featureName;
+                inputFieldTxtValue = edittextval;
+                edittextvalue.setText(String.valueOf(edittextval.getValue()));
+            }
+        });
+
+        relativeLayout2.addView(textView);
+        relativeLayout2.addView(button2);
+        patches.addView(relativeLayout2);
+    }
+
+    private void addCategory(String text) {
+        TextView textView = new TextView(this);
+        textView.setBackgroundColor(Color.parseColor("#2F3D4C"));
+        textView.setText(text);
+        textView.setGravity(17);
+        textView.setTextSize(14.0f);
+        textView.setTextColor(Color.parseColor("#DEEDF6"));
+        textView.setTypeface(null, Typeface.BOLD);
+        textView.setPadding(0, 5, 0, 5);
+        patches.addView(textView);
+    }
 
     //Play sounds
     public void playSound(Uri uri) {
-        if (EnableSounds()) {
-            if (!delayed) {
-                delayed = true;
+        if (Preferences.isSoundEnabled) {
+            if (!soundDelayed) {
+                soundDelayed = true;
                 if (FXPlayer != null) {
                     FXPlayer.stop();
                     FXPlayer.release();
                 }
                 FXPlayer = MediaPlayer.create(this, uri);
-                if (FXPlayer != null){
+                if (FXPlayer != null) {
                     //Volume reduced so sounds are not too loud
-                    FXPlayer.setVolume(0.5f, 0.5f);
+                    FXPlayer.setVolume(0.4f, 0.4f);
                     FXPlayer.start();
                 }
 
@@ -724,11 +756,16 @@ public class FloatingModMenuService extends Service {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        delayed = false;
+                        soundDelayed = false;
                     }
                 }, 100);
             }
         }
+    }
+
+    //Override our Start Command so the Service doesnt try to recreate itself when the App is closed
+    public int onStartCommand(Intent intent, int i, int i2) {
+        return Service.START_NOT_STICKY;
     }
 
     public boolean isViewCollapsed() {
@@ -744,6 +781,13 @@ public class FloatingModMenuService extends Service {
         return (int) TypedValue.applyDimension(1, (float) i, getResources().getDisplayMetrics());
     }
 
+    //Check if we are still in the game. If now our menu and menu button will dissapear
+    private boolean isNotInGame() {
+        RunningAppProcessInfo runningAppProcessInfo = new RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(runningAppProcessInfo);
+        return runningAppProcessInfo.importance != 100;
+    }
+
     //Destroy our View
     public void onDestroy() {
         super.onDestroy();
@@ -751,13 +795,6 @@ public class FloatingModMenuService extends Service {
         if (view != null) {
             mWindowManager.removeView(view);
         }
-    }
-
-    //Check if we are still in the game. If now our Menu and Menu button will dissapear
-    private boolean isNotInGame() {
-        RunningAppProcessInfo runningAppProcessInfo = new RunningAppProcessInfo();
-        ActivityManager.getMyMemoryState(runningAppProcessInfo);
-        return runningAppProcessInfo.importance != 100;
     }
 
     //Same as above so it wont crash in the background and therefore use alot of Battery life
@@ -782,19 +819,15 @@ public class FloatingModMenuService extends Service {
         }
     }
 
-    private interface InterfaceBtn {
-        void OnWrite();
-    }
+    public class EditTextValue {
+        private int val;
 
-    private interface InterfaceInt {
-        void OnWrite(int i);
-    }
+        public void setValue(int i) {
+            val = i;
+        }
 
-    private interface InterfaceBool {
-        void OnWrite(boolean z);
-    }
-
-    private interface InterfaceStr {
-        void OnWrite(String s);
+        public int getValue() {
+            return val;
+        }
     }
 }

@@ -399,14 +399,6 @@ Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
 Likely yes and no, but we don't support compiling projects on Android device. Please do not ask for help
 
-### Can you help me mod (name of game) or can you do mod service?
-
-No, this is not about spoonfeeding. Request for game modding is beyond the scope of this project, so please DO NOT ask regarding to game modding unless you need help with the mod menu.
-
-### Do you have project of someones mod menu including game codes for example MITO Team mod?
-
-No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team, NOT me. I, we LGL Team are the wrong persons to ask.
-
 ### How can I соntact you?
 After you readed everything, you can соntact me.
 
@@ -416,6 +408,16 @@ Speak english only
 
 - Tеlеgram: @ThеᒪGᒪ
 - Disсоrd: ᒪGᒪ#1066
+
+### Can you help me mod (name of game) or can you do mod service?
+
+Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
+                              
+Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, search on the internet and you should find a couple of forums such as Platinmods where you can ask your questions regarding game modding.
+
+### Do you have project of someones mod menu including game codes for example MITO Team mod?
+
+No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team, NOT me. I, we LGL Team are the wrong persons to ask.
 
 # Reporting issues
 

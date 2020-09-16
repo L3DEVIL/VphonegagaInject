@@ -407,13 +407,15 @@ No, this is not about spoonfeeding. Request for game modding is beyond the scope
 
 No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team, NOT me. I, we LGL Team are the wrong persons to ask.
 
-### How can I cоntact you?
-After you readed FAQ, you can cоntact me. Newbies should NOT cоntact me if they do not understand anything. You will be blocked if you beg me to teach/spoonfeed. Don't define me a teacher, i'm not a teacher :P
+### How can I соntact you?
+After you readed everything, you can соntact me.
+
+Newbies who do not understand anything should NOT соntact me. You will be blocked if you ask/beg me to teach/spoonfeed. Don't assume i'm a teacher, i'm NOT a teacher :P
 
 Speak english only
 
-- Tеlеgram: @TheLGL
-- Discоrd: LGL#1066
+- Tеlеgram: @𝚃𝚑𝚎𝙻𝙶𝙻
+- Disсоrd: 𝙻𝙶𝙻#𝟷𝟶𝟼𝟼
 
 # Reporting issues
 
@@ -421,7 +423,7 @@ You can report it here https://github.com/LGLTeam/Android-Mod-Menu/issues
 
 Please give link to the APK and provide logcat from Android Studio as possible
 
-Best way is to contact me privately. See above   
+Best way is to соntact me privately. See above   
 
 # Useful links
 

@@ -414,8 +414,8 @@ Newbies who do not understand anything should NOT соntact me. You will be bloc
 
 Speak english only
 
-- Tеlеgram: @𝚃𝚑𝚎𝙻𝙶𝙻
-- Disсоrd: 𝙻𝙶𝙻#𝟷𝟶𝟼𝟼
+- Tеlеgram: @ThеᒪGᒪ
+- Disсоrd: ᒪGᒪ#1066
 
 # Reporting issues
 

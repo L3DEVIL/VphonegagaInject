@@ -43,9 +43,9 @@ Preview:
 - This template of course
 
 # Download/Clone
-Click on the green button that says Code, the click Download ZIP
+Click on the button that says Code, and click Download ZIP
 
-![](https://i.imgur.com/Cy1SQgI.png)
+![](https://i.imgur.com/EZnbd10.png)
 
 Or clone through Android Studio itself (Requires Git to be installed on your machine and be configured in Android Studio)
 
@@ -79,7 +79,7 @@ It will index and Gradle will sync the project fir the first time. Please wait f
 
 If you encounter an error 
 
-```NDK not configured. Download it with SDK manager. Preferred NDK version is '20.0.5594570'```
+```NDK not configured. Download it with SDK manager. Preferred NDK version is 'xx.x.xxxxxx'```
 
 Click File and Project Structure
 
@@ -93,7 +93,7 @@ After it's done, you can start working!
 
 # Files to work with and making changes
 
-On the left side, you see the Project view. Default view is Android
+On the left side, you see your project view. Default view is Android
 
 ![](https://i.imgur.com/YT71Y6B.png)
 
@@ -261,6 +261,8 @@ Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encod
 
 If you have your device with adb enabled, connected your PC or your emulator with adb enabled. Android Studio will detect and you can click Play to run your app onto your device/emulator
 
+Most emulators will have adb enabled by default
+
 ![](https://i.imgur.com/ZegjeM8.png)
 
 To use adb, you must enable USB debugging in the device system settings, under Developer options.
@@ -271,7 +273,77 @@ On some devices, the Developer options screen might be located or named differen
 
 # Implementing the menu to the target game
 
-After you finished the menu, you can build the project to APK file.
+**KNOW YOUR GAME'S MAIN ACTIVITY**
+
+Now we are looking for main activity, there are 2 ways to do
+
+1. Decompile the game's APK file. Open `androidmanifest.xml` and search after `<action android:name="android.intent.action.MAIN"/>`.
+
+Example the game's main activity was `com.unity3d.player.UnityPlayerActivity`
+
+![](https://i.imgur.com/FfOtc1K.png)
+
+Be sure to enable Word wrap so it is easier to read
+
+![](https://i.imgur.com/7DzU8d0.png)
+
+2. APK Easy Tool since it can read out location of main activity without decompiling APK
+
+![](https://i.imgur.com/JQdPjyZ.png)
+
+Note it somewhere so you can easly remember it
+
+**CALLING YOUR MOD MENU ACTIVITY**
+
+Decompile the game APK
+
+There are 2 ways to call your mod menu activity. Choose one of them you like to try. Don't know? just choose METHOD 1
+
+###### METHOD 1
+
+This simple way, we will call to `StaticActivity.java`. `MainActivity.java` will never be used
+
+Locate to the game's path of main activity and open the **smali** file. If the game have multi dexes, it may be located in smali_classes2.. please check all
+
+Example if it was `com.unity3d.player.UnityPlayerActivity` then the path would be `(decompiled game)/com/unity3d/player/UnityPlayerActivity.smali`
+
+Open the main acitivity's smali file, search for OnCreate method and paste this code inside (change the package name if you had changed it)
+```
+invoke-static {p0}, Luk/lgl/modmenu/StaticActivity;->Start(Landroid/content/Context;)V
+```
+ 
+![](https://i.imgur.com/7CxTCl8.png)
+
+Save the file
+
+###### METHOD 2
+
+Warning: This method is not recommended. Using this method may cause problems with activity. Only use it if the first method really fails, or if you really want to use `MainActivity.java` for a reason
+
+On Android Studio, put the game's main activity to `public String GameActivity`
+
+![](https://i.imgur.com/jdacwvH.png)
+
+On `androidmanifest.xml`, near the end of application tag, add your new main activity above `</application>`. `uk.lgl.modmenu.MainActivity` is your main activity
+
+```xml
+<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="uk.lgl.modmenu.MainActivity">
+     <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+         <category android:name="android.intent.category.LAUNCHER"/>
+     </intent-filter>
+</activity>
+```
+
+![](https://i.imgur.com/33lMPhc.png)
+
+Save the file
+
+Do NOT use both methods in the same game
+
+**BUILDING YOUR PROJECT AND COPYING FILES**
+
+Build the project to the APK file.
 **Build** -> **Build Bundle(s)/APK(s)** -> **Build APK(s)**
 
 If no errors occured, you did everything right and build will succeded. You will be notified that it build successfully
@@ -282,45 +354,7 @@ Click on **locate** to show you the location of **build.apk**. It is stored at `
 
 ![](https://i.imgur.com/wBTPSLi.png)
 
-Now you will need to decompile **app-debug.apk**. Decompile the target game as well
-
-Open the game's `androidmanifest.xml`
-Add the permission besides other permissions
-```
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-```
-
-![](https://i.imgur.com/XOxLU91.png)
-
-Add the service below the start of application tag (change the package name of your menu if you had changed it)
-```
-<service android:name="uk.lgl.modmenu.FloatingModMenuService"
-        android:enabled="true"
-        android:exported="false"/>
-```
-
-Save the **AndroidManifest.xml** file
-
-Now we are looking for main activity, it is ususally written under application tag. The activity name may be different. If you spotted `android:name="android.intent.action.MAIN"` you will immediately know this is main activity
-
-Be sure to enable Word wrap so it is easier to read
-
-![](https://i.imgur.com/7DzU8d0.png)
-
-Or open the apk in APK Easy Tool and look for main activity
-
-![](https://i.imgur.com/ohp0zk1.png)
-
-In this case, the path to main activity was `com.funcube.loa.MainActivity`. We would navigate to `(decompiled game)/smali/com/funcube/loa/` and you will see **MainActivity.smali**. If the game have multi dex, find out which smali folder has the main activity, it should be in one of these folders.
-
-Open the main acitivity's smali file, search for OnCreate method and paste this code inside (change the package name if you had changed it)
-```
-    invoke-static {p0}, Luk/lgl/modmenu/StaticActivity;->Start(Landroid/content/Context;)V
-```
- 
-![](https://i.imgur.com/7CxTCl8.png)
-
-Save the file
+Decompile your **app-debug.apk**.
 
 Copy your mod menu from decompiled app-debug.apk smali to the game's smali folder. Example ours is uk.lgl.modmenu, we copy the `uk` folder from **app-debug** `(app-debug\smali\uk)` to the game's decompiled directory `(game name)\smali`
 
@@ -330,9 +364,33 @@ Very important for multi dex games. Let's say if main activity is located in **s
 
 Copy the library file (.so) from **app-debug.apk** to the target game. Make sure to copy .so to the correct architecture
 armeabi-v7a is armeabi-v7a, arm64-v8a is arm64-v8a, and so on.
-Putting the .so on a wrong architecture will result a crash
+
+PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH
  
 ![](https://i.imgur.com/oZq1Wq7.png)
+
+**CHANGING FILES**
+
+Open the game's `androidmanifest.xml`
+Add the permission besides other permissions
+```
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+```
+
+![](https://i.imgur.com/XOxLU91.png)
+
+Add the service above the end of application tag (change the package name of your menu if you had changed it)
+```
+<service android:name="uk.lgl.modmenu.FloatingModMenuService"
+        android:enabled="true"
+        android:exported="false"/>
+```
+
+![](https://i.imgur.com/rw0hawa.png)
+
+Save the **AndroidManifest.xml** file
+ 
+**COMPILING GAME APK**
  
 Now compile and sign the apk
 If compile fail, read the log and look up on Google
@@ -340,10 +398,6 @@ If compile fail, read the log and look up on Google
 If the mod menu appears and the hack are working, congratz!
 
 If you face any problem, be sure to check the logcat, and if it was native related, write the log such as `LOGD("whatever");` in your cpp codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat may also tell you if hooking fails (lib crash)
-
-Thanks for reading the tutorial
-
-Do not forget to check my template again. We may change it anytime =D
 
 # Loading lib without mod menu
 
@@ -373,7 +427,7 @@ If you have `jniLibs` folder on `\app\src\main`, delete it.
 
 ### I'm getting an error `Unsigned short value out of range: 65536` if I compile
 
-The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only. Many thanks Andnix for the tip
+The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only.
 
 ### I'm getting strange issues on Android Studio or Gradle
 
@@ -382,6 +436,13 @@ There are millions of reason why you are getting an error on Android Studio. Bac
 See troubleshooting: https://developer.android.com/studio/troubleshoot
 
 See known issues: https://developer.android.com/studio/known-issues
+
+### How to add colored text on JNI toast?
+It is not implemented yet, and we don't have enough knowledge in JNI porting to do this
+
+But it is deprecated in API level 30/Android 11, means custom toast will not work, so we will not implement it
+
+See: https://developer.android.com/reference/android/widget/Toast#getView()
 
 ### How can I protect my dex and/or lib?
 
@@ -397,17 +458,14 @@ Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
 ### Can I compile this project on Android using AIDE or other apps?
 
-Likely yes and no, but we don't support compiling projects on Android device. Please do not ask for help
+Likely yes and no, but we don't support compiling project on Android device. Please do not ask for help
 
 ### How can I соntact you?
-After you readed everything, you can соntact me.
+You can соntact me via Tеlеgram @ThеᒪGᒪ or Disсоrd ᒪGᒪ#1066
 
 Newbies who do not understand anything should NOT соntact me. You will be blocked if you ask/beg me to teach/spoonfeed. Don't assume i'm a teacher, i'm NOT a teacher :P
 
-Speak english only
-
-- Tеlеgram: @ThеᒪGᒪ
-- Disсоrd: ᒪGᒪ#1066
+Speak english only please
 
 ### Can you help me mod (name of game) or can you do mod service?
 
@@ -455,3 +513,5 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * Google - Android UI sounds
 
 * Material.io - https://material.io/design/sound/sound-resources.html#
+
+* Platinmod modders for suggestions and ideas, and the solution of fixing compilation errors :)

@@ -273,7 +273,7 @@ On some devices, the Developer options screen might be located or named differen
 
 # Implementing the menu to the target game
 
-**KNOW YOUR GAME'S MAIN ACTIVITY**
+###### 1. KNOW YOUR GAME'S MAIN ACTIVITY
 
 Now we are looking for main activity, there are 2 ways to do
 
@@ -293,13 +293,33 @@ Be sure to enable Word wrap so it is easier to read
 
 Note it somewhere so you can easly remember it
 
-**CALLING YOUR MOD MENU ACTIVITY**
+###### 2. CHANGING FILES
 
 Decompile the game APK
 
+Open the game's `androidmanifest.xml`
+
+Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist
+```
+<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+```
+
+![](https://i.imgur.com/XOxLU91.png)
+
+Add the service above the end of application tag (change the package name of your menu if you had changed it)
+```
+<service android:name="uk.lgl.modmenu.FloatingModMenuService"
+        android:enabled="true"
+        android:exported="false"/>
+```
+
+![](https://i.imgur.com/rw0hawa.png)
+
+Now we need to call your mod menu activity
+
 There are 2 ways to call your mod menu activity. Choose one of them you like to try. Don't know? just choose METHOD 1
 
-###### METHOD 1
+**METHOD 1**
 
 This simple way, we will call to `StaticActivity.java`. `MainActivity.java` will never be used
 
@@ -316,7 +336,7 @@ invoke-static {p0}, Luk/lgl/modmenu/StaticActivity;->Start(Landroid/content/Cont
 
 Save the file
 
-###### METHOD 2
+**METHOD 2**
 
 Warning: This method is not recommended. Using this method may cause problems with activity. Only use it if the first method really fails, or if you really want to use `MainActivity.java` for a reason
 
@@ -341,7 +361,7 @@ Save the file
 
 Do NOT use both methods in the same game
 
-**BUILDING YOUR PROJECT AND COPYING FILES**
+###### 3. BUILDING YOUR PROJECT AND COPYING FILES
 
 Build the project to the APK file.
 **Build** -> **Build Bundle(s)/APK(s)** -> **Build APK(s)**
@@ -360,37 +380,16 @@ Copy your mod menu from decompiled app-debug.apk smali to the game's smali folde
 
 ![](https://i.imgur.com/aO6eEab.png)
  
-Very important for multi dex games. Let's say if main activity is located in **smali_classes2**, we would put my mod menu in **smali_classes2**
+If the game have multidexes, just add your smali to the last `smali_classes` if possible to prevent compilation errors such as `Unsigned short value out of range: xxxxx` (Smali limit error)
 
 Copy the library file (.so) from **app-debug.apk** to the target game. Make sure to copy .so to the correct architecture
 armeabi-v7a is armeabi-v7a, arm64-v8a is arm64-v8a, and so on.
 
-PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH
+PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH!
  
 ![](https://i.imgur.com/oZq1Wq7.png)
-
-**CHANGING FILES**
-
-Open the game's `androidmanifest.xml`
-Add the permission besides other permissions
-```
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-```
-
-![](https://i.imgur.com/XOxLU91.png)
-
-Add the service above the end of application tag (change the package name of your menu if you had changed it)
-```
-<service android:name="uk.lgl.modmenu.FloatingModMenuService"
-        android:enabled="true"
-        android:exported="false"/>
-```
-
-![](https://i.imgur.com/rw0hawa.png)
-
-Save the **AndroidManifest.xml** file
  
-**COMPILING GAME APK**
+###### 4. COMPILING GAME APK
  
 Now compile and sign the apk
 If compile fail, read the log and look up on Google

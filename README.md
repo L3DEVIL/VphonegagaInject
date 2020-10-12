@@ -23,7 +23,7 @@ Mod menu is based on Octowolve/Escanor and Van's template.
 
 Preview:
 
-![](https://i.imgur.com/rPRKon5.gif)
+![](https://i.imgur.com/42Sh72L.gif)
 
 # What will you need?
 - Be good at modding games

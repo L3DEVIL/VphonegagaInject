@@ -3,10 +3,13 @@ package uk.lgl.modmenu;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+//TODO
+//Write up android logcat on readme
+
 public class Preferences {
     private static SharedPreferences.Editor editor;
     public static Context context;
-    public static boolean isSoundEnabled = true, savePref = false;
+    public static boolean isSoundEnabled = true, savePref = false, animation = true, expanded = false;
 
     public static native void Changes(Context context, int feature, int value, boolean bool, String str);
 
@@ -19,6 +22,10 @@ public class Preferences {
         if (featureNum == 1000)
             isSoundEnabled = value;
         if (featureNum == 1001)
+            animation = value;
+        if (featureNum == 1002)
+            expanded = value;
+        if (featureNum == 9998)
             savePref = value;
         Changes(context, featureNum, 0, value, feature);
 
@@ -36,11 +43,13 @@ public class Preferences {
         return 0;
     }
 
-    public static boolean loadPrefBoolean(String feature) {
-        if (savePref || (feature == "Sounds" || feature == "Save preferences")) {
+    public static boolean loadPrefBoolean(String feature, int featureNum) {
+        if (savePref || featureNum >= 1000) {
             SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
             editor = preferences.edit();
-            if (!preferences.contains("Sounds"))
+            if (feature.equals("Sounds") && !preferences.contains("Sounds"))
+                return true;
+            if (feature.equals("Color animation") && !preferences.contains("Color animation"))
                 return true;
             return preferences.getBoolean(feature, false);
         }

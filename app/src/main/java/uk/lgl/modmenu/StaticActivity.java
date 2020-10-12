@@ -13,7 +13,6 @@ import android.provider.Settings;
 public class StaticActivity {
 
     public static void Start(final Context context) {
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
             AlertDialog alertDialog = new AlertDialog.Builder(context, 1)
                     .setTitle("No overlay permission")
@@ -46,7 +45,7 @@ public class StaticActivity {
                 public void run() {
                     context.startService(new Intent(context, FloatingModMenuService.class));
                 }
-            }, 1000);
+            }, 500);
         }
     }
 }

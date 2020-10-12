@@ -8,8 +8,11 @@
  * Rprop - https://github.com/Rprop/And64InlineHook
  * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
  * */
-
+#include <list>
+#include <vector>
+#include <string.h>
 #include <pthread.h>
+#include <cstring>
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
@@ -18,8 +21,10 @@
 #include "src/Includes/Logger.h"
 #include "src/Includes/Utils.h"
 #include "src/Includes/obfuscate.h"
+
 #include "Menu/Sounds.h"
 #include "Menu/Menu.h"
+
 #include "Toast.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
@@ -35,7 +40,7 @@
 struct My_Patches {
     // let's assume we have patches for these functions for whatever game
     // like show in miniMap boolean function
-    MemoryPatch GodMode, SpeedHack;
+    MemoryPatch GodMode, SliderExample;
     // etc...
 } hexPatches;
 
@@ -50,43 +55,6 @@ void *instanceBtn;
 void (*AddMoneyExample)(void *instance, int amount);
 
 extern "C" {
-JNIEXPORT jobjectArray
-JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
-    jobjectArray ret;
-    featureListValid = true;
-
-    // Note: Do not translate the first text
-    // Usage:
-    // Category_(text)
-    // Toggle_[feature name]
-    // SeekBar_[feature name]_[min value]_[max value]
-    // Spinner_[feature name]_[Items e.g. item1_item2_item3]
-    // Button_[feature name]
-    // Button_OnOff_[feature name]
-    // InputValue_[feature name]
-    const char *features[] = {
-            OBFUSCATE("Category_The Category"),
-            OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE("SeekBar_The slider_0_100"),
-            OBFUSCATE("Spinner_The spinner_Items 1_Items 2_Items 3"),
-            OBFUSCATE("Button_The button"),
-            OBFUSCATE("Button_OnOff_The On/Off button"),
-            OBFUSCATE("InputValue_The input number")
-    };
-
-    int Total_Feature = (sizeof features /
-                         sizeof features[0]); //Now you dont have to manually update the number everytime;
-    ret = (jobjectArray)
-            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
-                                env->NewStringUTF(""));
-    int i;
-    for (i = 0; i < Total_Feature; i++)
-        env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
-
-    return (ret);
-}
-
 JNIEXPORT void JNICALL
 Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                                         jint feature, jint value, jboolean boolean, jstring str) {
@@ -94,16 +62,16 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
     const char *featureName = env->GetStringUTFChars(str, 0);
     feature += 1;  // No need to count from 0 anymore. yaaay :)))
 
-    LOGD(OBFUSCATE("Feature name: [%d] %s | Value: = %d | Bool: = %d"), feature, featureName, value, boolean);
+    LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d"), feature, featureName, value,
+                       boolean);
 
     // Changed to if-statement because modders can easly mess up with cases.
     if (feature == 1) {
         // The category was 1 so is not used
-    }
-    else if (feature == 2) {
+    } else if (feature == 2) {
         feature2 = boolean;
         if (feature2) {
-            MakeToast(env, obj, OBFUSCATE("Feature 1 ON"), Toast::LENGTH_SHORT);
+            // MakeToast(env, obj, OBFUSCATE("Feature 1 ON"), Toast::LENGTH_SHORT);
             // modify & print bytes
             if (hexPatches.GodMode.Modify()) {
                 LOGD(OBFUSCATE("Current Bytes: %s"),
@@ -112,7 +80,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             //Or
             hexPatches.GodMode.Modify();
         } else {
-            MakeToast(env, obj, OBFUSCATE("Feature 1 OFF"), Toast::LENGTH_SHORT);
+            //MakeToast(env, obj, OBFUSCATE("Feature 1 OFF"), Toast::LENGTH_SHORT);
             //restore & print bytes
             if (hexPatches.GodMode.Restore()) {
                 LOGD(OBFUSCATE("Current Bytes: %s"),
@@ -121,35 +89,63 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             //Or
             hexPatches.GodMode.Restore();
         }
-    }
-    else if (feature == 3) {
+    } else if (feature == 3) {
         sliderValue = value;
-    }
-    else if (feature == 4) {
-        switch (value) {
-            case 0:
-                MakeToast(env, obj, OBFUSCATE("Selected item 1"), Toast::LENGTH_SHORT);
-                break;
-            case 1:
-                MakeToast(env, obj, OBFUSCATE("Selected item 2"), Toast::LENGTH_SHORT);
-                break;
-            case 2:
-                MakeToast(env, obj, OBFUSCATE("Selected item 3"), Toast::LENGTH_SHORT);
-                break;
+    } else if (feature == 4) {
+        //Yes you can do kittymemory patches in a slider
+        if (value == 0) {
+            hexPatches.SliderExample = MemoryPatch::createWithHex(
+                    libName, string2Offset(
+                            OBFUSCATE_KEY("0x100000", '-')),
+                    OBFUSCATE(
+                            "00 00 A0 E3 1E FF 2F E1"));
+            hexPatches.SliderExample.Modify();
         }
-    }
-    else if (strcmp(featureName, "The button") == 0) { //Works with string too
-        LOGD(OBFUSCATE("Feature 5 Called"));
+        if (value == 1) {
+            hexPatches.SliderExample = MemoryPatch::createWithHex(
+                    libName, string2Offset(
+                            OBFUSCATE_KEY("0x100000",
+                                          '-')),
+                    OBFUSCATE(
+                            "01 00 A0 E3 1E FF 2F E1"));
+            hexPatches.SliderExample.Modify();
+        }
+        if (value == 2) {
+            hexPatches.SliderExample = MemoryPatch::createWithHex(
+                    libName,
+                    string2Offset(
+                            OBFUSCATE_KEY("0x100000",
+                                          '-')),
+                    OBFUSCATE(
+                            "02 00 A0 E3 1E FF 2F E1"));
+            hexPatches.SliderExample.Modify();
+        }
+        if (value == 3) {
+            //...
+        }
+        if (value == 4) {
+            //...
+        }
+    } else if (feature == 5) {
+        if (value == 0) {
+            LOGD(OBFUSCATE("Selected item 1"));
+        }
+        if (value == 1) {
+            LOGD(OBFUSCATE("Selected item 1"));
+        }
+        if (value == 2) {
+            LOGD(OBFUSCATE("Selected item 3"));
+        }
+    } else if (strcmp(featureName, "The button") == 0) { //Works with string too
+        LOGD(OBFUSCATE("Feature 6 Called"));
         //Since we have instanceBtn as a field, we can call it out of Update hook function
         if (instanceBtn != NULL)
             AddMoneyExample(instanceBtn, 999999);
         MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
-    }
-    else if (strcmp(featureName, "The On/Off button") == 0) {
-        LOGD(OBFUSCATE("Feature 6 Called"));
+    } else if (strcmp(featureName, "The On/Off button") == 0) {
+        LOGD(OBFUSCATE("Feature 7 Called"));
         featureHookToggle = boolean;
-    }
-    else if (feature == 7) {
+    } else if (feature == 7) {
 
     }
 }
@@ -158,6 +154,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
 // ---------- Hooking ---------- //
 
 bool (*old_get_BoolExample)(void *instance);
+
 bool get_BoolExample(void *instance) {
     if (instance != NULL && featureHookToggle) {
         return true;
@@ -166,6 +163,7 @@ bool get_BoolExample(void *instance) {
 }
 
 float (*old_get_FloatExample)(void *instance);
+
 float get_FloatExample(void *instance) {
     if (instance != NULL && sliderValue > 1) {
         return (float) sliderValue;
@@ -174,6 +172,7 @@ float get_FloatExample(void *instance) {
 }
 
 void (*old_Update)(void *instance);
+
 void Update(void *instance) {
     instanceBtn = instance;
     old_Update(instance);

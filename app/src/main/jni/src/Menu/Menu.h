@@ -33,7 +33,8 @@ void *antiLeech(void *) {
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jclass clazz, jstring directory) {
+Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jclass clazz,
+                                                      jstring directory) {
     std::string dir = env->GetStringUTFChars(directory, 0);
 
     writeToFile(dir + "On.ogg", base64::from_base64(Sounds::On));
@@ -93,5 +94,55 @@ Java_uk_lgl_modmenu_FloatingModMenuService_IconWebViewData(JNIEnv *env, jobject 
 
     //return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif");
     return NULL;
+}
+
+
+JNIEXPORT jobjectArray
+JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
+    jobjectArray ret;
+    featureListValid = true;
+
+    // Note: Do not translate the first text
+
+    // Usage:
+
+    // Category_(text)
+    // Toggle_(feature name)
+    // SeekBar_(feature name)_(min value)_(max value)
+    // Spinner_(feature name)_(Items e.g. item1,item2,item3)
+    // Button_(feature name)
+    // Button_OnOff_(feature name)
+    // InputValue_(feature name)
+    // RichTextView_(Text with limited HTML support)
+    // RichWebView_(Full HTML support)
+
+    // Learn more about HTML https://www.w3schools.com/
+
+    const char *features[] = {
+            OBFUSCATE("Category_The Category"),
+            OBFUSCATE("Toggle_The toggle"),
+            OBFUSCATE("SeekBar_The slider_0_100"),
+            OBFUSCATE("SeekBar_Kittymemory slider example_0_5"),
+            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
+            OBFUSCATE("Button_The button"),
+            OBFUSCATE("Button_OnOff_The On/Off button"),
+            OBFUSCATE("InputValue_The input number"),
+            OBFUSCATE(
+                    "RichTextView_This is text view, not fully HTML. <b>Bold</b> <i>italic</i> <u>underline</u><br />New line <font color='red'>Support colors</font>"),
+            OBFUSCATE(
+                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>This is WebView, with REAL HTML support! <div style=\"background-color: darkblue; text-align: center;\">Support CSS</div><marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee></body></html>")
+    };
+
+    int Total_Feature = (sizeof features /
+                         sizeof features[0]); //Now you dont have to manually update the number everytime;
+    ret = (jobjectArray)
+            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
+                                env->NewStringUTF(""));
+    int i;
+    for (i = 0; i < Total_Feature; i++)
+        env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
+
+    return (ret);
 }
 }

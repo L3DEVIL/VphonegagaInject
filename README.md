@@ -1,7 +1,6 @@
-**This template is NOT for newbies/noobs, it is for experience modders and programmers only. You will be expected to read, learn and even google. If you don't have the knowledge, this tutorial will be too hard for you**
+**THIS TEMPLATE IS NOT FOR NEWBIES/NOOBS, IT IS FOR EXPERIENCE MODDERS AND PROGRAMMERS ONLY. YOU WILL BE EXPECTED TO READ, LEARN AND EVEN GOOGLE. IF YOU DON'T HAVE THE KNOWLEDGE, THIS TUTORIAL WILL BE TOO HARD FOR YOU**
 
 # Quick links
-- [Pre-requisites](#pre-requisites)
 - [What will you need?](#what-will-you-need)
 - [download/clone](#downloadclone)
 - [Install NDK](#install-ndk)
@@ -10,7 +9,6 @@
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
-- [Reporting issues](#reporting-issues)
 - [Useful links](#useful-links)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
@@ -19,22 +17,22 @@ Simple floating mod menu with sounds for il2cpp and other native android games, 
 
 It comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
 
-Support Android 4.2.x way up to Android R preview. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
+Support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
 
 Mod menu is based on Octowolve/Escanor and Van's template. 
 
 Preview:
 
-![](https://i.imgur.com/CoI38ER.gif)
-
-# Pre-requisites:
-- Basic knowledge of C++, Java, dalvik opcodes (smali), ARM and ARM64 assembly. x86 is optional
-- Be able to patch hex and hook
-- Understanding how Android development works
+![](https://i.imgur.com/rPRKon5.gif)
 
 # What will you need?
+- Be good at modding games
+- Basic knowledge of C++, Java, dalvik opcodes (smali), ARM and ARM64 assembly. x86 is optional
+- Be able to patch hex
+- Be able to hook (Optional, but recommended if you want to do advanced modding)
+- Understanding how Android layout works
+
 - Android Studio 4 and up: https://developer.android.com/studio
-- Git if you want to clone a project though Android Studio (Optional): https://git-scm.com/download
 - [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
 - Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
 - Any png compression to compress your png file: https://compresspng.com/
@@ -47,15 +45,7 @@ Click on the button that says Code, and click Download ZIP
 
 ![](https://i.imgur.com/EZnbd10.png)
 
-Or clone through Android Studio itself (Requires Git to be installed on your machine and be configured in Android Studio)
-
-Click on "Get from Version Control"
-
-![](https://i.imgur.com/y8haBYN.png)
-
-Input the git url and Clone
-
-![](https://i.imgur.com/z8KkW8S.png)
+Or clone through Android Studio if you know how to use Git
 
 # Install NDK
 At the bottom-right corner, click on Configure and SDK Manager
@@ -93,23 +83,25 @@ After it's done, you can start working!
 
 # Files to work with and making changes
 
+**NOT ALL ARE EXPLAINED HERE, BUT WE WILL CONSTANTLY IMPROVE IT. IF THIS IS FIRST TIME, PLEASE READ ALL THE CODES UNTIL YOU CAN UNDERSTAND BETTER**
+
 On the left side, you see your project view. Default view is Android
 
 ![](https://i.imgur.com/YT71Y6B.png)
 
-**`LoadLib.java`**
+**`loadlib/LoadLib.java`**
 
 To call toast if you load lib without mod menu
 
-**`MainActivity.java`**
+**`modmenu/MainActivity.java`**
 
 Starts the main activity. No need to use if you implement the menu in the APK file
 
-**`Preferences.java`**
+**`modmenu/Preferences.java`**
 
 Saving the menu feature preferences and calling changes via JNI
 
-**`FloatingModMenuService.java`**
+**`modmenu/FloatingModMenuService.java` - Main codes of mod menu design**
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
@@ -131,13 +123,19 @@ Set the gradient drawable to the component
 
 - Resizing menu box
 
-This is the code that set the size of the box. You can change it manually example (500, 500).
+I have added variables so you can find it easly to resize
+```
+private final int MENU_WIDTH = 290;
+private final int MENU_HEIGHT = 200;
+```
 
-```mExpanded.setLayoutParams(new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT));```
+Note: You may need to implement auto sizing due to many types of phone with different DPIs and resolutions
 
-Note: You must implement DPI to auto size due to many types of phone with different DPIs and resolutions
+- Animation
 
-**`StaticActivity.java`**
+The codes can be seen in `startAnimation()`
+
+**`modmenu/StaticActivity.java`**
 
 To initialize by game activity's OnCreate
 Checks if device running Android 6.0 or above and if have overlay permission checked. Sounds being written to the cache directory.
@@ -184,33 +182,36 @@ Your toast
 
 **`Main.cpp`**
 
-In this file, you will mostly do implementation with your codes for modding
+In this file, you will work with your mods here
 
-- Changes: Get changes of toggles, seekbars, spinner and buttons to do modding. Features MUST be count from 0
+- `Changes`: Get values to do modding. We use if-else statement instead `case`, because most modders accidently remove `break`
+
+- `getFeatureList`: Here you set your mod features
 
 Usage:
 
 ```
-Toggle_[feature name]
-SeekBar_[feature name]_[min value]_[max value]
-Spinner_[feature name]_[Items e.g. item1_item2_item3]
-Button_[feature name]
-Button_OnOff_[feature name]
-InputValue_[feature name]
+Category_(text)
+Toggle_(feature name)
+SeekBar_(feature name)_(min value)_(max value)
+Spinner_(feature name)_(Items e.g. item1,item2,item3)
+Button_(feature name)
+Button_OnOff_(feature name)
+InputValue_(feature name)
+RichTextView_(Text with limited HTML support)
+RichWebView_(Full HTML support)
 ```
+
+Learn more about HTML https://www.w3schools.com/
 
 Examples:
 
 ```Toggle_God mode
-Spinner_Weapons_AK47_9mm_Knife
+Spinner_Weapons_AK47,9mm,Knife
 Button_OnOff_God mode
 ```
 
-Do not forget to count your features from 0 and remember them
-
-- hack_thread: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
-
-- JNI_OnLoad: Initialize when the library loads
+- `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
 
 KittyMemory usage:
 ```MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
@@ -226,10 +227,10 @@ Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.c
 
 Hook usage:
 ARM64:
-```A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
+```A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
 
 ARMv7/x86:
-```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *) [function], (void **) &[old function]);```
+```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
 
 **`Android.mk`**
 
@@ -239,7 +240,11 @@ Both must have same name
 
 **`proguard-rules.pro`**
 
-Java obfuscation is enabled by default with an exception to `public static void Start`
+See proguard rules here https://www.guardsquare.com/en/products/proguard/manual/usage
+
+Both `shrinkResources` and `minifyEnabled` MUST be `true` in `build.gradle (:app)` in order to enable proguard obfuscation
+
+`public static void Start` has been prevented from renaming
 
 Add `-dontobfuscate` to disable obfuscation
 
@@ -392,11 +397,11 @@ PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH!
 ###### 4. COMPILING GAME APK
  
 Now compile and sign the apk
-If compile fail, read the log and look up on Google
+Compile failed? read the log and look up on Google
 
 If the mod menu appears and the hack are working, congratz!
 
-If you face any problem, be sure to check the logcat, and if it was native related, write the log such as `LOGD("whatever");` in your cpp codes, recompile and capture the logcat. See what part of your code faced the problem. Logcat may also tell you if hooking fails (lib crash)
+If you face any problem, please read the [FAQ](#faq)
 
 # Loading lib without mod menu
 
@@ -410,26 +415,52 @@ And uncomment the isToastCalled check in hack_thread function
 Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
 
 # FAQ
-### I have a problem decompiling and compiling APK file
+## My game crashing or freezing/My mod menu does not work
+There are many reasons why, it could be your code fault, wrong offsets, bad c++ code, bad layout implementations, game protections etc.
 
+First of all, check logcat on Android Studio to see the error logs. Connect your device/reboot emulator to reconnect, open **Logcat** window from below, and select your device, process and filter to **Error** and reproduce your problem. Once you do, you can see the errors in logcat
+
+![](https://i.imgur.com/cutKC29.png)
+
+Then search the error on Google. Contact me or report issues if you can't find the answers
+
+If the game crashes or freezing while playing, check if your patches and hooks are correct. For hooks, write down the logs such as `LOGD("whatever");` like this below:
+
+```
+bool get_BoolExample(void *instance) {
+    LOGD("BoolExample 1");
+    if (instance != NULL && featureHookToggle) {
+        LOGD("BoolExample 2");
+        return true;
+    }
+    LOGD("BoolExample 3");
+    return old_get_BoolExample(instance);
+}
+```
+
+Recompile and check the logcat, to see what part of your code faced the problem.
+
+Logcat may also report `CRASH` if lib crashed, caused by hooking
+
+See more about logcat: https://developer.android.com/studio/debug/am-logcat
+
+If you believe the game has protection, try recompile APK without mod and install to see if it crash. We can't help you with bypassing protections
+
+### I have a problem decompiling or compiling APK file
 Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
 ### I'm getting an error `ERROR: executing external native build for ndkBuild Android.mk. Affected Modules: app`
-
 Install the NDK first and make sure your path does NOT contain spaces
 
 ### More than one file was found with OS independent path (.so file)
-
 If you have `jniLibs` folder on `\app\src\main`, delete it.
 
 ![](https://i.imgur.com/Y5Ze1XH.png)
 
 ### I'm getting an error `Unsigned short value out of range: 65536` if I compile
-
 The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only.
 
 ### I'm getting strange issues on Android Studio or Gradle
-
 There are millions of reason why you are getting an error on Android Studio. Bacisally, search on Google for the answer. If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In the critical cases, you may need to reinstall Android Studio
 
 See troubleshooting: https://developer.android.com/studio/troubleshoot
@@ -445,44 +476,34 @@ See: https://developer.android.com/reference/android/widget/Toast#getView()
 
 ### How can I protect my dex and/or lib?
 
-There are only chinese based tools we heard so far but they are super slow and we never manage to use them. We highly suggest to not use them, because we don't know if they contain malwares, spywares, you know, rumours about chinese spying. Protecting APK may end up including additional spywares and may result getting flagged by some anti-virus, so use it are your own risk. Do not be offended, i'm just warning
+We will not mention their service names, but you can search for that on Github. Using chinese tools may inject malwares and spywares in APK. We highly suggest to not use them, and please don't ask us.
 
-I will not mention their service names. Please don't ask me for it.
-
-But there is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
+There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
 
 ### How to get older version of the template?
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
-### Can I compile this project on Android using AIDE or other apps?
+### Can I compile this project on Android using AIDE?
 
-Likely yes and no, but we don't support compiling project on Android device. Please do not ask for help
+Likely yes and no, but we don't support AIDE at this time
 
 ### How can I соntact you?
-You can соntact me via Tеlеgram @ThеᒪGᒪ or Disсоrd ᒪGᒪ#1066
+You can соntact me via Tеlеgram @ThеᒪGᒪ or Disсоrd ᒪGᒪ#1066. Please make sure you have readed everything and looking on Google before contacting
 
-Newbies who do not understand anything should NOT соntact me. You will be blocked if you ask/beg me to teach/spoonfeed. Don't assume i'm a teacher, i'm NOT a teacher :P
+Newbies who do not understand anything should NOT соntact. You will be blocked if you ask/beg to teach/spoonfeed. We are NOT the teacher :P
 
 Speak english only please
 
 ### Can you help me mod (name of game) or can you do mod service?
 
-Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
+No, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
                               
-Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, search on the internet and you should find a couple of forums such as Platinmods where you can ask your questions regarding game modding.
+Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, search on the internet and you should find a couple of forums where you can ask your questions.
 
 ### Do you have project of someones mod menu including game codes for example MITO Team mod?
 
-No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team, NOT me. I, we LGL Team are the wrong persons to ask.
-
-# Reporting issues
-
-You can report it here https://github.com/LGLTeam/Android-Mod-Menu/issues
-
-Please give link to the APK and provide logcat from Android Studio as possible
-
-Best way is to соntact me privately. See above   
+No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team. We are the wrong persons to ask.
 
 # Useful links
 
@@ -495,6 +516,8 @@ Best way is to соntact me privately. See above
 * http://www.cydiasubstrate.com/api/c/MSHookFunction/
 
 * https://www.cprogramming.com/tutorial/function-pointers.html
+
+* https://www.androidhive.info/2016/11/android-floating-widget-like-facebook-chat-head/
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu

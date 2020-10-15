@@ -122,7 +122,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
     const char *features[] = {
             OBFUSCATE("Category_The Category"),
             OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE("SeekBar_The slider_0_100"),
+            OBFUSCATE("SeekBar_The slider_4_100"),
             OBFUSCATE("SeekBar_Kittymemory slider example_0_5"),
             OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
             OBFUSCATE("Button_The button"),
@@ -131,7 +131,11 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
             OBFUSCATE(
                     "RichTextView_This is text view, not fully HTML. <b>Bold</b> <i>italic</i> <u>underline</u><br />New line <font color='red'>Support colors</font>"),
             OBFUSCATE(
-                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>This is WebView, with REAL HTML support! <div style=\"background-color: darkblue; text-align: center;\">Support CSS</div><marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee></body></html>")
+                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                    "This is WebView, with REAL HTML support!"
+                    "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
+                    "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
+                    "</body></html>")
     };
 
     int Total_Feature = (sizeof features /

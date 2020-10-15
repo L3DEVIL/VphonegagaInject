@@ -34,13 +34,13 @@ public class Preferences {
 
     //TODO: changeFeatureString
 
-    public static int loadPrefInt(String feature) {
+    public static int loadPrefInt(String feature, int val) {
         if (savePref) {
             SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
             editor = preferences.edit();
-            return preferences.getInt(feature, 0);
+            return preferences.getInt(feature, val);
         }
-        return 0;
+        return val;
     }
 
     public static boolean loadPrefBoolean(String feature, int featureNum) {

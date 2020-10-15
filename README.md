@@ -184,7 +184,9 @@ Your toast
 
 In this file, you will work with your mods here
 
-- `Changes`: Get values to do modding. We use if-else statement instead `case`, because most modders accidently remove `break`
+- `Changes`: Get values to do modding.
+
+We use if-else statement instead `case`, because most modders accidently remove `break`, causing further problems. However you can still do `cases`
 
 - `getFeatureList`: Here you set your mod features
 

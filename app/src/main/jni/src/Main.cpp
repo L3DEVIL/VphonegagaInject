@@ -148,6 +148,22 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
     } else if (feature == 7) {
 
     }
+
+    //You can still do cases if you prefer that but careful not to remove break; by accidently
+    /*switch (feature) {
+        case 0:
+            feature1 = boolean;
+            break;
+        case 1:
+            feature2 = boolean;
+            break;
+        case 2:
+            //etc.
+            break;
+        case 3:
+            //etc.
+            break;
+    }*/
 }
 }
 

@@ -27,6 +27,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.DigitsKeyListener;
 import android.util.Base64;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -92,7 +93,6 @@ public class FloatingModMenuService extends Service {
     private int inputFieldFeatureNum;
     private EditTextValue inputFieldTxtValue;
 
-    private boolean isActive = true;
     boolean soundDelayed;
     public String cacheDir;
 
@@ -508,20 +508,20 @@ public class FloatingModMenuService extends Service {
     }
 
     private void addSeekBar(final int featureNum, final String featureName, int prog, int max) {
-        prog = Preferences.loadPrefInt(featureName);
+        int prog2 = Preferences.loadPrefInt(featureName, prog);
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setPadding(10, 5, 0, 5);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(17);
 
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + prog + "</font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + prog2 + "</font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
 
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(25, 10, 35, 10);
         seekBar.setMax(max);
-        seekBar.setProgress(prog);
+        seekBar.setProgress(prog2);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
@@ -543,7 +543,7 @@ public class FloatingModMenuService extends Service {
                 textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + i + "</font>"));
             }
         });
-        Preferences.changeFeatureInt(featureName, featureNum, prog);
+        Preferences.changeFeatureInt(featureName, featureNum, prog2);
         linearLayout.addView(textView);
         linearLayout.addView(seekBar);
         patches.addView(linearLayout);
@@ -562,7 +562,7 @@ public class FloatingModMenuService extends Service {
         if (featureName.contains("OnOff_")) {
             featureName = featureName.replace("OnOff_", "");
             final String finalFeatureName = featureName;
-            isActive = Preferences.loadPrefBoolean(featureName, featureNum);
+            boolean isActive = Preferences.loadPrefBoolean(featureName, featureNum);
             Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive);
             if (isActive) {
                 button.setText(finalFeatureName + ": ON");
@@ -573,19 +573,22 @@ public class FloatingModMenuService extends Service {
                 button.setBackgroundColor(Color.parseColor("#7f0000"));
                 isActive = true;
             }
+            final boolean finalIsActive = isActive;
             button.setOnClickListener(new View.OnClickListener() {
+                boolean isActive2 = finalIsActive;
                 public void onClick(View v) {
-                    Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive);
-                    if (isActive) {
+                    Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive2);
+                    //Log.d(TAG, finalFeatureName + " " + featureNum + " " + isActive2);
+                    if (isActive2) {
                         playSound("On.ogg");
                         button.setText(finalFeatureName + ": ON");
                         button.setBackgroundColor(Color.parseColor("#003300"));
-                        isActive = false;
+                        isActive2 = false;
                     } else {
                         playSound("Off.ogg");
                         button.setText(finalFeatureName + ": OFF");
                         button.setBackgroundColor(Color.parseColor("#7f0000"));
-                        isActive = true;
+                        isActive2 = true;
                     }
                 }
             });
@@ -672,7 +675,7 @@ public class FloatingModMenuService extends Service {
         layoutParams.topMargin = 15;
 
         final TextView textView = new TextView(this);
-        int num = Preferences.loadPrefInt(featureName);
+        int num = Preferences.loadPrefInt(featureName, 0);
         textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + num + "</font></font>"));
         textView.setTextColor(Color.parseColor("#DEEDF6"));
         textView.setLayoutParams(layoutParams);

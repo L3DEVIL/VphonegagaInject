@@ -451,23 +451,14 @@ If you believe the game has protection, try recompile APK without mod and instal
 ### I have a problem decompiling or compiling APK file
 Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
-### I'm getting an error `ERROR: executing external native build for ndkBuild Android.mk. Affected Modules: app`
-Install the NDK first and make sure your path does NOT contain spaces
-
-### More than one file was found with OS independent path (.so file)
-If you have `jniLibs` folder on `\app\src\main`, delete it.
-
-![](https://i.imgur.com/Y5Ze1XH.png)
-
 ### I'm getting an error `Unsigned short value out of range: 65536` if I compile
 The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only.
 
+### I'm getting an error `ERROR: executing external native build for ndkBuild Android.mk. Affected Modules: app`
+See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki/Executing-external-native-build-for-ndkBuild-Android.mk
+
 ### I'm getting strange issues on Android Studio or Gradle
-There are millions of reason why you are getting an error on Android Studio. Bacisally, search on Google for the answer. If you can't find a solution on Google, try invalidate caches. Click **File** -> **Invalidate Caches/Restart**. Let it load. In the critical cases, you may need to reinstall Android Studio
-
-See troubleshooting: https://developer.android.com/studio/troubleshoot
-
-See known issues: https://developer.android.com/studio/known-issues
+See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki
 
 ### How to add colored text on JNI toast?
 It is not implemented yet, and we don't have enough knowledge in JNI porting to do this

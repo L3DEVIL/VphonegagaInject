@@ -26,24 +26,24 @@ Preview:
 ![](https://i.imgur.com/42Sh72L.gif)
 
 # Prerequisites
-**1. BE AN EXPERIENCED MODDER**
+1. **BE AN EXPERIENCED MODDER**
    * Be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
    * Be able to hook (No need, but recommended if you want to do advanced modding in the future)
    * Be able to understand basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed)
-**2. Have basic knowledge of programming**
+2. **Have basic knowledge of programming**
    * Basic knowledge of C++, Java
    * Understanding how Android layout works
-**3. Time and patience.**
+3. **Time and patience.**
    * Don't start working on this if you have deadlines or important work. Only on your free time
    * Don't rush
    * Take your time to read, learn and memorize this project. Use google.com for more help. Don't ask us or someone to spoonfeed for you
-**4. Do-it-yourself**
+4. **Do-it-yourself**
    * Yes, this is an open source project, you must be able to do things yourself, you are free to do whatever you want with this project. If we can't or won't implement some certain features, try to implement yourself
    * Spoonfeeding is not acceptable here
-**5. Don't be a beginner/newbie or a toxic kid**
+5. **Don't be a beginner/newbie or a toxic kid**
    * We have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this. DON'T be that kid please
    * DON'T try to find my contact without reading anything
-**6. Softwares you need**
+6. **Softwares you need**
    * Android Studio 4 and up: https://developer.android.com/studio
    * [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
    * Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)

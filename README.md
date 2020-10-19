@@ -473,7 +473,7 @@ We will not mention their service names, but you can search for that on Github. 
 
 There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
 
-### How to get older version of the template?
+### How to get older version of the template? or how to see updates/commits?
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 

@@ -62,6 +62,7 @@ import uk.lgl.NativeToast;
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
+import static java.lang.System.exit;
 
 public class FloatingModMenuService extends Service {
     private final String TAG = "Mod_Menu";
@@ -69,7 +70,7 @@ public class FloatingModMenuService extends Service {
     //********** Here you can easly change menu design **********//
     private final int TEXT_COLOR = Color.parseColor("#82CAFD");
     private final int MENU_BG_COLOR = Color.parseColor("#DD1C2A35"); //#AARRGGBB
-    private final int MENU_FEATURE_BG_COLOR = Color.parseColor("#DD171E24"); //#AARRGGBB
+    private final int MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
     private final int MENU_WIDTH = 290;
     private final int MENU_HEIGHT = 210;
     private final float MENU_CORNER = 20f;
@@ -122,6 +123,7 @@ public class FloatingModMenuService extends Service {
         super.onCreate();
         Preferences.context = getApplicationContext();
         cacheDir = getCacheDir().getPath() + "/";
+        Log.d(TAG, "cache dir "+cacheDir);
         LoadSounds(cacheDir);
         //A little message for the user when he opens the app
         NativeToast.makeText(this, 0);
@@ -507,8 +509,8 @@ public class FloatingModMenuService extends Service {
             patches.addView(switchR);
     }
 
-    private void addSeekBar(final int featureNum, final String featureName, int prog, int max) {
-        int prog2 = Preferences.loadPrefInt(featureName, prog);
+    private void addSeekBar(final int featureNum, final String featureName, final int min, int max) {
+        int prog2 = Preferences.loadPrefInt(featureName, min);
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setPadding(10, 5, 0, 5);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
@@ -539,8 +541,10 @@ public class FloatingModMenuService extends Service {
                 }
                 l = i;
 
-                Preferences.changeFeatureInt(featureName, featureNum, i);
-                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + i + "</font>"));
+                //if progress is greater than minimum, don't go below. Else, set progress
+                seekBar.setProgress(i < min ? min : i);
+                Preferences.changeFeatureInt(featureName, featureNum, i < min ? min : i);
+                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + (i < min ? min : i) + "</font>"));
             }
         });
         Preferences.changeFeatureInt(featureName, featureNum, prog2);
@@ -836,6 +840,7 @@ public class FloatingModMenuService extends Service {
             e.printStackTrace();
         }
         super.onTaskRemoved(intent);
+        //exit(0);
     }
 
     public void Thread() {

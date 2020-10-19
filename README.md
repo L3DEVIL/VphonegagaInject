@@ -366,7 +366,7 @@ On `androidmanifest.xml`, near the end of application tag, add your new main act
 
 Save the file
 
-Do NOT use both methods in the same game
+Do NOT use both methods at the same time
 
 ###### 3. BUILDING YOUR PROJECT AND COPYING FILES
 
@@ -377,7 +377,7 @@ If no errors occured, you did everything right and build will succeded. You will
 
 ![](https://i.imgur.com/WpSKV1L.png)
 
-Click on **locate** to show you the location of **build.apk**. It is stored at `(your-project)\app\build\outputs\apk\ app-debug.apk`
+Click on **locate** to show you the location of **build.apk**. It is stored at `(your-project)\app\build\outputs\apk\app-debug.apk`
 
 ![](https://i.imgur.com/wBTPSLi.png)
 

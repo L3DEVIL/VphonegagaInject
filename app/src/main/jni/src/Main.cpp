@@ -280,4 +280,13 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
     pthread_create(&ptid, NULL, hack_thread, NULL);
 
     return JNI_VERSION_1_6;
-}*/
+}
+
+//Does not work yet
+//\ndk\21.3.6528147\sources\android\native_app_glue
+//#include <android_native_app_glue.h>
+
+void android_main(struct android_app* state) {
+    LOGI(OBFUSCATE("android_main"));
+}
+ */

@@ -1,5 +1,5 @@
 LOCAL_PATH := $(call my-dir)
-MAIN_LOCAL_PATH := $(call my-dir)
+
 include $(CLEAR_VARS)
 
 # Here is the name of your lib.
@@ -15,7 +15,6 @@ LOCAL_LDFLAGS += -Wl,--gc-sections,--strip-all
 LOCAL_ARM_MODE := arm
 
 # Here you add the cpp file
-LOCAL_C_INCLUDES += $(MAIN_LOCAL_PATH)
 LOCAL_SRC_FILES := src/Main.cpp \
 	src/Includes/Utils.cpp \
 	src/Substrate/hde64.c \
@@ -27,8 +26,9 @@ LOCAL_SRC_FILES := src/Main.cpp \
 	src/KittyMemory/MemoryPatch.cpp \
     src/KittyMemory/MemoryBackup.cpp \
     src/KittyMemory/KittyUtils.cpp \
-	src/And64InlineHook/And64InlineHook.cpp
+	src/And64InlineHook/And64InlineHook.cpp \
 
 LOCAL_LDLIBS := -llog -landroid
-
+#LOCAL_STATIC_LIBRARIES := android_native_app_glue
 include $(BUILD_SHARED_LIBRARY)
+#$(call import-module,android/native_app_glue)

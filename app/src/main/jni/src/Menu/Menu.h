@@ -1,10 +1,14 @@
-bool titleValid = false, headingValid = false, iconValid = false, featureListValid = false, isToastCalled = false;;
+bool titleValid = false, headingValid = false, iconValid = false, featureListValid = false, isToastCalled = false, menuLoaded = false;
 
 //Anti-leech: Check if text has been changed via java/smali
 void *antiLeech(void *) {
     //bad function
 
-    sleep(15);
+    do {
+        sleep(5);
+    } while (!menuLoaded);
+
+    sleep(10);
 
     if (!titleValid) {
         //Bad function to make it crash
@@ -101,6 +105,7 @@ JNIEXPORT jobjectArray
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
     jobjectArray ret;
+    menuLoaded = true;
     featureListValid = true;
 
     // Note: Do not translate the first text

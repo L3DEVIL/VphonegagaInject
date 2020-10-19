@@ -12,6 +12,12 @@ import android.provider.Settings;
 
 public class StaticActivity {
 
+    static{
+        // When you change the lib name, change also on Android.mk file
+        // Both must have same name
+        System.loadLibrary("MyLibName");
+    }
+
     public static void Start(final Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
             AlertDialog alertDialog = new AlertDialog.Builder(context, 1)
@@ -34,10 +40,6 @@ public class StaticActivity {
                     .create();
             alertDialog.show();
         } else {
-            // When you change the lib name, change also on Android.mk file
-            // Both must have same name
-            System.loadLibrary("MyLibName");
-
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
 

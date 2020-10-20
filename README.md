@@ -360,13 +360,32 @@ Save the file
 
 **METHOD 2**
 
-Warning: This method is not recommended. Using this method may cause problems with activity. Only use it if the first method really fails, or if you really want to use `MainActivity.java` for a reason
+You can follow this it if the first method really fails, or if you really want to use `MainActivity.java` for a reason. Since this involve changing activites, it may cause some problems.
 
-On Android Studio, put the game's main activity to `public String GameActivity`
+On your `MainActivity.java`, put the game's main activity to `public String GameActivity`
 
 ![](https://i.imgur.com/jdacwvH.png)
 
-On `androidmanifest.xml`, near the end of application tag, add your new main activity above `</application>`. `uk.lgl.modmenu.MainActivity` is your main activity
+Uncomment this code
+
+```
+try {
+     //Start service
+     MainActivity.this.startActivity(new Intent(MainActivity.this, Class.forName(MainActivity.this.GameActivity)));
+ } catch (ClassNotFoundException e) {
+     Toast.makeText(MainActivity.this, "Error. Game's main activity does not exist", Toast.LENGTH_LONG).show();
+     e.printStackTrace();
+     return;
+ }
+```
+
+On `androidmanifest.xml`, remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, like this:
+
+![](https://i.imgur.com/z1RxPjc.png)
+
+If you don't remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, your menu will not launch. `androidmanifest.xml` can ONLY contain one `<action android:name="android.intent.action.MAIN"/>`
+
+near the end of application tag `</application>`, add your main activity above it. `uk.lgl.modmenu.MainActivity` is your main activity
 
 ```xml
 <activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="uk.lgl.modmenu.MainActivity">
@@ -381,7 +400,7 @@ On `androidmanifest.xml`, near the end of application tag, add your new main act
 
 Save the file
 
-Do NOT use both methods at the same time
+_Do NOT use both methods at the same time_
 
 ###### 3. BUILDING YOUR PROJECT AND COPYING FILES
 

@@ -563,4 +563,4 @@ Thanks to the following individuals whose code helped me develop this mod menu
 
 * Material.io - https://material.io/design/sound/sound-resources.html#
 
-* Platinmod modders for suggestions and ideas, and the solution of fixing compilation errors :)
+* Some modders for suggestions and ideas :)

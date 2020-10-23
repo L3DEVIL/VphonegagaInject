@@ -43,11 +43,7 @@ Preview:
 4. **Do-it-yourself**
    * Yes, this is an open source project, you must be able to do things yourself, you are free to do whatever you want with this project. If we can't or won't implement some certain features, try to implement yourself
    * We are not the teachers, it is out our style, so don't ask us to teach or spoonfeed. Spoonfeeding is not acceptable here
-5. **Don't be a toxic kid**
-   * We have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this. DON'T be that kid please
-   * DON'T try to find my contact without reading anything
-   * DON'T beg how to mod Frее Firе and PUBG sh*t
-6. **Softwares you need**
+5. **Softwares you need**
    * Android Studio 4 and up: https://developer.android.com/studio
    * [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
    * Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
@@ -153,7 +149,7 @@ The codes can be seen in `startAnimation()`
 **`modmenu/StaticActivity.java`**
 
 To initialize by game activity's OnCreate
-Checks if device running Android 6.0 or above and if have overlay permission checked. Sounds being written to the cache directory.
+Checks if device running Android 6.0 or above and if have overlay permission checked.
 Start() will be called when implementing the menu to the game. We will explain later
 
 - writeToFile:
@@ -166,13 +162,22 @@ Basically the menu sounds, that have been converted to .ogg using XMedia Recode 
 **`Menu/Menu.h`**
 
 This is menu related
-- Title: Big text
 
-- Heading: Little text
+- Title:
 
-- Icon: Compressed image that is encoded to base64
+Big text
 
-- IconWebViewData: Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
+- Heading:
+
+Little text. Semi HTML is supported. Text will scroll if the text is too long
+
+- Icon:
+
+Compressed image that is encoded to base64
+
+- IconWebViewData:
+
+Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
 
 ```From internet: (Requires android.permission.INTERNET)
 return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif"); 
@@ -187,9 +192,13 @@ Nothing:
 return NULL
 ```
 
-- Toast: To get text from c++ in order to show toast in java
+- Toast:
 
-- getFeatureList: Here you add the mod features
+To get text from c++ in order to show toast in java
+
+- getFeatureList:
+
+Here you add the mod features
 
 **`Toast.h`**
 
@@ -281,13 +290,11 @@ Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encod
 
 # Testing
 
-If you have your device with adb enabled, connected your PC or your emulator with adb enabled. Android Studio will detect and you can click Play to run your app onto your device/emulator
-
-Most emulators will have adb enabled by default
+Connect your device to computer or run your emulator. Make sure you have USB-Debugging enabled in the developer option of your device. Android Studio will detect and you can click Play to run your app.
 
 ![](https://i.imgur.com/ZegjeM8.png)
 
-To use adb, you must enable USB debugging in the device system settings, under Developer options.
+Sometimes emulators such as NOX or MEMU fail to connect to adb automatically, in order to connect them, simply reboot the emulator.
 
 On Android 4.2 and higher, the Developer options screen is hidden by default. To make it visible, go to **Settings** > **About phone** and tap Build number seven times. Return to the previous screen to find Developer options at the bottom.
 
@@ -369,14 +376,7 @@ On your `MainActivity.java`, put the game's main activity to `public String Game
 Uncomment this code
 
 ```
-try {
-     //Start service
-     MainActivity.this.startActivity(new Intent(MainActivity.this, Class.forName(MainActivity.this.GameActivity)));
- } catch (ClassNotFoundException e) {
-     Toast.makeText(MainActivity.this, "Error. Game's main activity does not exist", Toast.LENGTH_LONG).show();
-     e.printStackTrace();
-     return;
- }
+Toast.makeText(MainActivity.this, "Error. Game's main activity does not exist", Toast.LENGTH_LONG).show();
 ```
 
 On `androidmanifest.xml`, remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, like this:
@@ -480,7 +480,7 @@ Logcat may also report `CRASH` if lib crashed, caused by hooking
 
 See more about logcat: https://developer.android.com/studio/debug/am-logcat
 
-If you believe the game has protection, try recompile APK without mod and install to see if it crash. We can't help you with bypassing protections
+If you believe the game has protection, try recompile APK without mod and install to see if it crash. We can't help you bypassing protections
 
 ### I have a problem decompiling or compiling APK file
 Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
@@ -516,11 +516,24 @@ Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 Likely yes and no, but we don't support AIDE at this time
 
 ### How can I соntact you?
-You can соntact me via Tеlеgram @ThеᒪGᒪ or Disсоrd ᒪGᒪ#1066. Please make sure you have readed everything and looking on Google before contacting
+You can соntact me via Tеlеgram or Disсоrd.
 
-Newbies who do not understand anything should NOT соntact. You will be blocked if you ask/beg to teach/spoonfeed. We are NOT the teacher nor your parents :P
+<details>
+<summary>Contact:</summary>
+Before you contact, please make sure you have readed everything and looking on Google before contacting
 
-Speak english only please
+Newbies who do not understand anything should NOT соntact. You will be blocked if you ask/beg to teach/spoonfeed. Why? Because we have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this now. DON'T be that toxic kid please
+
+DON'T beg how to mod Frее Firе and PUBG sh*t
+
+Speak english only please. Speaking in other language will be ignored
+
+Thanks!
+
+Tеlеgram: @ThеᒪGᒪ
+
+Disсоrd: ᒪGᒪ#1066
+</details>
 
 ### Can you help me mod (name of game) or can you do mod service?
 

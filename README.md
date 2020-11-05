@@ -5,17 +5,16 @@
 # Quick links
 - [Prerequisites](#prerequisites)
 - [download/clone](#downloadclone)
-- [Install NDK](#install-ndk)
+- [Setting up Android Studio](#setting-up-android-studio)
 - [Open the project](#open-the-project)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
-- [Useful links](#useful-links)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
-Simple floating mod menu with sounds for il2cpp and other native android games, KittyMemory, MSHook, and And64InlineHook included. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in java/smali and does not need to be stored under assets folder.
+Floating mod menu for il2cpp and other native android games. KittyMemory, MSHook, and And64InlineHook included. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
 
 It comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
 
@@ -33,19 +32,19 @@ Preview:
    * Be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
    * Be able to hook (No need, but recommended if you want to do advanced modding in the future)
    * Be able to understand basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed)
-2. **Have basic knowledge of programming**
-   * Basic knowledge of C++, Java
+   * Have basic knowledge of C++, Java
    * Understanding how Android layout works
-3. **Time and patience.**
+2. **Time and patience.**
    * Don't start working on this if you have deadlines or important work. Only on your free time
    * Don't rush
    * Take your time to read, learn and memorize this project.
-4. **Do-it-yourself**
-   * Yes, this is an open source project, you must be able to do things yourself, you are free to do whatever you want with this project. If we can't or won't implement some certain features, try to implement yourself
-   * We are not the teachers, it is out our style, so don't ask us to teach or spoonfeed. Spoonfeeding is not acceptable here
-5. **Softwares you need**
+3. **Do-it-yourself**
+   * Yes, you must be able to do things yourself, you are free to do whatever you want with this open source project. If we can't or won't implement some certain features, try to implement yourself
+   * We are not the teachers, it is not our style, so don't ask us to teach or spoonfeed. Spoonfeeding is not acceptable here
+   * There are some experienced modders who can totally do themself and solving problem themself, without asking us for help. They are really amazing :))
+4. **Softwares you need**
    * Android Studio 4 and up: https://developer.android.com/studio
-   * [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
+   * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
    * Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
    * Any png compression to compress your png file: https://compresspng.com/
    * Any base64 encoding to encode your file: https://www.base64encode.org/
@@ -58,7 +57,10 @@ Click on the button that says Code, and click Download ZIP
 
 Or clone through Android Studio if you know how to use Git
 
-# Install NDK
+# Setting up Android Studio
+
+### 1. Installing NDK
+
 At the bottom-right corner, click on Configure and SDK Manager
 
 ![](https://i.imgur.com/xBP1bCE.png)
@@ -67,10 +69,11 @@ Select **Android SDK**, check **NDK (Side by side)** and click OK. It will downl
 
 ![](https://i.imgur.com/FcAd2Px.png)
 
-# Open the project 
-Once you've downloaded all the necessary files, extract the template project to the folder without any spaces. If any folder has spaces, it will cause problem
+### 2. Open the project
 
-On Android Studio on the welcome screen, choose **"Open an existing Android Studio project"**
+Extract the template project to the folder without any spaces. If any folder has spaces, it will cause problem
+
+On the welcome screen, choose **"Open an existing Android Studio project"**
 
 Navigate to the extracted project and open it
 
@@ -78,7 +81,7 @@ Navigate to the extracted project and open it
 
 It will index and Gradle will sync the project fir the first time. Please wait for a while, it will take around 5 minutes depending your computer performance
 
-If you encounter an error 
+If you encounter an error
 
 ```NDK not configured. Download it with SDK manager. Preferred NDK version is 'xx.x.xxxxxx'```
 
@@ -94,29 +97,21 @@ After it's done, you can start working!
 
 # Files to work with and making changes
 
-**NOT ALL ARE EXPLAINED HERE, BUT WE WILL CONSTANTLY IMPROVE IT. IF THIS IS FIRST TIME, PLEASE READ ALL THE CODES UNTIL YOU CAN UNDERSTAND BETTER**
+### Java
 
-On the left side, you see your project view. Default view is Android
+**`StaticActivity.java`**: Start by game activity's `OnCreate`
+Checks if device running Android 6.0 or above and if have overlay permission checked.
+Start() will be called when implementing the menu to the game. We will explain later
 
-![](https://i.imgur.com/YT71Y6B.png)
+**`MainActivity.java`**: Start by `AndroidManifest.xml`. Only use if you really need it (Will be explained later)
 
-**`loadlib/LoadLib.java`**
+**`modmenu/Preferences.java`**: Saving the menu feature preferences and calling changes via JNI
 
-To call toast if you load lib without mod menu
-
-**`modmenu/MainActivity.java`**
-
-Starts the main activity. No need to use if you implement the menu in the APK file
-
-**`modmenu/Preferences.java`**
-
-Saving the menu feature preferences and calling changes via JNI
-
-**`modmenu/FloatingModMenuService.java` - Main codes of mod menu design**
+**`modmenu/FloatingModMenuService.java`**: Main codes of mod menu design
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
 
-- GradientDrawable
+- `GradientDrawable`
 
 A code for setting corner and stroke/inner border. Works for any View Components
 ```
@@ -126,7 +121,7 @@ gradientdrawable.setColor(Color.parseColor("#1C2A35")); //Set background color
 gradientdrawable.setStroke(1, Color.parseColor("#32cb00")); //Set border
 ```
 
-Set the gradient drawable to the component
+Set the gradient drawable to the view component
 
 ```
 [name of your view component].setBackground(gradientdrawable);
@@ -142,42 +137,45 @@ private final int MENU_HEIGHT = 200;
 
 Note: You may need to implement auto sizing due to many types of phone with different DPIs and resolutions
 
-- Animation
+- Color Animation: The codes can be seen in `startAnimation()`
 
-The codes can be seen in `startAnimation()`
+- Adding new view
 
-**`modmenu/StaticActivity.java`**
+Normally the Android development documentation does not explain the code in java. If you read the Android development documentation and you see an example like TextView
 
-To initialize by game activity's OnCreate
-Checks if device running Android 6.0 or above and if have overlay permission checked.
-Start() will be called when implementing the menu to the game. We will explain later
+```
+TextView textView = (TextView) findViewById(R.id.textView);
+textView.setFontVariationSettings("'wdth' 150");
+```
 
-- writeToFile:
-Decode base64 and write to file to a target directory
+This is for xml. Instead, create an instance for java and add view to your Layout
 
-**`Menu/Sounds.h`**
+```
+TextView textView = new TextView(this);
+textView.setFontVariationSettings("'wdth' 150");
+LinearLayoutExample.addView(textView);
 
-Basically the menu sounds, that have been converted to .ogg using XMedia Recode and encoded to base64. They are automatically decoded and stored into /data/data/(package name)/cache upon startup (See StaticActivity). Remember, we want to avoid storing files under assets as possible
+```
 
-**`Menu/Menu.h`**
+There are many more. While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc for more infomation
 
-This is menu related
+### Cpp
 
-- Title:
+**`Menu/Sounds.h`**: The sounds, that have been converted to .ogg and encoded to base64. Remember, we want to avoid storing files under assets as possible
 
-Big text
+**`Menu/Menu.h`**: Menu related with JNI calls
 
-- Heading:
+- `LoadSounds`: Decode base64 and save files into /data/data/(package name)/cache upon startup.
 
-Little text. Semi HTML is supported. Text will scroll if the text is too long
+- `Title`: Big text
 
-- Icon:
+- `Heading`: Little text. Semi HTML is supported. Text will scroll if the text is too long
 
-Compressed image that is encoded to base64
+- `Icon`: Compressed image that is encoded to base64
 
-- IconWebViewData:
+- `IconWebViewData`: Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
 
-Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
+Examples
 
 ```From internet: (Requires android.permission.INTERNET)
 return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif"); 
@@ -192,27 +190,24 @@ Nothing:
 return NULL
 ```
 
-- Toast:
+**`Toast.h`**: Your toast
 
-To get text from c++ in order to show toast in java
+**`Main.cpp`**: In this file, you will work with your mods here
 
-- getFeatureList:
+- `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
-Here you add the mod features
+You can also use if-else statement with string comparision
 
-**`Toast.h`**
+```
+if (strcmp(featureName, "The button") == 0) { //Compare with string
 
-Your toast
+} else if (strcmp(featureName, "The On/Off button") == 0) { //Compare with string
 
-**`Main.cpp`**
+} else if (feature == 7) {
 
-In this file, you will work with your mods here
-
-- `Changes`: Get values to do modding.
-
-We use if-else statement instead `case`, because most modders accidently remove `break`, causing further problems. However you can still do `cases`
-
-- `getFeatureList`: Here you set your mod features
+}
+```
+- `getFeatureList`: Mod features
 
 Usage:
 
@@ -224,11 +219,10 @@ Spinner_(feature name)_(Items e.g. item1,item2,item3)
 Button_(feature name)
 Button_OnOff_(feature name)
 InputValue_(feature name)
+CheckBox_(feature name)
 RichTextView_(Text with limited HTML support)
 RichWebView_(Full HTML support)
 ```
-
-Learn more about HTML https://www.w3schools.com/
 
 Examples:
 
@@ -236,6 +230,8 @@ Examples:
 Spinner_Weapons_AK47,9mm,Knife
 Button_OnOff_God mode
 ```
+
+Learn more about HTML https://www.w3schools.com/
 
 - `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
 
@@ -264,6 +260,12 @@ The make file for the c++ compiler. In that file, you can change the lib name on
 When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on FloatingModMenuService.java
 Both must have same name
 
+**C++ string obfuscation**
+
+We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
+
+### Others
+
 **`proguard-rules.pro`**
 
 See proguard rules here https://www.guardsquare.com/en/products/proguard/manual/usage
@@ -273,10 +275,6 @@ Both `shrinkResources` and `minifyEnabled` MUST be `true` in `build.gradle (:app
 `public static void Start` has been prevented from renaming
 
 Add `-dontobfuscate` to disable obfuscation
-
-**C++ string obfuscation**
-
-We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
 **Encoding your files into base64**
 
@@ -302,7 +300,7 @@ On some devices, the Developer options screen might be located or named differen
 
 # Implementing the menu to the target game
 
-###### 1. KNOW YOUR GAME'S MAIN ACTIVITY
+### 1. Know your game's main activity
 
 Now we are looking for main activity, there are 2 ways to do
 
@@ -322,13 +320,13 @@ Be sure to enable Word wrap so it is easier to read
 
 Note it somewhere so you can easly remember it
 
-###### 2. CHANGING FILES
+### 2. Changing files
 
 Decompile the game APK
 
 Open the game's `androidmanifest.xml`
 
-Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist
+Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. We only need one permission. Doesn't matter where you place it as long as it's above the application tag
 ```
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 ```
@@ -354,11 +352,11 @@ This simple way, we will call to `StaticActivity.java`. `MainActivity.java` will
 
 Locate to the game's path of main activity and open the **smali** file. If the game have multi dexes, it may be located in smali_classes2.. please check all
 
-Example if it was `com.unity3d.player.UnityPlayerActivity` then the path would be `(decompiled game)/com/unity3d/player/UnityPlayerActivity.smali`
+With the path of the target game’s main activity which we determined earlier `com.unity3d.player.UnityPlayerActivity`. Think of it like a path `/com/unity3d/player/UnityPlayerActivity.smali`
 
 Open the main acitivity's smali file, search for OnCreate method and paste this code inside (change the package name if you had changed it)
 ```
-invoke-static {p0}, Luk/lgl/modmenu/StaticActivity;->Start(Landroid/content/Context;)V
+invoke-static {p0}, Luk/lgl/StaticActivity;->Start(Landroid/content/Context;)V
 ```
  
 ![](https://i.imgur.com/7CxTCl8.png)
@@ -402,7 +400,7 @@ Save the file
 
 _Do NOT use both methods at the same time_
 
-###### 3. BUILDING YOUR PROJECT AND COPYING FILES
+### 3. Building your project and copying files
 
 Build the project to the APK file.
 **Build** -> **Build Bundle(s)/APK(s)** -> **Build APK(s)**
@@ -430,12 +428,13 @@ PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH!
  
 ![](https://i.imgur.com/oZq1Wq7.png)
  
-###### 4. COMPILING GAME APK
+### 4. Compiling game apk
  
-Now compile and sign the apk
-Compile failed? read the log and look up on Google
+Now compile and sign the apk, and install it on your device
 
-If the mod menu appears and the hack are working, congratz!
+Congrats. You have successfully implemented a mod menu.
+
+Compile failed? read the log and look up on Google
 
 If you face any problem, please read the [FAQ](#faq)
 
@@ -443,10 +442,8 @@ If you face any problem, please read the [FAQ](#faq)
 
 Just call the LoadLib in the OnCreate method
 ```
-    invoke-static {p0}, Luk/lgl/loadlib/LoadLib;->Start(Landroid/content/Context;)V
+    invoke-static {p0}, Luk/lgl/StaticActivity;->LoadLib(Landroid/content/Context;)V
 ```
-
-And uncomment the isToastCalled check in hack_thread function
 
 Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
 
@@ -503,7 +500,7 @@ See: https://developer.android.com/reference/android/widget/Toast#getView()
 
 ### How can I protect my dex and/or lib?
 
-We will not mention their service names, but you can search for that on Github. Using chinese tools may inject malwares and spywares in APK. We highly suggest to not use them, and please don't ask us.
+We will not mention their names, but you can search for that on Github. Using chinese tools may inject malwares and spywares in APK. We highly suggest to not use them, and please don't ask us.
 
 There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
 
@@ -545,7 +542,7 @@ Instead, try to find a couple of tutorials to learn and mod the game yourself. I
 
 No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team. We are the wrong persons to ask.
 
-# Useful links
+### Where can I learn hooking?
 
 * https://piin.dev/basic-hooking-tutorial-t19.html
 
@@ -556,8 +553,6 @@ No, because they used this template and they created their own mod with it, we d
 * http://www.cydiasubstrate.com/api/c/MSHookFunction/
 
 * https://www.cprogramming.com/tutorial/function-pointers.html
-
-* https://www.androidhive.info/2016/11/android-floating-widget-like-facebook-chat-head/
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu

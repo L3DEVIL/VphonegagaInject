@@ -2,6 +2,8 @@
 
 **IF YOU ARE UPDATING THIS TEMPLATE, PLEASE CLONE IT SEPARATELY. DO NOT MERGE INTO OLD ONE UNLESS YOU KNOW WHAT YOU ARE DOING!**
 
+**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask since I won't cover them. The codes in the template simply tells you how to use them**
+
 # Quick links
 - [Prerequisites](#prerequisites)
 - [download/clone](#downloadclone)
@@ -44,8 +46,9 @@ Preview:
    * There are some experienced modders who can totally do themself and solving problem themself, without asking us for help. They are really amazing :))
 4. **Softwares you need**
    * Android Studio 4 and up: https://developer.android.com/studio
-   * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools: [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960), [Jasi Toolkit](https://jaspreetsingh.store/jasi-toolkit/), or [INZ APKTool](https://forum.gsmhosting.com/vbb/f831/inz-apktool-2-0-windows-gui-apk-tool-2722815/)
-   * Any text editor: [Notepad++](https://notepad-plus-plus.org/downloads/), [Subline](https://www.sublimetext.com/) or [Visual Studio Code](https://code.visualstudio.com/)
+   * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools
+   * APK Easy Tool. To get main activity: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
+   * Any text editor. I use [Notepad++](https://notepad-plus-plus.org/downloads/)
    * Any png compression to compress your png file: https://compresspng.com/
    * Any base64 encoding to encode your file: https://www.base64encode.org/
    * Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
@@ -217,7 +220,8 @@ Toggle_(feature name)
 SeekBar_(feature name)_(min value)_(max value)
 Spinner_(feature name)_(Items e.g. item1,item2,item3)
 Button_(feature name)
-Button_OnOff_(feature name)
+ButtonLink_(feature name)_(URL/Link here)
+ButtonOnOff_(feature name)
 InputValue_(feature name)
 CheckBox_(feature name)
 RichTextView_(Text with limited HTML support)
@@ -320,7 +324,7 @@ Be sure to enable Word wrap so it is easier to read
 
 Note it somewhere so you can easly remember it
 
-### 2. Changing files
+### 2. Making corresponding changes in the files
 
 Decompile the game APK
 
@@ -440,9 +444,9 @@ If you face any problem, please read the [FAQ](#faq)
 
 # Loading lib without mod menu
 
-Just call the LoadLib in the OnCreate method
+Just call the `LoadLibOnly` in the `OnCreate` method
 ```
-    invoke-static {p0}, Luk/lgl/StaticActivity;->LoadLib(Landroid/content/Context;)V
+    invoke-static {p0}, Luk/lgl/StaticActivity;->LoadLibOnly(Landroid/content/Context;)V
 ```
 
 Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
@@ -519,7 +523,7 @@ You can соntact me via Tеlеgram or Disсоrd.
 <summary>Contact:</summary>
 Before you contact, please make sure you have readed everything and looking on Google before contacting
 
-Newbies who do not understand anything should NOT соntact. You will be blocked if you ask/beg to teach/spoonfeed. Why? Because we have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this now. DON'T be that toxic kid please
+Newbies who do not understand anything must NOT соntact. You will be BLOCKED if you ask/beg to teach/spoonfeed. Why? Because we have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this now. DON'T be that toxic kid please
 
 DON'T beg how to mod Frее Firе and PUBG sh*t
 
@@ -532,9 +536,9 @@ Tеlеgram: @ThеᒪGᒪ
 Disсоrd: ᒪGᒪ#1066
 </details>
 
-### Can you help me mod (name of game) or can you do mod service?
+### Can you help me mod (name of game)?
 
-No, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
+Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
                               
 Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, search on the internet and you should find a couple of forums where you can ask your questions.
 

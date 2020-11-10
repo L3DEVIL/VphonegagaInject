@@ -2,6 +2,7 @@ package uk.lgl.modmenu;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 //TODO
 //Write up android logcat on readme
@@ -28,30 +29,36 @@ public class Preferences {
         if (featureNum == 9998)
             savePref = value;
         Changes(context, featureNum, 0, value, feature);
-
         editor.putBoolean(feature, value).apply();
     }
 
     //TODO: changeFeatureString
 
-    public static int loadPrefInt(String feature, int val) {
+    public static int loadPrefInt(String featureName, int featureNum) {
         if (savePref) {
             SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
             editor = preferences.edit();
-            return preferences.getInt(feature, val);
+            int i = preferences.getInt(featureName, featureNum);
+            Changes(context, featureNum, i, false, featureName);
+            return i;
         }
-        return val;
+        return featureNum;
     }
 
-    public static boolean loadPrefBoolean(String feature, int featureNum) {
+    public static boolean loadPrefBoolean(String featureName, int featureNum) {
+        SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
+        if (featureNum >= 9998) {
+            savePref = preferences.getBoolean(featureName, false);
+        }
         if (savePref || featureNum >= 1000) {
-            SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
             editor = preferences.edit();
-            if (feature.equals("Sounds") && !preferences.contains("Sounds"))
+            if (featureNum == 1000 && !preferences.contains("Sounds"))
                 return true;
-            if (feature.equals("Color animation") && !preferences.contains("Color animation"))
+            if (featureNum == 1001 && !preferences.contains("Color animation"))
                 return true;
-            return preferences.getBoolean(feature, false);
+            boolean bool = preferences.getBoolean(featureName, false);
+            Changes(context, featureNum, 0, bool, featureName);
+            return bool;
         }
         return false;
     }

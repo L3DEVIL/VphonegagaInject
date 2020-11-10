@@ -50,7 +50,7 @@
 # define  A64_LOGI(...)        ((void)0)
 #endif // NDEBUG
 typedef uint32_t *__restrict *__restrict instruction;
-typedef struct a64 {
+typedef struct {
     struct fix_info {
         uint32_t *bp;
         uint32_t ls; // left-shift counts

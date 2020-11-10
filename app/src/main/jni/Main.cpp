@@ -16,11 +16,11 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
-#include "src/Includes/base64.hpp"
-#include "src/KittyMemory/MemoryPatch.h"
-#include "src/Includes/Logger.h"
-#include "src/Includes/Utils.h"
-#include "src/Includes/obfuscate.h"
+#include "Includes/base64.hpp"
+#include "KittyMemory/MemoryPatch.h"
+#include "Includes/Logger.h"
+#include "Includes/Utils.h"
+#include "Includes/obfuscate.h"
 
 #include "Menu/Sounds.h"
 #include "Menu/Menu.h"
@@ -28,11 +28,11 @@
 #include "Toast.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
-#include <src/And64InlineHook/And64InlineHook.hpp>
+#include <And64InlineHook/And64InlineHook.hpp>
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
-#include <src/Substrate/SubstrateHook.h>
-#include <src/Substrate/CydiaSubstrate.h>
+#include <Substrate/SubstrateHook.h>
+#include <Substrate/CydiaSubstrate.h>
 
 #endif
 
@@ -40,7 +40,7 @@
 struct My_Patches {
     // let's assume we have patches for these functions for whatever game
     // like show in miniMap boolean function
-    MemoryPatch GodMode, SliderExample;
+    MemoryPatch GodMode, GodMode2, SliderExample;
     // etc...
 } hexPatches;
 
@@ -63,106 +63,97 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
     feature += 1;  // No need to count from 0 anymore. yaaay :)))
 
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d"), feature, featureName, value,
-                       boolean);
+         boolean);
 
-    // Changed to if-statement because modders can easly mess up with cases.
-    if (feature == 1) {
-        // The category was 1 so is not used
-    } else if (feature == 2) {
-        feature2 = boolean;
-        if (feature2) {
-            // MakeToast(env, obj, OBFUSCATE("Feature 1 ON"), Toast::LENGTH_SHORT);
-            // modify & print bytes
-            if (hexPatches.GodMode.Modify()) {
-                LOGD(OBFUSCATE("Current Bytes: %s"),
-                     hexPatches.GodMode.get_CurrBytes().c_str());
-            }
-            //Or
-            hexPatches.GodMode.Modify();
-        } else {
-            //MakeToast(env, obj, OBFUSCATE("Feature 1 OFF"), Toast::LENGTH_SHORT);
-            //restore & print bytes
-            if (hexPatches.GodMode.Restore()) {
-                LOGD(OBFUSCATE("Current Bytes: %s"),
-                     hexPatches.GodMode.get_CurrBytes().c_str());
-            }
-            //Or
-            hexPatches.GodMode.Restore();
-        }
-    } else if (feature == 3) {
-        sliderValue = value;
-    } else if (feature == 4) {
-        //Yes you can do kittymemory patches in a slider
-        if (value == 0) {
-            hexPatches.SliderExample = MemoryPatch::createWithHex(
-                    libName, string2Offset(
-                            OBFUSCATE_KEY("0x100000", '-')),
-                    OBFUSCATE(
-                            "00 00 A0 E3 1E FF 2F E1"));
-            hexPatches.SliderExample.Modify();
-        }
-        if (value == 1) {
-            hexPatches.SliderExample = MemoryPatch::createWithHex(
-                    libName, string2Offset(
-                            OBFUSCATE_KEY("0x100000",
-                                          '-')),
-                    OBFUSCATE(
-                            "01 00 A0 E3 1E FF 2F E1"));
-            hexPatches.SliderExample.Modify();
-        }
-        if (value == 2) {
-            hexPatches.SliderExample = MemoryPatch::createWithHex(
-                    libName,
-                    string2Offset(
-                            OBFUSCATE_KEY("0x100000",
-                                          '-')),
-                    OBFUSCATE(
-                            "02 00 A0 E3 1E FF 2F E1"));
-            hexPatches.SliderExample.Modify();
-        }
-        if (value == 3) {
-            //...
-        }
-        if (value == 4) {
-            //...
-        }
-    } else if (feature == 5) {
-        if (value == 0) {
-            LOGD(OBFUSCATE("Selected item 1"));
-        }
-        if (value == 1) {
-            LOGD(OBFUSCATE("Selected item 1"));
-        }
-        if (value == 2) {
-            LOGD(OBFUSCATE("Selected item 3"));
-        }
-    } else if (strcmp(featureName, "The button") == 0) { //Works with string too
-        LOGD(OBFUSCATE("Feature 6 Called"));
-        //Since we have instanceBtn as a field, we can call it out of Update hook function
-        if (instanceBtn != NULL)
-            AddMoneyExample(instanceBtn, 999999);
-        MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
-    } else if (strcmp(featureName, "The On/Off button") == 0) {
-        LOGD(OBFUSCATE("Feature 7 Called"));
-        featureHookToggle = boolean;
-    } else if (feature == 7) {
+    //!!! BE CAREFUL NOT TO ACCIDENTLY REMOVE break; !!!//
 
-    }
-
-    //You can still do cases if you prefer that but careful not to remove break; by accidently
-    /*switch (feature) {
-        case 0:
-            feature1 = boolean;
-            break;
+    switch (feature) {
         case 1:
-            feature2 = boolean;
+            // The category was 1 so is not used
             break;
         case 2:
-            //etc.
+            feature2 = boolean;
+            if (feature2) {
+                // To print bytes you can do this
+                //if (hexPatches.GodMode.Modify()) {
+                //    LOGD(OBFUSCATE("Current Bytes: %s"),
+                //         hexPatches.GodMode.get_CurrBytes().c_str());
+                //}
+                hexPatches.GodMode.Modify();
+                hexPatches.GodMode2.Modify();
+            } else {
+                hexPatches.GodMode.Restore();
+                hexPatches.GodMode2.Restore();
+            }
             break;
         case 3:
-            //etc.
+            sliderValue = value;
             break;
+        case 4:
+            switch (value) {
+                case 0:
+                    hexPatches.SliderExample = MemoryPatch::createWithHex(
+                            libName, string2Offset(
+                                    OBFUSCATE_KEY("0x100000", '-')),
+                            OBFUSCATE(
+                                    "00 00 A0 E3 1E FF 2F E1"));
+                    hexPatches.SliderExample.Modify();
+                    break;
+                case 1:
+                    hexPatches.SliderExample = MemoryPatch::createWithHex(
+                            libName, string2Offset(
+                                    OBFUSCATE_KEY("0x100000",
+                                                  '-')),
+                            OBFUSCATE(
+                                    "01 00 A0 E3 1E FF 2F E1"));
+                    hexPatches.SliderExample.Modify();
+                    break;
+                case 2:
+                    hexPatches.SliderExample = MemoryPatch::createWithHex(
+                            libName,
+                            string2Offset(
+                                    OBFUSCATE_KEY("0x100000",
+                                                  '-')),
+                            OBFUSCATE(
+                                    "02 00 A0 E3 1E FF 2F E1"));
+                    hexPatches.SliderExample.Modify();
+                    break;
+            }
+            break;
+        case 5:
+            switch (value) {
+                case 0:
+                    LOGD(OBFUSCATE("Selected item 1"));
+                    break;
+                case 1:
+                    LOGD(OBFUSCATE("Selected item 2"));
+                    break;
+                case 2:
+                    LOGD(OBFUSCATE("Selected item 3"));
+                    break;
+            }
+            break;
+        case 6:
+            LOGD(OBFUSCATE("Feature 6 Called"));
+            // Since we have instanceBtn as a field, we can call it out of Update hook function
+            // See more https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+            if (instanceBtn != NULL)
+                AddMoneyExample(instanceBtn, 999999);
+            MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
+            break;
+        case 8:
+            LOGD(OBFUSCATE("Feature 8 Called"));
+            featureHookToggle = boolean;
+            break;
+    }
+
+    // You can also use if-else statement
+    /*if (strcmp(featureName, "The button") == 0) { //Compare with string
+
+    } else if (strcmp(featureName, "The On/Off button") == 0) { //Compare with string
+
+    } else if (feature == 7) {
+
     }*/
 }
 }
@@ -202,7 +193,7 @@ void Update(void *instance) {
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread called"));
 
-    //Default lib target is Il2Cpp. Uncomment if you want to target other lib
+    //Default lib target is libil2cpp.so. Uncomment if you want to target other lib globally
     //libName = OBFUSCATE("libOtherLib.so");
 
     //Check if target lib is loaded
@@ -235,6 +226,10 @@ void *hack_thread(void *) {
     hexPatches.GodMode = MemoryPatch::createWithHex(libName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '-')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", '-')),
+                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
 
     // Offset Hook example
     MSHookFunction(
@@ -260,14 +255,9 @@ void *hack_thread(void *) {
 //We do this to hide OnLoad from disassembler
 __attribute__((constructor))
 void lib_main() {
-    LOGI(OBFUSCATE("Own lib has been loaded"));
     // Create a new thread so it does not block the main thread, means the game would not freeze
     pthread_t ptid;
     pthread_create(&ptid, NULL, hack_thread, NULL);
-
-    //Run anti-leech
-    pthread_t p;
-    pthread_create(&p, NULL, antiLeech, NULL);
 }
 
 /*
@@ -276,17 +266,6 @@ JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *globalEnv;
     vm->GetEnv((void **) &globalEnv, JNI_VERSION_1_6);
 
-    pthread_t ptid;
-    pthread_create(&ptid, NULL, hack_thread, NULL);
-
     return JNI_VERSION_1_6;
-}
-
-//Does not work yet
-//\ndk\21.3.6528147\sources\android\native_app_glue
-//#include <android_native_app_glue.h>
-
-void android_main(struct android_app* state) {
-    LOGI(OBFUSCATE("android_main"));
 }
  */

@@ -8,25 +8,25 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := MyLibName
 
 # Code optimization
-LOCAL_CFLAGS := -Wno-error=format-security -fpermissive -w -s -Werror -Wold-style-cast -fms-extensions -Wno-narrowing
-LOCAL_CFLAGS += -fno-rtti -fno-exceptions -fvisibility=hidden -ffunction-sections -fdata-sections -stdlib=libc++
-LOCAL_CPPFLAGS += -fvisibility=hidden -ffunction-sections -fdata-sections -w -std=c++14
+# -std=c++17 is required to support AIDE app with NDK support
+LOCAL_CFLAGS += -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w
+LOCAL_CPPFLAGS += -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++17 -Wno-error=c++11-narrowing -fms-extensions
 LOCAL_LDFLAGS += -Wl,--gc-sections,--strip-all
 LOCAL_ARM_MODE := arm
 
 # Here you add the cpp file
-LOCAL_SRC_FILES := src/Main.cpp \
-	src/Includes/Utils.cpp \
-	src/Substrate/hde64.c \
-	src/Substrate/SubstrateDebug.cpp \
-	src/Substrate/SubstrateHook.cpp \
-	src/Substrate/SubstratePosixMemory.cpp \
-	src/Substrate/SymbolFinder.cpp \
-	src/KittyMemory/KittyMemory.cpp \
-	src/KittyMemory/MemoryPatch.cpp \
-    src/KittyMemory/MemoryBackup.cpp \
-    src/KittyMemory/KittyUtils.cpp \
-	src/And64InlineHook/And64InlineHook.cpp \
+LOCAL_SRC_FILES := Main.cpp \
+	Includes/Utils.cpp \
+	Substrate/hde64.c \
+	Substrate/SubstrateDebug.cpp \
+	Substrate/SubstrateHook.cpp \
+	Substrate/SubstratePosixMemory.cpp \
+	Substrate/SymbolFinder.cpp \
+	KittyMemory/KittyMemory.cpp \
+	KittyMemory/MemoryPatch.cpp \
+    KittyMemory/MemoryBackup.cpp \
+    KittyMemory/KittyUtils.cpp \
+	And64InlineHook/And64InlineHook.cpp \
 
 LOCAL_LDLIBS := -llog -landroid
 #LOCAL_STATIC_LIBRARIES := android_native_app_glue

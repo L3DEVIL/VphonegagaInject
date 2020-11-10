@@ -6,7 +6,7 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <cstring>
-#include <src/Includes/obfuscate.h>
+#include <Includes/obfuscate.h>
 #include "SymbolFinder.h"
 
 #define TAG "MSHook"

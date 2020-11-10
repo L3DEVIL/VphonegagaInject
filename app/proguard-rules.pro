@@ -23,4 +23,4 @@
 -keepclassmembers class ** {
    public static void Start (***);
 }
--keep public class uk.lgl.modmenu.StaticActivity
+-keep public class uk.lgl.StaticActivity

@@ -1,33 +1,9 @@
-#include <jni.h>
-#include <unistd.h>
-#include <pthread.h>
-#include "Includes/Logger.h"
-#include "Includes/Utils.h"
-#include "Includes/obfuscate.h"
+bool titleValid = false, headingValid = false, iconValid = false;
 
-bool titleValid = false, headingValid = false, iconValid = false, featureListValid = false;
-
-//Anti-leech: Check if text has been changed via java/smali
 void *antiLeech(void *) {
-    //bad function
-
     sleep(15);
-
-    if (!titleValid) {
+    if (!titleValid || !headingValid || !iconValid) {
         //Bad function to make it crash
-        //Note: We want to avoid using exit() method call
-        int *p = 0;
-        *p = 0;
-    }
-    if (!headingValid) {
-        int *p = 0;
-        *p = 0;
-    }
-    if (!iconValid) {
-        int *p = 0;
-        *p = 0;
-    }
-    if (!featureListValid) {
         int *p = 0;
         *p = 0;
     }
@@ -35,17 +11,25 @@ void *antiLeech(void *) {
 }
 
 extern "C" {
-JNIEXPORT jboolean
-JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_EnableSounds(JNIEnv *env, jobject thiz) {
-    //Note: some games don't like sounds, which caused crash. Please turn it off if it happens
-    return true;
+JNIEXPORT void JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jclass clazz,
+                                                      jstring directory) {
+    std::string dir = env->GetStringUTFChars(directory, 0);
+
+    writeToFile(dir + "On.ogg", base64::from_base64(Sounds::On));
+    writeToFile(dir + "Off.ogg", base64::from_base64(Sounds::Off));
+    writeToFile(dir + "Back.ogg", base64::from_base64(Sounds::Back));
+    writeToFile(dir + "OpenMenu.ogg", base64::from_base64(Sounds::OpenMenu));
+    writeToFile(dir + "Select.ogg", base64::from_base64(Sounds::Select));
+    writeToFile(dir + "SliderDecrease.ogg", base64::from_base64(Sounds::SliderDecrease));
+    writeToFile(dir + "SliderIncrease.ogg", base64::from_base64(Sounds::SliderIncrease));
 }
 
 JNIEXPORT jstring
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(JNIEnv *env, jobject thiz) {
     titleValid = true;
+
     return env->NewStringUTF(OBFUSCATE("Modded by (yourname)"));
 }
 
@@ -53,7 +37,13 @@ JNIEXPORT jstring
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Heading(JNIEnv *env, jobject thiz) {
     headingValid = true;
-    return env->NewStringUTF(OBFUSCATE("Put your website or notes here"));
+
+    //It will autoscroll if the text is too long
+    return env->NewStringUTF(OBFUSCATE("<marquee><p style=\"font-size:30\">"
+                                       "<p style=\"color:green;\">Modded by LGL</p> | "
+                                       "https://github.com/LGLTeam | Lorem Ipsum is simply dummy text of the printing and typesetting</p>"
+                                       "</marquee>"));
+    // return env->NewStringUTF(OBFUSCATE("Put your website or notes here"));
 }
 
 JNIEXPORT jstring
@@ -70,62 +60,71 @@ JNIEXPORT jstring
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_IconWebViewData(JNIEnv *env, jobject thiz) {
     iconValid = true;
+    //WebView support GIF animation. Upload your image or GIF on imgur.com or other sites
 
-    //Upload your image or gif on imgur.com or other sites
-    //To disable it:
-    //return NULL
-    //It would load the base64 icon from above as usual
-
-    //From internet (Requires android.permission.INTERNET)
+    // From internet (Requires android.permission.INTERNET)
     // return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif");
 
-    //From assets folder: (Requires android.permission.INTERNET)
+    // From assets folder: (Requires android.permission.INTERNET)
     // return env->NewStringUTF("file:///android_asset/example.gif");
 
-    //Base64 html:
+    // Base64 html:
     // return env->NewStringUTF("data:image/png;base64, <encoded base64 here>");
 
-    //Nothing:
+    // To disable it, return NULL. It will use normal image above:
     // return NULL
 
     //return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif");
     return NULL;
 }
 
-JNIEXPORT jint
-JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_IconSize(JNIEnv *env, jobject thiz) {
-    return 70;
-}
 
 JNIEXPORT jobjectArray
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
     jobjectArray ret;
-    featureListValid = true;
-
     // Note: Do not translate the first text
+
     // Usage:
     // Category_(text)
-    // Toggle_[feature name]
-    // SeekBar_[feature name]_[min value]_[max value]
-    // Spinner_[feature name]_[Items e.g. item1_item2_item3]
-    // Button_[feature name]
-    // Button_OnOff_[feature name]
-    // InputValue_[feature name]
+    // Toggle_(feature name)
+    // SeekBar_(feature name)_(min value)_(max value)
+    // Spinner_(feature name)_(Items e.g. item1,item2,item3)
+    // Button_(feature name)
+    // ButtonLink_(feature name)_(URL/Link here)
+    // ButtonOnOff_(feature name)
+    // InputValue_(feature name)
+    // CheckBox_(feature name)
+    // RichTextView_(Text with limited HTML support)
+    // RichWebView_(Full HTML support)
+
+    // Learn more about HTML https://www.w3schools.com/
+
     const char *features[] = {
             OBFUSCATE("Category_The Category"),
             OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE("SeekBar_The slider_0_100"),
-            OBFUSCATE("Spinner_The spinner_Items 1_Items 2_Items 3"),
+            OBFUSCATE("SeekBar_The slider_4_100"),
+            OBFUSCATE("SeekBar_Kittymemory slider example_0_5"),
+            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
             OBFUSCATE("Button_The button"),
-            OBFUSCATE("Button_OnOff_The On/Off button"),
-            OBFUSCATE("InputValue_The input number")
+            OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"),
+            OBFUSCATE("ButtonOnOff_The On/Off button"),
+            OBFUSCATE("CheckBox_The Check Box"),
+            OBFUSCATE("InputValue_The input number"),
+            OBFUSCATE(
+                    "RichTextView_This is text view, not fully HTML."
+                    "<b>Bold</b> <i>italic</i> <u>underline</u>"
+                    "<br />New line <font color='red'>Support colors</font>"),
+            OBFUSCATE(
+                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                    "This is WebView, with REAL HTML support!"
+                    "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
+                    "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
+                    "</body></html>")
     };
 
     int Total_Feature = (sizeof features /
                          sizeof features[0]); //Now you dont have to manually update the number everytime;
-
     ret = (jobjectArray)
             env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
                                 env->NewStringUTF(""));
@@ -133,7 +132,6 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
     for (i = 0; i < Total_Feature; i++)
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
 
-    //Run anti-leech
     pthread_t ptid;
     pthread_create(&ptid, NULL, antiLeech, NULL);
 

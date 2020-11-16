@@ -389,10 +389,10 @@ On `androidmanifest.xml`, remove `<action android:name="android.intent.action.MA
 
 If you don't remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, your menu will not launch. `androidmanifest.xml` can ONLY contain one `<action android:name="android.intent.action.MAIN"/>`
 
-near the end of application tag `</application>`, add your main activity above it. `uk.lgl.modmenu.MainActivity` is your main activity
+near the end of application tag `</application>`, add your main activity above it. `uk.lgl.MainActivity` is your main activity
 
 ```xml
-<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="uk.lgl.modmenu.MainActivity">
+<activity android:configChanges="keyboardHidden|orientation|screenSize" android:name="uk.lgl.MainActivity">
      <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
          <category android:name="android.intent.category.LAUNCHER"/>

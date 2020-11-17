@@ -212,10 +212,6 @@ void *hack_thread(void *) {
     A64HookFunction((void *) getAbsoluteAddress(libName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
                     (void **) &old_get_BoolExample);
 
-    // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
-    A64HookFunction((void *)("__SymbolNameExample"), (void *) get_BoolExample,
-                   (void **) &old_get_BoolExample);
-
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
     AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(libName, 0x123456);
@@ -230,6 +226,9 @@ void *hack_thread(void *) {
     hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
                                                      string2Offset(OBFUSCATE_KEY("0x222222", '-')),
                                                      OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //Apply patches here if you don't use mod menu
+    //hexPatches.GodMode.Modify();
+    //hexPatches.GodMode2.Modify();
 
     // Offset Hook example
     MSHookFunction(

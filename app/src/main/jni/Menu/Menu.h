@@ -95,6 +95,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
     // ButtonOnOff_(feature name)
     // InputValue_(feature name)
     // CheckBox_(feature name)
+    // RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
     // RichTextView_(Text with limited HTML support)
     // RichWebView_(Full HTML support)
 
@@ -111,6 +112,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
             OBFUSCATE("ButtonOnOff_The On/Off button"),
             OBFUSCATE("CheckBox_The Check Box"),
             OBFUSCATE("InputValue_The input number"),
+            OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
             OBFUSCATE(
                     "RichTextView_This is text view, not fully HTML."
                     "<b>Bold</b> <i>italic</i> <u>underline</u>"

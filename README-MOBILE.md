@@ -1,7 +1,9 @@
-**This is for Android phone users who do not have a PC. Floating apps or similar is recommended to read this page and working at the same time**
+**This is for Android mobile users who do not have a PC. Floating apps or similar is recommended to read this page and working at the same time**
+
+**This is best viewed on mobile**
 
 # Quick links
-- [Prerequisites](#prerequisites)
+- [Softwares you need](#softwares-you-need)
 - [download/clone](#downloadclone)
 - [Setting up AIDE](#setting-up-aide)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
@@ -11,33 +13,20 @@
 - [Useful links](#useful-links)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
-# Prerequisites
-1. **BE AN EXPERIENCED MODDER, NOT A NEWBIE/BEGINNER**
-   * Why this is not for newbie? because you need to be able to do programming and modding. It is too difficult for newbies to understand this, and teaching them brings nothing but a totally waste of time. This is the basis of this whole guide. We can't help you if you don't know how to mod an APK file. I gueest you go watch tutorial instead, there are plenty of tutorials on the internet
-   * Be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
-   * Be able to hook (No need, but recommended if you want to do advanced modding in the future)
-   * Be able to understand basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed)
-   * Have basic knowledge of C++, Java
-   * Understanding how Android layout works
-2. **Time and patience.**
-   * Don't start working on this if you have deadlines or important work. Only on your free time
-   * Don't rush
-   * Take your time to read, learn and memorize this project.
-3. **Do-it-yourself**
-   * Yes, you must be able to do things yourself, you are free to do whatever you want with this open source project. If we can't or won't implement some certain features, try to implement yourself
-   * We are not the teachers, it is not our style, so don't ask us to teach or spoonfeed. Spoonfeeding is not acceptable here
-   * There are some experienced modders who can totally do themself and solving problem themself, without asking us for help. They are really amazing :))
-4. **Softwares you need**
-   * Modded AIDE is required. The official AIDE from play Store will not work with this project. 
-   * Modded AIDE APK: https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk
-   * ndk.tar.gz for modded AIDE: https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk
-   * X-plore: https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en
-   * MT Manager. With build in Apktool and editors to modify APK file: https://bbs.binmt.cc/forum-2-1.html | Mirror link: https://secufiles.com/js6i/MT2.9.2.apk
-   * Floating apps (optional). You can use it to read this page and working at the same time: https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en or a build-in feature by OEM
+# Softwares you need
+* Modded AIDE app. The official AIDE from Play Store will not work with this project: https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk
+* ndk.tar.gz for modded AIDE for NDK support: https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk
+* X-plore: https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en
+* MT Manager. With build in Apktool and editors to modify APK file: https://bbs.binmt.cc/forum-2-1.html | Mirror link: https://secufiles.com/js6i/MT2.9.2.apk
+* Floating apps (optional). You can use it to read this page and working at the same time: https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en or a build-in feature by OEM
 
 # Download/Clone
 
 Go to releases page https://github.com/LGLTeam/Android-Mod-Menu/releases/ and download **Source code (zip)**
+
+To download latest commit, enable desktop mode on your browser then click **Code**, and click **Download ZIP**
+
+![](https://i.imgur.com/EZnbd10.png)
 
 # Setting up AIDE
 
@@ -51,13 +40,13 @@ Go to **Build & Run**, and click on **Manage native code support**.
 
 ![](https://images2.imgbox.com/6e/5c/DootVB4P_o.png)
 
-A prompt will ask to input the path of NDK file
+A prompt will ask to input the path of NDK file.
 
-If you use X-plore, you can show details of the file and copy file path easly
+If you use X-plore, you can show details of the file and copy file path easly. We stored the ndk.tar.gz on an internal storage /storage/emulated/0/ndk_arm64.tar.gz
 
 ![](https://images2.imgbox.com/54/2b/G0gVbhrN_o.png)
 
-Paste it in the prompt box. We stored the ndk.tar.gz on an internal storage /storage/emulated/0/ndk_arm64.tar.gz
+Paste it in the prompt box.
 
 ![](https://images2.imgbox.com/e1/c0/HSj9yQS9_o.png)
 
@@ -65,7 +54,7 @@ Click install and wait
 
 ![](https://images2.imgbox.com/1d/55/7LPXB7CI_o.png)
 
-After installiation, you can now use AIDE
+After installiation, you can now use AIDE with NDK support
 
 # Opening project in AIDE
 
@@ -83,7 +72,7 @@ Press play to compile the project whether it works or not
 
 If successful, it will ask you to install the APK. It may ask you to allow installation from unknown sources. Please allow when asked
 
-Open the app. If it works, congratulations :))
+Open the app to test
 
 # Files to work with and making changes
 
@@ -178,7 +167,7 @@ Ok, we go back to the main directory inside APK. You can press **..** to go back
 
 **GO TO THIS PAGE TO READ WHAT TO CHANGE:**
 
-https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#2-changing-files
+https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#2-making-corresponding-changes-in-the-files
 
 **To open xml file**
 
@@ -229,6 +218,12 @@ Go back outside APK. You will now see a green text which tells you that you have
 Simple install it. You may need to uninstall original APK first
 
 If it works, congratulations!
+
+# Troubleshooting
+
+Problem with the project: click **More... - Project - Refresh Build**. This will clear the project cache
+
+Problem with AIDE: Open System Settings - Apps and clear data of AIDE app. This will reset everything and you need to install NDK again
 
 # Loading lib without mod menu
 

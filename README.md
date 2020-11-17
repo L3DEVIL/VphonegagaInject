@@ -4,10 +4,11 @@
 
 **This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask since I won't cover them. The codes in the template simply tells you how to use them**
 
-**For mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
+**For mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md) how to use this project within AIDE app**
 
 # Quick links
 - [Prerequisites](#prerequisites)
+- [Softwares you need](#softwares-you-need)
 - [download/clone](#downloadclone)
 - [Setting up Android Studio](#setting-up-android-studio)
 - [Open the project](#open-the-project)
@@ -31,29 +32,23 @@ Preview:
 ![](https://i.imgur.com/42Sh72L.gif)
 
 # Prerequisites
-1. **BE AN EXPERIENCED MODDER, NOT A NEWBIE/BEGINNER**
-   * Why this is not for newbie? because you need to be able to do programming and modding. It is too difficult for newbies to understand this, and teaching them brings nothing but a totally waste of time. This is the basis of this whole guide. We can't help you if you don't know how to mod an APK file. I gueest you go watch tutorial instead, there are plenty of tutorials on the internet
-   * Be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
-   * Be able to hook (No need, but recommended if you want to do advanced modding in the future)
-   * Be able to understand basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed)
-   * Have basic knowledge of C++, Java
-   * Understanding how Android layout works
-2. **Time and patience.**
-   * Don't start working on this if you have deadlines or important work. Only on your free time
-   * Don't rush
-   * Take your time to read, learn and memorize this project.
-3. **Do-it-yourself**
-   * Yes, you must be able to do things yourself, you are free to do whatever you want with this open source project. If we can't or won't implement some certain features, try to implement yourself
-   * We are not the teachers, it is not our style, so don't ask us to teach or spoonfeed. Spoonfeeding is not acceptable here
-   * There are some experienced modders who can totally do themself and solving problem themself, without asking us for help. They are really amazing :))
-4. **Softwares you need**
-   * Android Studio 4 and up: https://developer.android.com/studio
-   * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools
-   * APK Easy Tool. To get main activity: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
-   * Any text editor. I use [Notepad++](https://notepad-plus-plus.org/downloads/)
-   * Any png compression to compress your png file: https://compresspng.com/
-   * Any base64 encoding to encode your file: https://www.base64encode.org/
-   * Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
+* **AN EXPERIENCED MODDER, NOT A NEWBIE/BEGINNER MODDER:** You should be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
+* Basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed), required for patching meemory
+* Be able to hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
+* Basic knowledge of C++ and java
+* Basic awareness of how Android layout works in XML and Java. This project only uses Java for layout but you will learn it easly
+* Time and patience: Don't start working on this if you have deadlines or important work, only on your free time. Take your time to read, learn and get used to work with this project.
+* DIY (Do it yourself): Yes, you must be able to do things yourself. If we can't or won't implement some certain features, try to implement yourself. We are not the teachers, it is not our style, so don't ask us to teach or spoonfeed.
+* An inquisitive mind
+
+# Softwares you need
+* Android Studio 4 and up: https://developer.android.com/studio
+* Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools
+* APK Easy Tool. To get main activity: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
+* Any text editor. I use [Notepad++](https://notepad-plus-plus.org/downloads/)
+* Any png compression to compress your png file: https://compresspng.com/
+* Any base64 encoding to encode your file: https://www.base64encode.org/
+* Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
 
 # Download/Clone
 Click on the button that says Code, and click Download ZIP
@@ -226,6 +221,7 @@ ButtonLink_(feature name)_(URL/Link here)
 ButtonOnOff_(feature name)
 InputValue_(feature name)
 CheckBox_(feature name)
+RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
 RichTextView_(Text with limited HTML support)
 RichWebView_(Full HTML support)
 ```
@@ -446,7 +442,7 @@ If you face any problem, please read the [FAQ](#faq)
 
 # Loading lib without mod menu
 
-Just call the `LoadLibOnly` in the `OnCreate` method
+Just call the `LoadLibOnly` in the `OnCreate` method if you want to load your hacks without mod menu
 ```
     invoke-static {p0}, Luk/lgl/StaticActivity;->LoadLibOnly(Landroid/content/Context;)V
 ```
@@ -527,15 +523,13 @@ Before you contact, please make sure you have readed everything and looking on G
 
 Newbies who do not understand anything must NOT соntact. You will be BLOCKED if you ask/beg to teach/spoonfeed. Why? Because we have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this now. DON'T be that toxic kid please
 
-DON'T beg how to mod Frее Firе and PUBG sh*t
-
 Speak english only please. Speaking in other language will be ignored
 
 Thanks!
 
 Tеlеgram: @ThеᒪGᒪ
 
-Disсоrd: ᒪGᒪ#1066
+Disсоrd: ᒪGᒪ#6844
 </details>
 
 ### Can you help me mod (name of game)?
@@ -551,30 +545,19 @@ No, because they used this template and they created their own mod with it, we d
 ### Where can I learn hooking?
 
 * https://piin.dev/basic-hooking-tutorial-t19.html
-
 * https://iosgods.com/topic/65529-instance-variables-and-function-pointers/
-
 * https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-
 * http://www.cydiasubstrate.com/api/c/MSHookFunction/
-
 * https://www.cprogramming.com/tutorial/function-pointers.html
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu
 
 * Octowolve/Escanor - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu and Hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
- 
 * VanHoevenTR - Mod menu - https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
-
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
-
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
-
 * Rprop - https://github.com/Rprop/And64InlineHook
-
 * Google - Android UI sounds
-
 * Material.io - https://material.io/design/sound/sound-resources.html#
-
 * Some modders for suggestions and ideas :)

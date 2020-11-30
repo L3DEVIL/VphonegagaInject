@@ -45,7 +45,7 @@ struct My_Patches {
 } hexPatches;
 
 bool feature1 = false, feature2 = false, featureHookToggle = false;
-int sliderValue = 0;
+int sliderValue = 1, dmgmul = 1, defmul = 1;
 void *instanceBtn;
 
 // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -53,6 +53,9 @@ void *instanceBtn;
 // will result in a null pointer which will cause crash
 // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
 void (*AddMoneyExample)(void *instance, int amount);
+
+//Target lib here
+#define targetLibName OBFUSCATE("libil2cpp.so")
 
 extern "C" {
 JNIEXPORT void JNICALL
@@ -87,13 +90,15 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             }
             break;
         case 3:
-            sliderValue = value;
+            if (value >= 1) {
+                sliderValue = value;
+            }
             break;
         case 4:
             switch (value) {
                 case 0:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            libName, string2Offset(
+                            targetLibName, string2Offset(
                                     OBFUSCATE_KEY("0x100000", '-')),
                             OBFUSCATE(
                                     "00 00 A0 E3 1E FF 2F E1"));
@@ -101,7 +106,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
                 case 1:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            libName, string2Offset(
+                            targetLibName, string2Offset(
                                     OBFUSCATE_KEY("0x100000",
                                                   '-')),
                             OBFUSCATE(
@@ -110,7 +115,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
                 case 2:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            libName,
+                            targetLibName,
                             string2Offset(
                                     OBFUSCATE_KEY("0x100000",
                                                   '-')),
@@ -190,41 +195,40 @@ void Update(void *instance) {
 
 //KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
 //Note: We use OBFUSCATE_KEY for offsets which is the important part xD
+
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread called"));
-
-    //Default lib target is libil2cpp.so. Uncomment if you want to target other lib globally
-    //libName = OBFUSCATE("libOtherLib.so");
 
     //Check if target lib is loaded
     do {
         sleep(1);
-    } while (!isLibraryLoaded(libName));
-    LOGI(OBFUSCATE("Lib %s has been loaded"), libName);
+    } while (!isLibraryLoaded(targetLibName));
+
+    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
 
 #if defined(__aarch64__) //Compile for arm64 lib only
     // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(libName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '3')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
 
     // Offset Hook example
-    A64HookFunction((void *) getAbsoluteAddress(libName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
+    A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
                     (void **) &old_get_BoolExample);
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(libName, 0x123456);
+    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
 
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
     // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(libName,
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '-')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
     //You can also specify target lib like this
     hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE_KEY("0x222222", '-')),
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
                                                      OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
     //Apply patches here if you don't use mod menu
     //hexPatches.GodMode.Modify();
@@ -232,7 +236,8 @@ void *hack_thread(void *) {
 
     // Offset Hook example
     MSHookFunction(
-            (void *) getAbsoluteAddress(libName, string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+            (void *) getAbsoluteAddress(targetLibName,
+                                        string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
             (void *) get_BoolExample,
             (void **) &old_get_BoolExample);
 
@@ -242,7 +247,7 @@ void *hack_thread(void *) {
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(libName, 0x123456);
+    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
 
     LOGI(OBFUSCATE("Hooked"));
 #endif

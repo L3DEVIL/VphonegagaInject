@@ -9,8 +9,6 @@
 #include <cstdlib>
 #include "Logger.h"
 
-extern const char* libName;
-
 typedef unsigned long DWORD;
 static uintptr_t libBase;
 

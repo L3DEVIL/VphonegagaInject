@@ -9,7 +9,8 @@ assignees: ''
 
 <!-- Replace the bracketed [...] placeholders with your own information. -->
 <!-- Failure to fill out details will result the issue being closed, with or without notice! -->
-<!-- THIS IS FOR ISSUE WITH INJECTED MOD MENU IN A MODDED APK ONLY. Do not post an issue with hooking and patching in game. I don't offer support with it. End users must understand c++ and pointers. Instead please go to any modding forum communuty for help with this. The biggest site is platinmods.com where there are a lot of modders to help you with -->
+
+<!-- THIS IS FOR ISSUE WITH INJECTED MOD MENU IN A MODDED APK ONLY. Do not post an issue with hooking and patching in game. We don't offer support with it. End users must understand c++ and pointers. Instead please go to any modding forum communuty for help with this. -->
 
 ### Describe the bug
 <!-- [A clear and concise description of what the bug is.] -->

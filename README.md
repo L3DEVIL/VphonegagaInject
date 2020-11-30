@@ -99,17 +99,18 @@ After it's done, you can start working!
 
 ### Java
 
-**`StaticActivity.java`**: Start by game activity's `OnCreate`
-Checks if device running Android 6.0 or above and if have overlay permission checked.
-Start() will be called when implementing the menu to the game. We will explain later
+**`MainActivity.java`**:
+You pretty don't need to work with it unless you are implementing something like login layout.
 
-**`MainActivity.java`**: Start by `AndroidManifest.xml`. Only use if you really need it (Will be explained later)
+Static method `Start()` and `LoadLibOnly()` can be called from game's `OnCreate`. `Start()` checks if device running Android 6.0 or above and if have overlay permission checked before starting menu service.
 
 **`modmenu/Preferences.java`**: Saving the menu feature preferences and calling changes via JNI
 
 **`modmenu/FloatingModMenuService.java`**: Main codes of mod menu design
 
-The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments (//...)
+The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments
+
+Note: In the `run()` handler method inside `initFloating()`, there is a code that checks if game lib is loaded or not before loading feature lists. If you are running the app as debug and want to test preferences, comment the if-else code out except feature list thing. Otherwise it would get stuck without a game
 
 - `GradientDrawable`
 
@@ -337,9 +338,7 @@ Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't
 
 Add the service above the end of application tag (change the package name of your menu if you had changed it)
 ```
-<service android:name="uk.lgl.modmenu.FloatingModMenuService"
-        android:enabled="true"
-        android:exported="false"/>
+<service android:name="uk.lgl.modmenu.FloatingModMenuService" android:enabled="true" android:exported="false" android:stopWithTask="true"/>
 ```
 
 ![](https://i.imgur.com/rw0hawa.png)
@@ -350,7 +349,7 @@ There are 2 ways to call your mod menu activity. Choose one of them you like to 
 
 **METHOD 1**
 
-This simple way, we will call to `StaticActivity.java`. `MainActivity.java` will never be used
+This simple way, we will call to `MainActivity.java`. `MainActivity.java` will never be used
 
 Locate to the game's path of main activity and open the **smali** file. If the game have multi dexes, it may be located in smali_classes2.. please check all
 
@@ -358,7 +357,7 @@ With the path of the target game’s main activity which we determined earlier `
 
 Open the main acitivity's smali file, search for OnCreate method and paste this code inside (change the package name if you had changed it)
 ```
-invoke-static {p0}, Luk/lgl/StaticActivity;->Start(Landroid/content/Context;)V
+invoke-static {p0}, Luk/lgl/MainActivity;->Start(Landroid/content/Context;)V
 ```
  
 ![](https://i.imgur.com/7CxTCl8.png)
@@ -444,7 +443,7 @@ If you face any problem, please read the [FAQ](#faq)
 
 Just call the `LoadLibOnly` in the `OnCreate` method if you want to load your hacks without mod menu
 ```
-    invoke-static {p0}, Luk/lgl/StaticActivity;->LoadLibOnly(Landroid/content/Context;)V
+    invoke-static {p0}, Luk/lgl/MainActivity;->LoadLibOnly(Landroid/content/Context;)V
 ```
 
 Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)

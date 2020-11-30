@@ -1,3 +1,4 @@
+
 bool titleValid = false, headingValid = false, iconValid = false;
 
 void *antiLeech(void *) {
@@ -12,7 +13,7 @@ void *antiLeech(void *) {
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jclass clazz,
+Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jobject obj,
                                                       jstring directory) {
     std::string dir = env->GetStringUTFChars(directory, 0);
 
@@ -29,8 +30,7 @@ JNIEXPORT jstring
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(JNIEnv *env, jobject thiz) {
     titleValid = true;
-
-    return env->NewStringUTF(OBFUSCATE("Modded by (yourname)"));
+    return env->NewStringUTF(OBFUSCATE("<b>Modded by (yourname)</b>"));
 }
 
 JNIEXPORT jstring
@@ -39,10 +39,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Heading(JNIEnv *env, jobject thiz) {
     headingValid = true;
 
     //It will autoscroll if the text is too long
-    return env->NewStringUTF(OBFUSCATE("<marquee><p style=\"font-size:30\">"
+    return env->NewStringUTF(OBFUSCATE("<b><marquee><p style=\"font-size:30\">"
                                        "<p style=\"color:green;\">Modded by LGL</p> | "
                                        "https://github.com/LGLTeam | Lorem Ipsum is simply dummy text of the printing and typesetting</p>"
-                                       "</marquee>"));
+                                       "</marquee></b>"));
     // return env->NewStringUTF(OBFUSCATE("Put your website or notes here"));
 }
 

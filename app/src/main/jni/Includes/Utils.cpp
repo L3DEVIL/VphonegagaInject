@@ -2,7 +2,9 @@
 #include <fstream>
 #include "Includes/Utils.h"
 #include "Includes/base64.hpp"
-const char *libName = OBFUSCATE("libil2cpp.so"); //Default target lib is Il2Cpp
+#include <jni.h>
+
+bool isGameLibLoaded = false;
 
 DWORD findLibrary(const char *library) {
     char filename[0xFF] = {0},
@@ -41,6 +43,13 @@ DWORD getAbsoluteAddress(const char *libraryName, DWORD relativeAddr) {
     return (reinterpret_cast<DWORD>(libBase + relativeAddr));
 }
 
+extern "C" {
+JNIEXPORT jboolean JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_isGameLibLoaded(JNIEnv *env, jobject thiz) {
+    return isGameLibLoaded;
+}
+}
+
 bool isLibraryLoaded(const char *libraryName) {
     char line[512] = {0};
     FILE *fp = fopen(OBFUSCATE("/proc/self/maps"), OBFUSCATE("rt"));
@@ -51,8 +60,10 @@ bool isLibraryLoaded(const char *libraryName) {
                 int *i = (int *) 0x0;
                 *i = 1;
             }
-            if (strstr(line, libraryName))
+            if (strstr(line, libraryName)) {
+                isGameLibLoaded = true;
                 return true;
+            }
         }
         fclose(fp);
     }

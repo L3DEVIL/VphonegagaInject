@@ -23,4 +23,4 @@
 -keepclassmembers class ** {
    public static void Start (***);
 }
--keep public class uk.lgl.StaticActivity
+-keep public class uk.lgl.MainActivity

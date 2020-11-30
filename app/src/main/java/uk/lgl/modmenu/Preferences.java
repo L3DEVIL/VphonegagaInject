@@ -16,7 +16,7 @@ public class Preferences {
 
     public static void changeFeatureInt(String feature, int featureNum, int value) {
         Changes(context, featureNum, value, false, feature);
-        editor.putInt(feature, value).apply();
+        editor.putInt(String.valueOf(featureNum), value).apply();
     }
 
     public static void changeFeatureBoolean(String feature, int featureNum, boolean value) {
@@ -29,7 +29,7 @@ public class Preferences {
         if (featureNum == 9998)
             savePref = value;
         Changes(context, featureNum, 0, value, feature);
-        editor.putBoolean(feature, value).apply();
+        editor.putBoolean(String.valueOf(featureNum), value).apply();
     }
 
     //TODO: changeFeatureString
@@ -38,25 +38,25 @@ public class Preferences {
         if (savePref) {
             SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
             editor = preferences.edit();
-            int i = preferences.getInt(featureName, featureNum);
+            int i = preferences.getInt(String.valueOf(featureNum), 0);
             Changes(context, featureNum, i, false, featureName);
             return i;
         }
-        return featureNum;
+        return -1;
     }
 
     public static boolean loadPrefBoolean(String featureName, int featureNum) {
         SharedPreferences preferences = context.getSharedPreferences("mod_menu", 0);
         if (featureNum >= 9998) {
-            savePref = preferences.getBoolean(featureName, false);
+            savePref = preferences.getBoolean(String.valueOf(featureNum), false);
         }
         if (savePref || featureNum >= 1000) {
             editor = preferences.edit();
-            if (featureNum == 1000 && !preferences.contains("Sounds"))
+            if (featureNum == 1000 && !preferences.contains("1000"))
                 return true;
-            if (featureNum == 1001 && !preferences.contains("Color animation"))
+            if (featureNum == 1001 && !preferences.contains("1001"))
                 return true;
-            boolean bool = preferences.getBoolean(featureName, false);
+            boolean bool = preferences.getBoolean(String.valueOf(featureNum), false);
             Changes(context, featureNum, 0, bool, featureName);
             return bool;
         }

@@ -99,7 +99,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                 case 0:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
                             targetLibName, string2Offset(
-                                    OBFUSCATE_KEY("0x100000", '-')),
+                                    OBFUSCATE_KEY("0x100000", 't')),
                             OBFUSCATE(
                                     "00 00 A0 E3 1E FF 2F E1"));
                     hexPatches.SliderExample.Modify();
@@ -108,7 +108,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
                             targetLibName, string2Offset(
                                     OBFUSCATE_KEY("0x100000",
-                                                  '-')),
+                                                  'b')),
                             OBFUSCATE(
                                     "01 00 A0 E3 1E FF 2F E1"));
                     hexPatches.SliderExample.Modify();
@@ -118,7 +118,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                             targetLibName,
                             string2Offset(
                                     OBFUSCATE_KEY("0x100000",
-                                                  '-')),
+                                                  'q')),
                             OBFUSCATE(
                                     "02 00 A0 E3 1E FF 2F E1"));
                     hexPatches.SliderExample.Modify();

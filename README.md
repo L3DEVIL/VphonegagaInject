@@ -267,6 +267,13 @@ Both must have same name
 
 We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 
+Example
+```
+OBFUSCATE("Hello world")
+OBFUSCATE_KEY("Hello world", 'a')
+OBFUSCATE_KEY("Hello world", 'u')
+```
+
 ### Others
 
 **`proguard-rules.pro`**

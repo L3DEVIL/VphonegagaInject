@@ -198,18 +198,18 @@ public class FloatingModMenuService extends Service {
         //********** The icon in Webview to open mod menu **********
         WebView wView = new WebView(this); //Icon size width=\"50\" height=\"50\"
         wView.loadData("<html>" +
-                "<head>" +
-                "<body style=\"margin: 0; padding: 0\"" +
+                "<head></head>" +
+                "<body style=\"margin: 0; padding: 0\">" +
                 "<img src=\"" + IconWebViewData() + "\" width=\"" + ICON_SIZE + "\" height=\"" + ICON_SIZE + "\"" +
                 "</body>" +
                 "</html>", "text/html", "utf-8");
         wView.setBackgroundColor(0x00000000); //Transparent
-        wView.requestLayout();
         wView.setAlpha(ICON_ALPHA);
         wView.getSettings().setAppCachePath("/data/data/" + getPackageName() + "/cache");
         wView.getSettings().setAppCacheEnabled(true);
         wView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         wView.setOnTouchListener(onTouchListener());
+        wView.requestLayout();
 
         //********** Settings icon **********
         TextView settings = new TextView(this); //Android 5 can't show ⚙, instead show other icon instead

@@ -48,7 +48,6 @@ Preview:
 * Any text editor. I use [Notepad++](https://notepad-plus-plus.org/downloads/)
 * Any png compression to compress your png file: https://compresspng.com/
 * Any base64 encoding to encode your file: https://www.base64encode.org/
-* Any audio converters to convert your sound files to .ogg (Optional): [XMedia Recode](https://www.xmedia-recode.de/en/download.php)
 
 # Download/Clone
 Click on the button that says Code, and click Download ZIP
@@ -162,11 +161,7 @@ There are many more. While we can't explain much here, you can use Google. Searc
 
 ### Cpp
 
-**`Menu/Sounds.h`**: The sounds, that have been converted to .ogg and encoded to base64. Remember, we want to avoid storing files under assets as possible
-
-**`Menu/Menu.h`**: Menu related with JNI calls
-
-- `LoadSounds`: Decode base64 and save files into /data/data/(package name)/cache upon startup.
+- **`Menu.h`**: Menu related with JNI calls
 
 - `Title`: Big text
 
@@ -564,6 +559,4 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
 * Rprop - https://github.com/Rprop/And64InlineHook
-* Google - Android UI sounds
-* Material.io - https://material.io/design/sound/sound-resources.html#
 * Some modders for suggestions and ideas :)

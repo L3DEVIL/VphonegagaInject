@@ -12,24 +12,12 @@ void *antiLeech(void *) {
 }
 
 extern "C" {
-JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_LoadSounds(JNIEnv *env, jobject obj,
-                                                      jstring directory) {
-    std::string dir = env->GetStringUTFChars(directory, 0);
-
-    writeToFile(dir + "On.ogg", base64::from_base64(Sounds::On));
-    writeToFile(dir + "Off.ogg", base64::from_base64(Sounds::Off));
-    writeToFile(dir + "Back.ogg", base64::from_base64(Sounds::Back));
-    writeToFile(dir + "OpenMenu.ogg", base64::from_base64(Sounds::OpenMenu));
-    writeToFile(dir + "Select.ogg", base64::from_base64(Sounds::Select));
-    writeToFile(dir + "SliderDecrease.ogg", base64::from_base64(Sounds::SliderDecrease));
-    writeToFile(dir + "SliderIncrease.ogg", base64::from_base64(Sounds::SliderIncrease));
-}
-
 JNIEXPORT jstring
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_Title(JNIEnv *env, jobject thiz) {
     titleValid = true;
+
+    //Html is supported
     return env->NewStringUTF(OBFUSCATE("<b>Modded by (yourname)</b>"));
 }
 
@@ -39,6 +27,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_Heading(JNIEnv *env, jobject thiz) {
     headingValid = true;
 
     //It will autoscroll if the text is too long
+    //Html is supported
     return env->NewStringUTF(OBFUSCATE("<b><marquee><p style=\"font-size:30\">"
                                        "<p style=\"color:green;\">Modded by LGL</p> | "
                                        "https://github.com/LGLTeam | Lorem Ipsum is simply dummy text of the printing and typesetting</p>"
@@ -104,7 +93,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
     const char *features[] = {
             OBFUSCATE("Category_The Category"),
             OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE("SeekBar_The slider_4_100"),
+            OBFUSCATE("SeekBar_The slider_1_100"),
             OBFUSCATE("SeekBar_Kittymemory slider example_0_5"),
             OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
             OBFUSCATE("Button_The button"),

@@ -25,6 +25,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <Includes/obfuscate.h>
 
 _extern bool MSDebug;
 bool MSDebug = false;
@@ -48,14 +49,14 @@ void MSLogHexEx(const void *vdata, size_t size, size_t stride, const char *mark)
     while (i != size) {
         if (i % HexWidth_ == 0) {
             if (mark != NULL)
-                b += sprintf(d + b, "\n[%s] ", mark);
-            b += sprintf(d + b, "0x%.3zx:", i);
+                b += sprintf(d + b, OBFUSCATE("\n[%s] "), mark);
+            b += sprintf(d + b, OBFUSCATE("0x%.3zx:"), i);
         }
 
         b += sprintf(d + b, " ");
 
         for (size_t q(0); q != stride; ++q)
-            b += sprintf(d + b, "%.2x", data[i + stride - q - 1]);
+            b += sprintf(d + b, OBFUSCATE("%.2x"), data[i + stride - q - 1]);
 
         i += stride;
 
@@ -83,9 +84,9 @@ void MSLogHexEx(const void *vdata, size_t size, size_t stride, const char *mark)
             b += sprintf(d + b, " ");
         b += sprintf(d + b, " ");
         for (j = i / HexWidth_ * HexWidth_; j != i; ++j)
-            b += sprintf(d + b, "%c", _MSHexChar(data[j]));
+            b += sprintf(d + b, OBFUSCATE("%c"), _MSHexChar(data[j]));
 
-        lprintf("%s", d);
+       // lprintf("%s", d);
         b = 0;
         d[0] = '\0';
     }

@@ -17,9 +17,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.Animatable;
 import android.graphics.drawable.GradientDrawable;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -56,7 +54,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
-import java.io.File;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -84,7 +82,6 @@ public class FloatingModMenuService extends Service {
     //********************************************************************//
 
     //Some fields
-    MediaPlayer FXPlayer;
     GradientDrawable gdMenuBody, gdAnimation = new GradientDrawable();
     RelativeLayout mCollapsed, mRootContainer;
     LinearLayout mExpanded, patches, mSettings;
@@ -102,14 +99,9 @@ public class FloatingModMenuService extends Service {
     int inputFieldFeatureNum;
     EditTextValue inputFieldTxtValue;
 
-    boolean soundDelayed;
-    String cacheDir;
-
     LinearLayout.LayoutParams scrlLLExpanded, scrlLL;
 
     //initialize methods from the native library
-    native void LoadSounds(String dir);
-
     native String Title();
 
     native String Heading();
@@ -127,9 +119,7 @@ public class FloatingModMenuService extends Service {
     public void onCreate() {
         super.onCreate();
         Preferences.context = this;
-        cacheDir = getCacheDir().getPath() + "/";
-        //Log.d(TAG, "cache dir " + cacheDir);
-        LoadSounds(cacheDir);
+
         //A little message for the user when he opens the app
         NativeToast.makeText(this, 0);
 
@@ -164,10 +154,9 @@ public class FloatingModMenuService extends Service {
         mExpanded = new LinearLayout(this); // Menu markup (when the menu is expanded)
         mExpanded.setVisibility(View.GONE);
         mExpanded.setBackgroundColor(MENU_BG_COLOR);
-        //mExpanded.setAlpha(0.95f);
         mExpanded.setGravity(Gravity.CENTER);
         mExpanded.setOrientation(LinearLayout.VERTICAL);
-        mExpanded.setPadding(0, 0, 0, 0);
+        // mExpanded.setPadding(1, 1, 1, 1);
         mExpanded.setLayoutParams(new LinearLayout.LayoutParams(dp(MENU_WIDTH), WRAP_CONTENT));
         gdMenuBody = new GradientDrawable();
         gdMenuBody.setCornerRadius(MENU_CORNER); //Set corner
@@ -224,7 +213,6 @@ public class FloatingModMenuService extends Service {
             @Override
             public void onClick(View v) {
                 try {
-                    playSound("Select.ogg");
                     scrollView.removeView(patches);
                     scrollView.addView(mSettings);
                 } catch (IllegalStateException e) {
@@ -235,7 +223,6 @@ public class FloatingModMenuService extends Service {
         //********** Settings **********
         mSettings = new LinearLayout(this);
         mSettings.setOrientation(LinearLayout.VERTICAL);
-        Switch(1000, "Sounds");
         Switch(1001, "Color animation");
         Switch(1002, "Auto size vertically");
         Switch(9998, "Save feature preferences");
@@ -295,13 +282,11 @@ public class FloatingModMenuService extends Service {
                 mCollapsed.setAlpha(0);
                 mExpanded.setVisibility(View.GONE);
                 NativeToast.makeText(view.getContext(), 1);
-                playSound("Back.ogg");
             }
         });
         hideBtn.setOnLongClickListener(new View.OnLongClickListener() {
             public boolean onLongClick(View view) {
                 NativeToast.makeText(view.getContext(), 2);
-                playSound("Back.ogg");
                 FloatingModMenuService.this.stopSelf();
                 return false;
             }
@@ -317,7 +302,6 @@ public class FloatingModMenuService extends Service {
                 mCollapsed.setVisibility(View.VISIBLE);
                 mCollapsed.setAlpha(ICON_ALPHA);
                 mExpanded.setVisibility(View.GONE);
-                playSound("Back.ogg");
             }
         });
 
@@ -357,6 +341,7 @@ public class FloatingModMenuService extends Service {
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             boolean viewLoaded = false;
+
             @Override
             public void run() {
                 //If the save preferences is enabled, it will check if game lib is loaded before starting menu
@@ -434,7 +419,6 @@ public class FloatingModMenuService extends Service {
                             try {
                                 collapsedView.setVisibility(View.GONE);
                                 expandedView.setVisibility(View.VISIBLE);
-                                playSound("OpenMenu.ogg");
                             } catch (NullPointerException e) {
 
                             }
@@ -479,7 +463,6 @@ public class FloatingModMenuService extends Service {
         edittextvalue.setMaxLines(1);
         edittextvalue.setWidth(convertDipToPixels(300));
         edittextvalue.setTextColor(TEXT_COLOR_2);
-        edittextvalue.setTextSize(13.0f);
         edittextvalue.setHintTextColor(Color.parseColor("#434d52"));
         edittextvalue.setInputType(InputType.TYPE_CLASS_NUMBER);
         edittextvalue.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
@@ -500,7 +483,6 @@ public class FloatingModMenuService extends Service {
                 inputFieldTextView.setText(Html.fromHtml("<font face='roboto'>" + inputFieldFeatureName + ": <font color='#41c300'>" + edittextvalue.getText().toString() + "</font></font>"));
                 alert.dismiss();
                 Preferences.changeFeatureInt(inputFieldFeatureName, inputFieldFeatureNum, Integer.parseInt(edittextvalue.getText().toString()));
-                playSound("Select.ogg");
             }
         });
 
@@ -541,11 +523,6 @@ public class FloatingModMenuService extends Service {
         switchR.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
         switchR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
-                if (isChecked) {
-                    playSound("On.ogg");
-                } else {
-                    playSound("Off.ogg");
-                }
                 if (featureNum == 1001)
                     mExpanded.setBackground(isChecked ? gdAnimation : gdMenuBody);
                 if (featureNum == 1002)
@@ -559,7 +536,9 @@ public class FloatingModMenuService extends Service {
             patches.addView(switchR);
     }
 
-    private void SeekBar(final int featureNum, final String featureName, final int prog, int max) {
+    @TargetApi(Build.VERSION_CODES.O)
+    private void SeekBar(final int featureNum, final String featureName, final int min, int max) {
+        Preferences.changeFeatureInt(featureName, featureNum, min);
         int loadedProg = Preferences.loadPrefInt(featureName, featureNum);
         LinearLayout linearLayout = new LinearLayout(this);
         linearLayout.setPadding(10, 5, 0, 5);
@@ -567,13 +546,15 @@ public class FloatingModMenuService extends Service {
         linearLayout.setGravity(Gravity.CENTER);
 
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + ((loadedProg == -1) ? prog : loadedProg) + "</font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + ((loadedProg == 0) ? min : loadedProg) + "</font>"));
         textView.setTextColor(TEXT_COLOR_2);
 
         SeekBar seekBar = new SeekBar(this);
         seekBar.setPadding(25, 10, 35, 10);
         seekBar.setMax(max);
-        seekBar.setProgress((loadedProg == -1) ? prog : loadedProg);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            seekBar.setMin(min); //setMin for Oreo and above
+        seekBar.setProgress((loadedProg == 0) ? min : loadedProg);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
@@ -581,20 +562,11 @@ public class FloatingModMenuService extends Service {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
 
-            int l;
-
             public void onProgressChanged(SeekBar seekBar, int i, boolean z) {
-                if (l < i) {
-                    playSound("SliderIncrease.ogg");
-                } else {
-                    playSound("SliderDecrease.ogg");
-                }
-                l = i;
-
                 //if progress is greater than minimum, don't go below. Else, set progress
-                seekBar.setProgress(i < prog ? prog : i);
-                Preferences.changeFeatureInt(featureName, featureNum, i < prog ? prog : i);
-                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + (i < prog ? prog : i) + "</font>"));
+                seekBar.setProgress(i < min ? min : i);
+                Preferences.changeFeatureInt(featureName, featureNum, i < min ? min : i);
+                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + (i < min ? min : i) + "</font>"));
             }
         });
         linearLayout.addView(textView);
@@ -608,14 +580,13 @@ public class FloatingModMenuService extends Service {
         layoutParams.setMargins(7, 5, 7, 5);
         button.setLayoutParams(layoutParams);
         button.setPadding(10, 5, 10, 5);
-        button.setTextSize(13.0f);
+        // button.setTextSize(13.0f);
         button.setTextColor(TEXT_COLOR_2);
         button.setGravity(Gravity.CENTER);
         button.setText(featureName);
         button.setBackgroundColor(BTN_COLOR);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                playSound("Select.ogg");
                 if (featureNum == 9999) {
                     scrollView.removeView(mSettings);
                     scrollView.addView(patches);
@@ -636,8 +607,6 @@ public class FloatingModMenuService extends Service {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         layoutParams.setMargins(7, 5, 7, 5);
         button.setLayoutParams(layoutParams);
-        button.setPadding(10, 5, 10, 5);
-        button.setTextSize(13.0f);
         button.setTextColor(TEXT_COLOR_2);
         button.setGravity(Gravity.CENTER);
         button.setText(featureName);
@@ -658,8 +627,6 @@ public class FloatingModMenuService extends Service {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         layoutParams.setMargins(7, 5, 7, 5);
         button.setLayoutParams(layoutParams);
-        button.setPadding(10, 5, 10, 5);
-        button.setTextSize(13.0f);
         button.setTextColor(TEXT_COLOR_2);
         button.setGravity(Gravity.CENTER);
 
@@ -682,12 +649,10 @@ public class FloatingModMenuService extends Service {
                 Preferences.changeFeatureBoolean(finalFeatureName, featureNum, isActive2);
                 //Log.d(TAG, finalFeatureName + " " + featureNum + " " + isActive2);
                 if (isActive2) {
-                    playSound("On.ogg");
                     button.setText(finalFeatureName + ": ON");
                     button.setBackgroundColor(Color.parseColor("#003300"));
                     isActive2 = false;
                 } else {
-                    playSound("Off.ogg");
                     button.setText(finalFeatureName + ": OFF");
                     button.setBackgroundColor(Color.parseColor("#7f0000"));
                     isActive2 = true;
@@ -705,7 +670,6 @@ public class FloatingModMenuService extends Service {
         final List<String> lists = new LinkedList<>(Arrays.asList(list.split(",")));
 
         LinearLayout linearLayout = new LinearLayout(this);
-        linearLayout.setPadding(10, 5, 10, 5);
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(Gravity.CENTER);
 
@@ -737,12 +701,10 @@ public class FloatingModMenuService extends Service {
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 Preferences.changeFeatureInt(spinner.getSelectedItem().toString(), featureNum, position);
                 ((TextView) parentView.getChildAt(0)).setTextColor(TEXT_COLOR_2);
-                playSound("Select.ogg");
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                playSound("Select.ogg");
             }
         });
         linearLayout.addView(textView);
@@ -796,16 +758,13 @@ public class FloatingModMenuService extends Service {
         final CheckBox checkBox = new CheckBox(this);
         checkBox.setText(featureName);
         checkBox.setTextColor(TEXT_COLOR_2);
-        checkBox.setPadding(10, 5, 10, 5);
         checkBox.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkBox.isChecked()) {
-                    playSound("On.ogg");
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 } else {
-                    playSound("Off.ogg");
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 }
             }
@@ -858,7 +817,6 @@ public class FloatingModMenuService extends Service {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 Radioo.setButtonTintList(colorStateList);
             Radioo.setOnClickListener(first_radio_listener);
-            Radioo.setPadding(5, 5, 5, 5);
             radioGroup.addView(Radioo);
         }
 
@@ -868,12 +826,12 @@ public class FloatingModMenuService extends Service {
     private void Category(String text) {
         TextView textView = new TextView(this);
         textView.setBackgroundColor(Color.parseColor("#2F3D4C"));
-        textView.setText(text);
+        textView.setText(Html.fromHtml(text));
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(14.0f);
         textView.setTextColor(TEXT_COLOR_2);
         textView.setTypeface(null, Typeface.BOLD);
-        textView.setPadding(10, 5, 10, 5);
+        textView.setPadding(0, 5, 0, 5);
         patches.addView(textView);
     }
 
@@ -895,34 +853,8 @@ public class FloatingModMenuService extends Service {
         patches.addView(wView);
     }
 
-    //Play sounds
-    public void playSound(String uri) {
-        if (Preferences.isSoundEnabled) {
-            if (!soundDelayed) {
-                soundDelayed = true;
-                if (FXPlayer != null) {
-                    FXPlayer.stop();
-                    FXPlayer.release();
-                }
-                FXPlayer = MediaPlayer.create(this, Uri.fromFile(new File(cacheDir + uri)));
-                if (FXPlayer != null) {
-                    //Volume reduced so sounds are not too loud
-                    FXPlayer.setVolume(0.4f, 0.4f);
-                    FXPlayer.start();
-                }
-
-                Handler handler = new Handler();
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        soundDelayed = false;
-                    }
-                }, 100);
-            }
-        }
-    }
-
-    //View animation
+    //Credit: Octowolve
+    //https://github.com/Octowolve/Hooking-Template-With-Mod-Menu/blob/27f68f4f7b4f8f40763aa2d2ebf9c85e7ae04fa5/app/src/main/java/com/dark/force/MenuService.java#L505
     public void startAnimation() {
         final int start = Color.parseColor("#dd00820d");
         final int end = Color.parseColor("#dd000282");

@@ -24,8 +24,6 @@ std::string s(const std::string &str);
 
 uintptr_t string2Offset(const char *c);
 
-void writeToFile(std::string dir, std::string buf);
-
 namespace Toast {
     inline const int LENGTH_LONG = 1;
     inline const int LENGTH_SHORT = 0;

@@ -10,7 +10,7 @@ import android.util.Log;
 public class Preferences {
     private static SharedPreferences.Editor editor;
     public static Context context;
-    public static boolean isSoundEnabled = true, savePref = false, animation = true, expanded = false;
+    public static boolean savePref = false, animation = false, expanded = false;
 
     public static native void Changes(Context context, int feature, int value, boolean bool, String str);
 
@@ -20,8 +20,6 @@ public class Preferences {
     }
 
     public static void changeFeatureBoolean(String feature, int featureNum, boolean value) {
-        if (featureNum == 1000)
-            isSoundEnabled = value;
         if (featureNum == 1001)
             animation = value;
         if (featureNum == 1002)
@@ -42,7 +40,7 @@ public class Preferences {
             Changes(context, featureNum, i, false, featureName);
             return i;
         }
-        return -1;
+        return 0;
     }
 
     public static boolean loadPrefBoolean(String featureName, int featureNum) {
@@ -52,10 +50,8 @@ public class Preferences {
         }
         if (savePref || featureNum >= 1000) {
             editor = preferences.edit();
-            if (featureNum == 1000 && !preferences.contains("1000"))
-                return true;
-            if (featureNum == 1001 && !preferences.contains("1001"))
-                return true;
+            //if (featureNum == 1001 && !preferences.contains("1001"))
+            //    return true;
             boolean bool = preferences.getBoolean(String.valueOf(featureNum), false);
             Changes(context, featureNum, 0, bool, featureName);
             return bool;

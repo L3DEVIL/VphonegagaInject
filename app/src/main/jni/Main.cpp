@@ -16,14 +16,12 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
-#include "Includes/base64.hpp"
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/Logger.h"
 #include "Includes/Utils.h"
 #include "Includes/obfuscate.h"
 
-#include "Menu/Sounds.h"
-#include "Menu/Menu.h"
+#include "Menu.h"
 
 #include "Toast.h"
 
@@ -151,15 +149,6 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             featureHookToggle = boolean;
             break;
     }
-
-    // You can also use if-else statement
-    /*if (strcmp(featureName, "The button") == 0) { //Compare with string
-
-    } else if (strcmp(featureName, "The On/Off button") == 0) { //Compare with string
-
-    } else if (feature == 7) {
-
-    }*/
 }
 }
 

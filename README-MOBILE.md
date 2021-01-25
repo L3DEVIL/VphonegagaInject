@@ -1,4 +1,4 @@
-**This is for Android mobile users who do not have a PC. Floating apps or similar is recommended to read this page and working at the same time**
+**This is for Android mobile users who do not have a PC. Floating apps or similar is recommended to read this page while working at the same time**
 
 **This is best viewed on mobile**
 
@@ -14,11 +14,12 @@
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Softwares you need
-* Modded AIDE app. The official AIDE from Play Store will not work with this project: https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk
-* ndk.tar.gz for modded AIDE for NDK support: https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk
-* X-plore: https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en
-* MT Manager. With build in Apktool and editors to modify APK file: https://bbs.binmt.cc/forum-2-1.html | Mirror link: https://secufiles.com/js6i/MT2.9.2.apk
-* Floating apps (optional). You can use it to read this page and working at the same time: https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en or a build-in feature by OEM
+* [Modded AIDE app](https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk): The official AIDE from Play Store will not work with this project
+* [ndk.tar.gz](https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk): NDK support for modded AIDE
+* [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en): File Manager
+* [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file
+* [Modded APK Editor Pro app](https://drive.google.com/file/d/1tJd7LLXUXFL-J180lFTLMuv8-B67w1K2/view): To edit `AndroidManifest.xml` for free
+* [Floating apps](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en) (optional): You can use it to read this page and working at the same time or use a build-in feature by OEM
 
 # Download/Clone
 
@@ -165,27 +166,9 @@ PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT IN A CRASH!
 
 Ok, we go back to the main directory inside APK. You can press **..** to go back
 
-**GO TO THIS PAGE TO READ WHAT TO CHANGE:**
+**I don't want to explain it here again, so please go to main README.md to read: https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#2-making-corresponding-changes-in-the-files**
 
-https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#2-making-corresponding-changes-in-the-files
-
-**To open xml file**
-
-Open `androidmanifest.xml` directly. You may need to login if you edit `androidmanifest.xml`. It is free
-
-Choose **Decompile**. The editor opens
-
-![](https://images2.imgbox.com/91/ac/WNOqNObe_o.png)
-
-After you're done, save it
-
-![](https://images2.imgbox.com/ad/7c/JyAKmAwA_o.png)
-
-Update the changes to the game's APK file with auto sign on
-
-![](https://images2.imgbox.com/22/e3/bp31DFCX_o.png)
-
-**To open dex file**
+**Editing DEX file using MT Manager**
 
 Open `classes.dex` directly, choose **Dex Editor Plus**
 
@@ -195,9 +178,9 @@ This dialog will show if it have multidex. **SELECT ALL** and click OK
 
 ![](https://images2.imgbox.com/c3/65/3vpID6Um_o.png)
 
-The editor opens
+The editor opens.
 
-After you're done, save it
+Make some changes. After you're done, save it
 
 ![](https://images2.imgbox.com/ad/7c/JyAKmAwA_o.png)
 
@@ -209,19 +192,41 @@ Click OK to update the changes to the game's APK file with auto sign on
 
 ![](https://images2.imgbox.com/1a/5a/4Dw9YFv9_o.png)
 
-### 6. Installing APK
-
 Go back outside APK. You will now see a green text which tells you that you have recently modified the file
 
 ![](https://images2.imgbox.com/dc/c3/SX5pHGPj_o.png)
 
-Simple install it. You may need to uninstall original APK first
+**Editing XML file using APK Editor Pro**
+
+MT Manage requires an account to edit `AndroidManifest.xml` and VIP account to edit more than 200 lines. No, we don't need VIP, we will use APK Editor Pro to edit
+
+Open APK Editor Pro, click "Select an Apk file". Navigate to the location where you have stored APK, and select it to edit
+
+![](https://images2.imgbox.com/97/05/bIwx800E_o.png)
+
+Open `AndroidManifest.xml`
+
+![](https://images2.imgbox.com/01/11/eP695bXz_o.png)
+
+Make some changes. After you're done, save it
+
+![](https://images2.imgbox.com/e4/e5/CgmEHFof_o.png)
+
+Go back, save the APK file
+
+![](https://images2.imgbox.com/ca/4d/0zeGiS91_o.png)
+
+Wait until it finish compiling. This screen will show after it's done. You can choose to install the APK right now. You may need to uninstall original APK first
+
+![](https://images2.imgbox.com/30/3e/hNbeXhYr_o.png)
+
+It's obvious that it saved an APK to the strange location `/storage/emulated/0/ApkEditor/tmp/gen_signed.apk`, just move it somewhere if you like to.
 
 If it works, congratulations!
 
 # Troubleshooting
 
-Problem with the project: click **More... - Project - Refresh Build**. This will clear the project cache
+Problem with the project: click **More... - Project - Refresh Build**. This will clear the project cache. Or delete the `build` folder from the project
 
 Problem with AIDE: Open System Settings - Apps and clear data of AIDE app. This will reset everything and you need to install NDK again
 
@@ -235,4 +240,4 @@ See: https://github.com/LGLTeam/Android-Mod-Menu#faq
 
 # Credits/Acknowledgements
 
-* RANUAK MODS for some help in modding via phone
+* RAUNAK MODS for help in modding games via phone, and testing the template in AIDE

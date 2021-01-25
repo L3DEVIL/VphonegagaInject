@@ -1,15 +1,16 @@
-**THIS TEMPLATE IS NOT FOR NEWBIES/NOOBS, IT IS FOR EXPERIENCE MODDERS AND PROGRAMMERS ONLY. YOU WILL BE EXPECTED TO READ, LEARN AND EVEN GOOGLE. THIS IS NOT A SIMPLE ONE-CLICK INSTALL SETUP. IF YOU DON'T HAVE THE KNOWLEDGE, THIS TUTORIAL WILL BE TOO HARD FOR YOU**
+**WARNING: THIS TEMPLATE IS NOT FOR BEGINNERS. YOU NEED THE PROGRAMMING KNOWLEDGE, OTHERWISE THIS TEMPLATE WILL BE TOO HARD FOR YOU**
 
-**IF YOU ARE UPDATING THIS TEMPLATE, PLEASE CLONE IT SEPARATELY. DO NOT MERGE INTO OLD ONE UNLESS YOU KNOW WHAT YOU ARE DOING!**
+**We have disabled issues section due to beginners using issues improperly**
 
-**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask since I won't cover them. The codes in the template simply tells you how to use them**
+**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask. The codes in the template simply tells you how to use them**
 
-**For mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md) how to use this project within AIDE app**
+**For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)** how to use this template on your Android mobile.
 
 # Quick links
 - [Prerequisites](#prerequisites)
 - [Softwares you need](#softwares-you-need)
-- [download/clone](#downloadclone)
+- [Download/clone](#downloadclone)
+- [Video Tutorial](#video-tutorial)
 - [Setting up Android Studio](#setting-up-android-studio)
 - [Open the project](#open-the-project)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
@@ -19,26 +20,25 @@
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
-Floating mod menu for il2cpp and other native android games. KittyMemory, MSHook, and And64InlineHook included. This template is optimized for modders who want the faster way to implement the menu in the game without hassle. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
+Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/) (Yes, he made it first before Octo), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
 
-It comes with string and offset obfuscation without using any external tool and without modifying the compiler. We use AY Obfuscator
-
-Support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
-
-Mod menu is based on Octowolve/Escanor and Van's template. 
+It support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
 
 Preview:
 
 ![](https://i.imgur.com/42Sh72L.gif)
 
 # Prerequisites
-* **AN EXPERIENCED MODDER, NOT A NEWBIE/BEGINNER MODDER:** You should be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
-* Basic knowledge of smali dalvik opcodes and ARM and ARM64 assembly (x86 not needed), required for patching meemory
-* Be able to hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
+Before we can jump head first into working a template, we need to go over a few things.
+
+* **AN EXPERIENCED MODDER, NOT A BEGINNER:** You should be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
+* Basic knowledge of smali dalvik opcodes to modify smali
+* Basic knowledge ARM and ARM64 assembly (x86 optional)
 * Basic knowledge of C++ and java
+* Be able to hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
 * Basic awareness of how Android layout works in XML and Java. This project only uses Java for layout but you will learn it easly
-* Time and patience: Don't start working on this if you have deadlines or important work, only on your free time. Take your time to read, learn and get used to work with this project.
-* DIY (Do it yourself): Yes, you must be able to do things yourself. If we can't or won't implement some certain features, try to implement yourself. We are not the teachers, it is not our style, so don't ask us to teach or spoonfeed.
+* Time and patience: Don't start working on this if you have deadlines or important work. Take your time to read, learn and get used to work with this project.
+* DIY (Do it yourself): Yes, you must be able to do things yourself, not depending being spoonfeed. We don't spoonfeed, We are not the teachers.
 * An inquisitive mind
 
 # Softwares you need
@@ -50,11 +50,16 @@ Preview:
 * Any base64 encoding to encode your file: https://www.base64encode.org/
 
 # Download/Clone
-Click on the button that says Code, and click Download ZIP
+Download this repo as ZIP, or clone using any git tools
 
-![](https://i.imgur.com/EZnbd10.png)
+Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
 
-Or clone through Android Studio if you know how to use Git
+Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
+
+# Video Tutorial
+Big thanks to PMT DVA who created a video tutorial for me. Be warned, this is not for beginners, it's a quite misleading
+
+https://www.youtube.com/watch?v=ieMclBtL6Ig
 
 # Setting up Android Studio
 
@@ -98,10 +103,11 @@ After it's done, you can start working!
 
 ### Java
 
-**`MainActivity.java`**:
-You pretty don't need to work with it unless you are implementing something like login layout.
+**`modmenu/Logcat.java`**: To save and clear logcat on menu settings without root and without file permission. Can be helpful for modders to diagnose the issues
 
-Static method `Start()` and `LoadLibOnly()` can be called from game's `OnCreate`. `Start()` checks if device running Android 6.0 or above and if have overlay permission checked before starting menu service.
+Android 11: /storage/emulated/0/Documents/Mod Menu logs/
+
+Android 10 and below: /storage/emulated/0/Android/data/(package name)/files/Mod Menu logs
 
 **`modmenu/Preferences.java`**: Saving the menu feature preferences and calling changes via JNI
 
@@ -109,11 +115,8 @@ Static method `Start()` and `LoadLibOnly()` can be called from game's `OnCreate`
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments
 
-Note: In the `run()` handler method inside `initFloating()`, there is a code that checks if game lib is loaded or not before loading feature lists. If you are running the app as debug and want to test preferences, comment the if-else code out except feature list thing. Otherwise it would get stuck without a game
+- `GradientDrawable`: A code for setting corner and stroke/inner border. Works for any View Components
 
-- `GradientDrawable`
-
-A code for setting corner and stroke/inner border. Works for any View Components
 ```
 GradientDrawable gradientdrawable = new GradientDrawable();
 gradientdrawable.setCornerRadius(20); //Set corner
@@ -157,7 +160,12 @@ LinearLayoutExample.addView(textView);
 
 ```
 
-There are many more. While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc for more infomation
+There are many more. While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc. for more infomation
+
+**`MainActivity.java`**:
+Activity launcher. Checks if device running Android 6.0 or above and if have overlay permission enabled before starting menu service.
+
+You pretty don't need to work with it unless you are implementing something like login layout.
 
 ### Cpp
 
@@ -168,6 +176,14 @@ There are many more. While we can't explain much here, you can use Google. Searc
 - `Heading`: Little text. Semi HTML is supported. Text will scroll if the text is too long
 
 - `Icon`: Compressed image that is encoded to base64
+
+You can pretty much use any tools for base64 encoding.
+
+We use a simple website https://www.base64encode.org/
+
+Scroll down till you see `Encode files into Base64 format`. Click or tap on the box to select a file
+
+Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encoded file. Now you can paste it in cpp code
 
 - `IconWebViewData`: Use icon in Web view with GIF animation support. URL requires internet permission `android.permission.INTERNET`
 
@@ -192,41 +208,43 @@ return NULL
 
 - `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
-You can also use if-else statement with string comparision
+- `settingsList`: Settings assigned in negative numbers, we keep the positive numbers for mods. Works same as mod features but the call must be implemented in `localChanges(int featureNum, boolean toggle)` in `FloatingModMenuService.java`
 
-```
-if (strcmp(featureName, "The button") == 0) { //Compare with string
-
-} else if (strcmp(featureName, "The On/Off button") == 0) { //Compare with string
-
-} else if (feature == 7) {
-
-}
-```
 - `getFeatureList`: Mod features
+
+Now you need to manually assign feature numbers. The benefit is you can easly remember the numbers and you don't need to re-order your Changes anymore when you remove/add/re-order your features
+Feature numbers can be like 1,3,200,10... instead in order 1,2,3,4,5...
+
+Do not translate the first text
+
+To learn HTML, go to this page: https://www.w3schools.com/
 
 Usage:
 
 ```
-Category_(text)
-Toggle_(feature name)
-SeekBar_(feature name)_(min value)_(max value)
-Spinner_(feature name)_(Items e.g. item1,item2,item3)
-Button_(feature name)
-ButtonLink_(feature name)_(URL/Link here)
-ButtonOnOff_(feature name)
-InputValue_(feature name)
-CheckBox_(feature name)
-RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
-RichTextView_(Text with limited HTML support)
-RichWebView_(Full HTML support)
+(Feature number)_Category_(text)
+(Feature number)_Toggle_(feature name)
+(Feature number)_SeekBar_(feature name)_(min value)_(max value)
+(Feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
+(Feature number)_Button_(feature name)
+(Feature number)_ButtonLink_(feature name)_(URL/Link here)
+(Feature number)_ButtonOnOff_(feature name)
+(Feature number)_InputValue_(feature name)
+(Feature number)_CheckBox_(feature name)
+(Feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
+(Feature number)_RichTextView_(Text with limited HTML support)
+(Feature number)_RichWebView_(Full HTML support)
 ```
 
 Examples:
 
-```Toggle_God mode
-Spinner_Weapons_AK47,9mm,Knife
-Button_OnOff_God mode
+```
+0_Category_Hello world
+1_Toggle_God mode
+2_Spinner_Weapons_AK47,9mm,Knife
+3_Button_OnOff_God mode
+0_Category_Hello world
+0_Category_Hello world
 ```
 
 Learn more about HTML https://www.w3schools.com/
@@ -255,7 +273,7 @@ ARMv7/x86:
 **`Android.mk`**
 
 The make file for the c++ compiler. In that file, you can change the lib name on the `LOCAL_MODULE` line
-When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on FloatingModMenuService.java
+When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on `MainActivity.java`
 Both must have same name
 
 **C++ string obfuscation**
@@ -268,28 +286,6 @@ OBFUSCATE("Hello world")
 OBFUSCATE_KEY("Hello world", 'a')
 OBFUSCATE_KEY("Hello world", 'u')
 ```
-
-### Others
-
-**`proguard-rules.pro`**
-
-See proguard rules here https://www.guardsquare.com/en/products/proguard/manual/usage
-
-Both `shrinkResources` and `minifyEnabled` MUST be `true` in `build.gradle (:app)` in order to enable proguard obfuscation
-
-`public static void Start` has been prevented from renaming
-
-Add `-dontobfuscate` to disable obfuscation
-
-**Encoding your files into base64**
-
-You can pretty much use any tools for base64 encoding.
-
-We use a simple website https://www.base64encode.org/
-
-Scroll down till you see `Encode files into Base64 format`. Click or tap on the box to select a file
-
-Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encoded file. Now you can paste it in your code
 
 # Testing
 
@@ -309,7 +305,7 @@ On some devices, the Developer options screen might be located or named differen
 
 Now we are looking for main activity, there are 2 ways to do
 
-1. Decompile the game's APK file. Open `androidmanifest.xml` and search after `<action android:name="android.intent.action.MAIN"/>`.
+1. Decompile the game's APK file. Open `AndroidManifest.xml` and search after `<action android:name="android.intent.action.MAIN"/>`.
 
 Example the game's main activity was `com.unity3d.player.UnityPlayerActivity`
 
@@ -329,7 +325,7 @@ Note it somewhere so you can easly remember it
 
 Decompile the game APK
 
-Open the game's `androidmanifest.xml`
+Open the game's `AndroidManifest.xml`
 
 Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. We only need one permission. Doesn't matter where you place it as long as it's above the application tag
 ```
@@ -380,11 +376,11 @@ Uncomment this code
 Toast.makeText(MainActivity.this, "Error. Game's main activity does not exist", Toast.LENGTH_LONG).show();
 ```
 
-On `androidmanifest.xml`, remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, like this:
+On `AndroidManifest.xml`, remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, like this:
 
 ![](https://i.imgur.com/z1RxPjc.png)
 
-If you don't remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, your menu will not launch. `androidmanifest.xml` can ONLY contain one `<action android:name="android.intent.action.MAIN"/>`
+If you don't remove `<action android:name="android.intent.action.MAIN"/>` from the game's activity, your menu will not launch. `AndroidManifest.xml` can ONLY contain one `<action android:name="android.intent.action.MAIN"/>`
 
 near the end of application tag `</application>`, add your main activity above it. `uk.lgl.MainActivity` is your main activity
 
@@ -424,10 +420,9 @@ Copy your mod menu from decompiled app-debug.apk smali to the game's smali folde
  
 If the game have multidexes, just add your smali to the last `smali_classes` if possible to prevent compilation errors such as `Unsigned short value out of range: xxxxx` (Smali limit error)
 
-Copy the library file (.so) from **app-debug.apk** to the target game. Make sure to copy .so to the correct architecture
-armeabi-v7a is armeabi-v7a, arm64-v8a is arm64-v8a, and so on.
+Copy the library file (.so) from **app-debug.apk** to the target game. Watch out the folder names, we don't want to mix them up, so make sure to copy our lib file to the correct architecture. Like our armeabi-v7a lib goes to the target games armeabi-v7a folder, arm64-v8a lib goes to the arm64-v8a folder...
 
-PUTTING THE .SO file ON A WRONG ARCHITECTURE WILL RESULT A CRASH!
+PUTTING THE LIB FILE ON A WRONG ARCHITECTURE LIKE PUTTING ARM64 LIB TO ARMV7 WILL RESULT A CRASH!
  
 ![](https://i.imgur.com/oZq1Wq7.png)
  
@@ -443,22 +438,19 @@ If you face any problem, please read the [FAQ](#faq)
 
 # Loading lib without mod menu
 
-Just call the `LoadLibOnly` in the `OnCreate` method if you want to load your hacks without mod menu
-```
-    invoke-static {p0}, Luk/lgl/MainActivity;->LoadLibOnly(Landroid/content/Context;)V
-```
-
-Make sure to delete `modmenu` folder from the smali to avoid reaching the method limit of the smali classes (limit is 65535)
+Comment out `Start(this);` in `MainActivity.java`
 
 # FAQ
-## My game crashing or freezing/My mod menu does not work
+### My game crashing or freezing/My mod menu does not work
 There are many reasons why, it could be your code fault, wrong offsets, bad c++ code, bad layout implementations, game protections etc.
 
 First of all, check logcat on Android Studio to see the error logs. Connect your device/reboot emulator to reconnect, open **Logcat** window from below, and select your device, process and filter to **Error** and reproduce your problem. Once you do, you can see the errors in logcat
 
 ![](https://i.imgur.com/cutKC29.png)
 
-Then search the error on Google. Contact me or report issues if you can't find the answers
+Or you can save logcat to file via mod menu settings
+
+Then read logcat and figure out yourself. Google it if possible.
 
 If the game crashes or freezing while playing, check if your patches and hooks are correct. For hooks, write down the logs such as `LOGD("whatever");` like this below:
 
@@ -480,10 +472,10 @@ Logcat may also report `CRASH` if lib crashed, caused by hooking
 
 See more about logcat: https://developer.android.com/studio/debug/am-logcat
 
-If you believe the game has protection, try recompile APK without mod and install to see if it crash. We can't help you bypassing protections
+If you believe the game has protection, bypass it or drop it
 
 ### I have a problem decompiling or compiling APK file
-Check if apk is not protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
+Check if apk is protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
 ### I'm getting an error `Unsigned short value out of range: 65536` if I compile
 The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only.
@@ -495,38 +487,30 @@ See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki/Executing-external
 See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki
 
 ### How to add colored text on JNI toast?
-It is not implemented yet, and we don't have enough knowledge in JNI porting to do this
-
-But it is deprecated in API level 30/Android 11, means custom toast will not work, so we will not implement it
+There is no point to implement since it is deprecated in API level 30/Android 11, means custom toast will no longer work
 
 See: https://developer.android.com/reference/android/widget/Toast#getView()
 
 ### How can I protect my dex and/or lib?
 
-We will not mention their names, but you can search for that on Github. Using chinese tools may inject malwares and spywares in APK. We highly suggest to not use them, and please don't ask us.
-
-There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough
+There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough. We do not recommended to use chinese tools as anti virus may flag your mod for malware (false positive). Don't ask us for the tools
 
 ### How to get older version of the template? or how to see updates/commits?
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
-### Can I compile this project on Android using AIDE?
+### Someone created an awesome features like animation closing. Can you implement it?
 
-Likely yes and no, but we don't support AIDE at this time
+No, ask the CORRECT modder for the specific code for it, not us. We will only implement when we want it, you don't decide
 
 ### How can I соntact you?
-You can соntact me via Tеlеgram or Disсоrd.
-
 <details>
 <summary>Contact:</summary>
-Before you contact, please make sure you have readed everything and looking on Google before contacting
+You can соntact me via Tеlеgram or Disсоrd.
 
-Newbies who do not understand anything must NOT соntact. You will be BLOCKED if you ask/beg to teach/spoonfeed. Why? Because we have gotten so many newbie kids who wouldn't know nothing about modding but attempt to try this for nothing, and come to me and begging and spamming for help. We are getting tired of this now. DON'T be that toxic kid please
+Please make sure you have readed everything and looking on Google for answer before contacting.
 
-Speak english only please. Speaking in other language will be ignored
-
-Thanks!
+Don't contact if you are a beginner/newbie/noobs, don't be annoying, don't ask too much like asking same question everytime, don't beg to spoonfeed. You will likely get ignored or even BLOCKED!
 
 Tеlеgram: @ThеᒪGᒪ
 
@@ -535,13 +519,7 @@ Disсоrd: ᒪGᒪ#6844
 
 ### Can you help me mod (name of game)?
 
-Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games.
-                              
-Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, search on the internet and you should find a couple of forums where you can ask your questions.
-
-### Do you have project of someones mod menu including game codes for example MITO Team mod?
-
-No, because they used this template and they created their own mod with it, we don't support nor work with them. Ask the right owner who have them, example if mod is created by MITO Team, ask MITO Team. We are the wrong persons to ask.
+Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions.
 
 ### Where can I learn hooking?
 

@@ -11,11 +11,14 @@ import android.provider.Settings;
 import android.widget.Toast;
 
 import uk.lgl.modmenu.FloatingModMenuService;
-import uk.lgl.modmenu.Preferences;
+
+import static uk.lgl.modmenu.Preferences.context;
 
 public class MainActivity extends Activity {
 
     public String GameActivity = "com.unity3d.player.UnityPlayerActivity";
+
+    public static native void Toast(Context context);
 
     //Load lib
     static {
@@ -27,12 +30,12 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Preferences.context = this;
-        //To launch mod menu
+        context = this;
+        //To launch mod menu. If you don't use mod menu, remove or comment out Start(this);
         Start(this);
 
-        //To load lib only
-        //LoadLib(this);
+        //Use getApplicationContext() to fix dark background of Toast message
+        CallToast(getApplicationContext());
 
         //To launch game activity
         try {
@@ -44,13 +47,14 @@ public class MainActivity extends Activity {
             e.printStackTrace();
             return;
         }
+
     }
 
     //Load mod menu
     public static void Start(final Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) {
-            Toast.makeText(context, "Overlay permission is required in order to show mod menu", Toast.LENGTH_LONG).show();
-            Toast.makeText(context, "Restart the game after you allow permission", Toast.LENGTH_LONG).show();
+            Toast.makeText(context.getApplicationContext(), "Overlay permission is required in order to show mod menu", Toast.LENGTH_LONG).show();
+            Toast.makeText(context.getApplicationContext(), "Restart the game after you allow permission", Toast.LENGTH_LONG).show();
             context.startActivity(new Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION",
                     Uri.parse("package:" + context.getPackageName())));
         } else {
@@ -58,17 +62,16 @@ public class MainActivity extends Activity {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                        context.startService(new Intent(context, FloatingModMenuService.class));
+                    context.startService(new Intent(context, FloatingModMenuService.class));
                 }
             }, 500);
         }
     }
 
-    //Call toast only without mod menu
-    public static void LoadLibOnly(final Context context) {
+    public static void CallToast(final Context context) {
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                NativeToast.makeText(context.getApplicationContext(), 0);
+                Toast(context);
             }
         }, 500);
     }

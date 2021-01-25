@@ -16,13 +16,11 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
+#include "Includes/obfuscate.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/Logger.h"
 #include "Includes/Utils.h"
-#include "Includes/obfuscate.h"
-
 #include "Menu.h"
-
 #include "Toast.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
@@ -43,7 +41,7 @@ struct My_Patches {
 } hexPatches;
 
 bool feature1 = false, feature2 = false, featureHookToggle = false;
-int sliderValue = 1, dmgmul = 1, defmul = 1;
+int sliderValue = 1, dmgmul = 1, defmul = 1, valueFromInput;
 void *instanceBtn;
 
 // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -61,7 +59,6 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                                         jint feature, jint value, jboolean boolean, jstring str) {
 
     const char *featureName = env->GetStringUTFChars(str, 0);
-    feature += 1;  // No need to count from 0 anymore. yaaay :)))
 
     LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d"), feature, featureName, value,
          boolean);
@@ -70,9 +67,6 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
 
     switch (feature) {
         case 1:
-            // The category was 1 so is not used
-            break;
-        case 2:
             feature2 = boolean;
             if (feature2) {
                 // To print bytes you can do this
@@ -82,17 +76,19 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                 //}
                 hexPatches.GodMode.Modify();
                 hexPatches.GodMode2.Modify();
+                LOGI(OBFUSCATE("On"));
             } else {
                 hexPatches.GodMode.Restore();
                 hexPatches.GodMode2.Restore();
+                LOGI(OBFUSCATE("Off"));
             }
             break;
-        case 3:
+        case 2:
             if (value >= 1) {
                 sliderValue = value;
             }
             break;
-        case 4:
+        case 3:
             switch (value) {
                 case 0:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
@@ -123,7 +119,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
             }
             break;
-        case 5:
+        case 4:
             switch (value) {
                 case 0:
                     LOGD(OBFUSCATE("Selected item 1"));
@@ -136,17 +132,27 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
             }
             break;
-        case 6:
-            LOGD(OBFUSCATE("Feature 6 Called"));
+        case 5:
+            LOGD(OBFUSCATE("Feature 5 Called"));
             // Since we have instanceBtn as a field, we can call it out of Update hook function
             // See more https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
             if (instanceBtn != NULL)
                 AddMoneyExample(instanceBtn, 999999);
             MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
             break;
-        case 8:
-            LOGD(OBFUSCATE("Feature 8 Called"));
+        case 6:
+            LOGD(OBFUSCATE("Feature 6 Called"));
+            break;
+        case 7:
+            LOGD(OBFUSCATE("Feature 7 Called"));
             featureHookToggle = boolean;
+            break;
+        case 200:
+            LOGD(OBFUSCATE("Feature 200 Called"));
+            valueFromInput = value;
+            break;
+        case 100:
+            LOGD(OBFUSCATE("Feature 100 Called"));
             break;
     }
 }
@@ -200,10 +206,14 @@ void *hack_thread(void *) {
     hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '3')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
+                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
 
     // Offset Hook example
-    A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
-                    (void **) &old_get_BoolExample);
+    // A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
+    //                (void **) &old_get_BoolExample);
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
@@ -224,21 +234,18 @@ void *hack_thread(void *) {
     //hexPatches.GodMode2.Modify();
 
     // Offset Hook example
-    MSHookFunction(
-            (void *) getAbsoluteAddress(targetLibName,
-                                        string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
-            (void *) get_BoolExample,
-            (void **) &old_get_BoolExample);
+    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+    //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
 
     // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
-    MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample,
-                   (void **) &old_get_BoolExample);
+    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
     AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
 
-    LOGI(OBFUSCATE("Hooked"));
+    LOGI(OBFUSCATE("Done"));
 #endif
 
     return NULL;

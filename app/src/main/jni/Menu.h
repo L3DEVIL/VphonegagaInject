@@ -67,47 +67,82 @@ Java_uk_lgl_modmenu_FloatingModMenuService_IconWebViewData(JNIEnv *env, jobject 
     return NULL;
 }
 
+// Note:
+// Do not translate the first text
+// Now you need to manually assign feature numbers. The benefit is you can easly remember the numbers
+// and you don't need to re-order your Changes anymore when you remove/add/re-order your features
+// Feature numbers can be like 1,3,200,10... instead in order 0,1,2,3,4,5...
+// To learn HTML, go to this page: https://www.w3schools.com/
+
+// Usage:
+// (Feature number)_Category_(text)
+// (Feature number)_Toggle_(feature name)
+// (Feature number)_SeekBar_(feature name)_(min value)_(max value)
+// (Feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
+// (Feature number)_Button_(feature name)
+// (Feature number)_ButtonLink_(feature name)_(URL/Link here)
+// (Feature number)_ButtonOnOff_(feature name)
+// (Feature number)_InputValue_(feature name)
+// (Feature number)_CheckBox_(feature name)
+// (Feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
+// (Feature number)_RichTextView_(Text with limited HTML support)
+// (Feature number)_RichWebView_(Full HTML support)
+
+JNIEXPORT jobjectArray
+JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_settingsList(JNIEnv *env, jobject activityObject) {
+    jobjectArray ret;
+
+    const char *features[] = {
+            OBFUSCATE("0_Category_Settings"),
+            OBFUSCATE("-1_Toggle_Color animation"),
+            OBFUSCATE("-2_Toggle_Auto size vertically"),
+            OBFUSCATE("-3_Toggle_Save feature preferences (Radio Button is not saved)"), //-3 is checked on Preferences.java
+            OBFUSCATE("0_Category_Logcat"),
+            OBFUSCATE("0_RichTextView_Save logcat if a bug occured and sent it to the modder. Clear logcat and reproduce bug again if the log file is too large"),
+            OBFUSCATE("0_RichTextView_<small>Saving logcat does not need file permission. Logcat location:<br/>Android 11: /storage/emulated/0/Documents/Mod Menu logs/"
+                      "<br/>Android 10 and below: /storage/emulated/0/Android/data/(package name)/files/Mod Menu logs</small>"),
+            OBFUSCATE("-4_Button_Save logcat to file"),
+            OBFUSCATE("-5_Button_Clear logcat"),
+            OBFUSCATE("0_Category_Menu"),
+            OBFUSCATE("-6_Button_<font color='red'>Close settings</font>"),
+    };
+
+    int Total_Feature = (sizeof features /
+                         sizeof features[0]); //Now you dont have to manually update the number everytime;
+    ret = (jobjectArray)
+            env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
+                                env->NewStringUTF(""));
+    int i;
+    for (i = 0; i < Total_Feature; i++)
+        env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
+
+    return (ret);
+}
 
 JNIEXPORT jobjectArray
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
     jobjectArray ret;
-    // Note: Do not translate the first text
-
-    // Usage:
-    // Category_(text)
-    // Toggle_(feature name)
-    // SeekBar_(feature name)_(min value)_(max value)
-    // Spinner_(feature name)_(Items e.g. item1,item2,item3)
-    // Button_(feature name)
-    // ButtonLink_(feature name)_(URL/Link here)
-    // ButtonOnOff_(feature name)
-    // InputValue_(feature name)
-    // CheckBox_(feature name)
-    // RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
-    // RichTextView_(Text with limited HTML support)
-    // RichWebView_(Full HTML support)
-
-    // Learn more about HTML https://www.w3schools.com/
 
     const char *features[] = {
-            OBFUSCATE("Category_The Category"),
-            OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE("SeekBar_The slider_1_100"),
-            OBFUSCATE("SeekBar_Kittymemory slider example_0_5"),
-            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
-            OBFUSCATE("Button_The button"),
-            OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"),
-            OBFUSCATE("ButtonOnOff_The On/Off button"),
-            OBFUSCATE("CheckBox_The Check Box"),
-            OBFUSCATE("InputValue_The input number"),
-            OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
+            OBFUSCATE("0_Category_The Category"),
+            OBFUSCATE("1_Toggle_The toggle"),
+            OBFUSCATE("2_SeekBar_The slider_1_100"),
+            OBFUSCATE("3_SeekBar_Kittymemory slider example_1_5"),
+            OBFUSCATE("4_Spinner_The spinner_Items 1,Items 2,Items 3"),
+            OBFUSCATE("5_Button_The button"),
+            OBFUSCATE("0_ButtonLink_The button with link_https://www.youtube.com/"),
+            OBFUSCATE("6_ButtonOnOff_The On/Off button"),
+            OBFUSCATE("7_CheckBox_The Check Box"),
+            OBFUSCATE("200_InputValue_The input number"),
+            OBFUSCATE("100_RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
             OBFUSCATE(
-                    "RichTextView_This is text view, not fully HTML."
+                    "0_RichTextView_This is text view, not fully HTML."
                     "<b>Bold</b> <i>italic</i> <u>underline</u>"
                     "<br />New line <font color='red'>Support colors</font>"),
             OBFUSCATE(
-                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                    "0_RichWebView_<html><head><style>body{color: white;}</style></head><body>"
                     "This is WebView, with REAL HTML support!"
                     "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
                     "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"

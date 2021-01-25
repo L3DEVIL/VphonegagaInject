@@ -1,5 +1,5 @@
 LOCAL_PATH := $(call my-dir)
-
+MAIN_LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 # Here is the name of your lib.
@@ -8,15 +8,18 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := MyLibName
 
 # Code optimization
-# -std=c++17 is required to support AIDE app with NDK support
-LOCAL_CFLAGS += -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w
-LOCAL_CPPFLAGS += -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++17 -Wno-error=c++11-narrowing -fms-extensions
-LOCAL_LDFLAGS += -Wl,--gc-sections,--strip-all
+# -std=c++17 is required to support AIDE app with NDK
+LOCAL_CFLAGS := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w
+LOCAL_CFLAGS += -fno-rtti -fno-exceptions -fpermissive
+LOCAL_CPPFLAGS := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++17
+LOCAL_CPPFLAGS += -Wno-error=c++11-narrowing -fms-extensions -fno-rtti -fno-exceptions -fpermissive
+LOCAL_LDFLAGS += -Wl,--gc-sections,--strip-all, -llog
 LOCAL_ARM_MODE := arm
+
+LOCAL_C_INCLUDES += $(MAIN_LOCAL_PATH)
 
 # Here you add the cpp file
 LOCAL_SRC_FILES := Main.cpp \
-	Includes/Utils.cpp \
 	Substrate/hde64.c \
 	Substrate/SubstrateDebug.cpp \
 	Substrate/SubstrateHook.cpp \
@@ -28,7 +31,6 @@ LOCAL_SRC_FILES := Main.cpp \
     KittyMemory/KittyUtils.cpp \
 	And64InlineHook/And64InlineHook.cpp \
 
-LOCAL_LDLIBS := -llog -landroid
-#LOCAL_STATIC_LIBRARIES := android_native_app_glue
+LOCAL_LDLIBS := -llog -landroid -lGLESv2
+
 include $(BUILD_SHARED_LIBRARY)
-#$(call import-module,android/native_app_glue)

@@ -753,10 +753,8 @@ public class FloatingModMenuService extends Service {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkBox.isChecked()) {
-                    checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 } else {
-                    checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 }
             }
@@ -976,7 +974,6 @@ public class FloatingModMenuService extends Service {
                 BTN_COLOR = Color.parseColor("#00649F");
                 MENU_BG_COLOR = Color.parseColor("#252E3B");
                 MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24");
-
                 HintTxtColor = Color.parseColor("#434d52");
                 ToggleON = Color.parseColor("#0066FF");
                 ToggleOFF = Color.parseColor("#00649F");

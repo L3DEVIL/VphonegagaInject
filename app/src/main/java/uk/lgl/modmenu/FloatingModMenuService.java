@@ -73,7 +73,7 @@ public class FloatingModMenuService extends Service {
     int MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
     int MENU_WIDTH = 290;
     int MENU_HEIGHT = 210;
-    float MENU_CORNER = 20f;
+    float MENU_CORNER = 1f;
     int ICON_SIZE = 50; //Change both width and height of image
     float ICON_ALPHA = 0.7f; //Transparent
 
@@ -87,6 +87,8 @@ public class FloatingModMenuService extends Service {
     int CategoryBG =  Color.parseColor("#2F3D4C");
     int SeekBarColor = Color.parseColor("#80CBC4");
     int SeekBarProgressColor = Color.parseColor("#80CBC4");
+    int CheckBoxColor = Color.parseColor("#80CBC4");
+    int RadioColor =  Color.parseColor("#FFFFFF");
     String NumberTxt = "#41c300";
     //********************************************************************//
 
@@ -745,13 +747,16 @@ public class FloatingModMenuService extends Service {
         final CheckBox checkBox = new CheckBox(this);
         checkBox.setText(featureName);
         checkBox.setTextColor(TEXT_COLOR_2);
+        checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
         checkBox.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (checkBox.isChecked()) {
+                    checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 } else {
+                    checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
                     Preferences.changeFeatureBoolean(featureName, featureNum, isChecked);
                 }
             }
@@ -771,15 +776,6 @@ public class FloatingModMenuService extends Service {
         radioGroup.setPadding(10, 5, 10, 5);
         radioGroup.setOrientation(LinearLayout.VERTICAL);
         radioGroup.addView(textView);
-
-        int e = 1;
-        int[][] iArr = new int[e][];
-        int[] iArr2 = new int[e];
-        iArr2[0] = 0x0101009e;
-        iArr[0] = iArr2;
-        int[] iArr3 = new int[e];
-        iArr3[0] = -1;
-        ColorStateList colorStateList = new ColorStateList(iArr, iArr3);
 
         for (int i = 0; i < lists.size(); i++) {
             final RadioButton Radioo = new RadioButton(this);
@@ -802,7 +798,7 @@ public class FloatingModMenuService extends Service {
             Radioo.setText(lists.get(i));
             Radioo.setTextColor(Color.LTGRAY);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                Radioo.setButtonTintList(colorStateList);
+                Radioo.setButtonTintList(ColorStateList.valueOf(RadioColor));
             Radioo.setOnClickListener(first_radio_listener);
             radioGroup.addView(Radioo);
         }
@@ -989,7 +985,10 @@ public class FloatingModMenuService extends Service {
                 CategoryBG =  Color.parseColor("#2F3D4C");
                 SeekBarColor = Color.parseColor("#00649F");
                 SeekBarProgressColor = Color.parseColor("#00649F");
+                CheckBoxColor = Color.parseColor("#00649F");
+                RadioColor = Color.parseColor("#00649F");
                 NumberTxt = "#41c300";
+
                 break;
             case 2:
                 TEXT_COLOR = Color.parseColor("#82CAFD");
@@ -1005,6 +1004,8 @@ public class FloatingModMenuService extends Service {
                 SeekBarProgressColor = Color.parseColor("#80CBC4");
                 BtnON = Color.parseColor("#003300");
                 BtnOFF = Color.parseColor("#7f0000");
+                CheckBoxColor = Color.parseColor("#80CBC4");
+                RadioColor = Color.parseColor("#FFFFFF");
                 NumberTxt = "#41c300";
                 break;
         }

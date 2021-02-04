@@ -66,16 +66,30 @@ import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
 public class FloatingModMenuService extends Service {
     //********** Here you can easly change the menu appearance **********//
     public static final String TAG = "Mod_Menu"; //Tag for logcat
-    final int TEXT_COLOR = Color.parseColor("#82CAFD");
-    final int TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
-    final int BTN_COLOR = Color.parseColor("#1C262D");
-    final int MENU_BG_COLOR = Color.parseColor("#DD1C2A35"); //#AARRGGBB
-    final int MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
-    final int MENU_WIDTH = 290;
-    final int MENU_HEIGHT = 210;
-    final float MENU_CORNER = 20f;
-    final int ICON_SIZE = 50; //Change both width and height of image
-    final float ICON_ALPHA = 0.7f; //Transparent
+    int TEXT_COLOR = Color.parseColor("#82CAFD");
+    int TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
+    int BTN_COLOR = Color.parseColor("#1C262D");
+    int MENU_BG_COLOR = Color.parseColor("#DD1C2A35"); //#AARRGGBB
+    int MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
+    int MENU_WIDTH = 290;
+    int MENU_HEIGHT = 210;
+    float MENU_CORNER = 1f;
+    int ICON_SIZE = 50; //Change both width and height of image
+    float ICON_ALPHA = 0.7f; //Transparent
+
+    int HintTxtColor = Color.parseColor("#FF171E24");
+
+    int ToggleON = Color.GREEN;
+    int ToggleOFF = Color.RED;
+
+    int BtnON = Color.parseColor("#003300");
+    int BtnOFF = Color.parseColor("#7f0000");
+    int CategoryBG =  Color.parseColor("#2F3D4C");
+    int SeekBarColor = Color.parseColor("#80CBC4");
+    int SeekBarProgressColor = Color.parseColor("#80CBC4");
+    int CheckBoxColor = Color.parseColor("#80CBC4");
+    int RadioColor =  Color.parseColor("#FFFFFF");
+    String NumberTxt = "#41c300";
     //********************************************************************//
 
     //Some fields
@@ -121,6 +135,7 @@ public class FloatingModMenuService extends Service {
         Preferences.context = this;
 
         //Create the menu
+        ChangeTheme(1);
         initFloating();
         initAlertDiag();
 
@@ -459,7 +474,7 @@ public class FloatingModMenuService extends Service {
         edittextvalue.setMaxLines(1);
         edittextvalue.setWidth(convertDipToPixels(300));
         edittextvalue.setTextColor(TEXT_COLOR_2);
-        edittextvalue.setHintTextColor(Color.parseColor("#434d52"));
+        edittextvalue.setHintTextColor(HintTxtColor);
         edittextvalue.setInputType(InputType.TYPE_CLASS_NUMBER);
         edittextvalue.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
 
@@ -502,8 +517,8 @@ public class FloatingModMenuService extends Service {
                 },
                 new int[]{
                         Color.BLUE,
-                        Color.GREEN,
-                        Color.RED
+                        ToggleON, // ON
+                        ToggleOFF // OFF
                 }
         );
         //Set colors of the switch. Comment out if you don't like it
@@ -533,7 +548,7 @@ public class FloatingModMenuService extends Service {
         linearLayout.setGravity(Gravity.CENTER);
 
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + ((loadedProg == 0) ? min : loadedProg) + "</font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxt +"'>" + ((loadedProg == 0) ? min : loadedProg) + "</font>"));
         textView.setTextColor(TEXT_COLOR_2);
 
         SeekBar seekBar = new SeekBar(this);
@@ -542,6 +557,8 @@ public class FloatingModMenuService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             seekBar.setMin(min); //setMin for Oreo and above
         seekBar.setProgress((loadedProg == 0) ? min : loadedProg);
+        seekBar.getThumb().setColorFilter(SeekBarColor, PorterDuff.Mode.SRC_ATOP);
+        seekBar.getProgressDrawable().setColorFilter(SeekBarProgressColor, PorterDuff.Mode.SRC_ATOP);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             public void onStartTrackingTouch(SeekBar seekBar) {
             }
@@ -553,7 +570,7 @@ public class FloatingModMenuService extends Service {
                 //if progress is greater than minimum, don't go below. Else, set progress
                 seekBar.setProgress(i < min ? min : i);
                 Preferences.changeFeatureInt(featureName, featureNum, i < min ? min : i);
-                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + (i < min ? min : i) + "</font>"));
+                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxt +"'>" + (i < min ? min : i) + "</font>"));
             }
         });
         linearLayout.addView(textView);
@@ -617,11 +634,11 @@ public class FloatingModMenuService extends Service {
         boolean isOn = Preferences.loadPrefBoolean(featureName, featureNum);
         if (isOn) {
             button.setText(finalFeatureName + ": ON");
-            button.setBackgroundColor(Color.parseColor("#003300"));
+            button.setBackgroundColor(BtnON);
             isOn = false;
         } else {
             button.setText(finalFeatureName + ": OFF");
-            button.setBackgroundColor(Color.parseColor("#7f0000"));
+            button.setBackgroundColor(BtnOFF);
             isOn = true;
         }
         final boolean finalIsOn = isOn;
@@ -634,11 +651,11 @@ public class FloatingModMenuService extends Service {
                 //Log.d(TAG, finalFeatureName + " " + featureNum + " " + isActive2);
                 if (isOn) {
                     button.setText(finalFeatureName + ": ON");
-                    button.setBackgroundColor(Color.parseColor("#003300"));
+                    button.setBackgroundColor(BtnON);
                     isOn = false;
                 } else {
                     button.setText(finalFeatureName + ": OFF");
-                    button.setBackgroundColor(Color.parseColor("#7f0000"));
+                    button.setBackgroundColor(BtnOFF);
                     isOn = true;
                 }
             }
@@ -695,7 +712,7 @@ public class FloatingModMenuService extends Service {
 
         final TextView textView = new TextView(this);
         int num = Preferences.loadPrefInt(featureName, feature);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + num + "</font></font>"));
+        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxt +"'>" + num + "</font></font>"));
         textView.setTextColor(TEXT_COLOR_2);
         textView.setLayoutParams(layoutParams);
 
@@ -730,6 +747,7 @@ public class FloatingModMenuService extends Service {
         final CheckBox checkBox = new CheckBox(this);
         checkBox.setText(featureName);
         checkBox.setTextColor(TEXT_COLOR_2);
+        checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
         checkBox.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -757,22 +775,13 @@ public class FloatingModMenuService extends Service {
         radioGroup.setOrientation(LinearLayout.VERTICAL);
         radioGroup.addView(textView);
 
-        int e = 1;
-        int[][] iArr = new int[e][];
-        int[] iArr2 = new int[e];
-        iArr2[0] = 0x0101009e;
-        iArr[0] = iArr2;
-        int[] iArr3 = new int[e];
-        iArr3[0] = -1;
-        ColorStateList colorStateList = new ColorStateList(iArr, iArr3);
-
         for (int i = 0; i < lists.size(); i++) {
             final RadioButton Radioo = new RadioButton(this);
             final String finalFeatureName = featureName, radioName = lists.get(i);
             View.OnClickListener first_radio_listener = new View.OnClickListener() {
                 public void onClick(View v) {
                     textView.setText(finalFeatureName + ": " + radioName);
-                    textView.setText(Html.fromHtml("<font face='roboto'>" + finalFeatureName + ": <font color='#41c300'>" + radioName + "</font>"));
+                    textView.setText(Html.fromHtml("<font face='roboto'>" + finalFeatureName + ": <font color='" + NumberTxt +"'>" + radioName + "</font>"));
                     Preferences.changeFeatureInt(finalFeatureName, featureNum, radioGroup.indexOfChild(Radioo));
                 }
             };
@@ -787,7 +796,7 @@ public class FloatingModMenuService extends Service {
             Radioo.setText(lists.get(i));
             Radioo.setTextColor(Color.LTGRAY);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                Radioo.setButtonTintList(colorStateList);
+                Radioo.setButtonTintList(ColorStateList.valueOf(RadioColor));
             Radioo.setOnClickListener(first_radio_listener);
             radioGroup.addView(Radioo);
         }
@@ -797,7 +806,7 @@ public class FloatingModMenuService extends Service {
 
     private View Category(String text) {
         TextView textView = new TextView(this);
-        textView.setBackgroundColor(Color.parseColor("#2F3D4C"));
+        textView.setBackgroundColor(CategoryBG);
         textView.setText(Html.fromHtml(text));
         textView.setGravity(Gravity.CENTER);
         textView.setTextSize(14.0f);
@@ -954,5 +963,49 @@ public class FloatingModMenuService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void ChangeTheme(int num)
+    {
+        switch (num) {
+            case 1:
+                TEXT_COLOR = Color.parseColor("#82CAFD");
+                TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
+                BTN_COLOR = Color.parseColor("#00649F");
+                MENU_BG_COLOR = Color.parseColor("#252E3B");
+                MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24");
+                HintTxtColor = Color.parseColor("#434d52");
+                ToggleON = Color.parseColor("#0066FF");
+                ToggleOFF = Color.parseColor("#00649F");
+                BtnON = Color.parseColor("#0066CC");
+                BtnOFF = Color.parseColor("#1A2028");
+                CategoryBG =  Color.parseColor("#2F3D4C");
+                SeekBarColor = Color.parseColor("#00649F");
+                SeekBarProgressColor = Color.parseColor("#00649F");
+                CheckBoxColor = Color.parseColor("#00649F");
+                RadioColor = Color.parseColor("#00649F");
+                NumberTxt = "#41c300";
+
+                break;
+            case 2:
+                TEXT_COLOR = Color.parseColor("#82CAFD");
+                TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
+                BTN_COLOR = Color.parseColor("#1C262D");
+                MENU_BG_COLOR = Color.parseColor("#DD1C2A35"); //#AARRGGBB
+                MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
+                HintTxtColor = Color.parseColor("#434d52");
+                ToggleON = Color.parseColor("#0066FF");
+                ToggleOFF = Color.parseColor("#00649F");
+                CategoryBG =  Color.parseColor("#2F3D4C");
+                SeekBarColor = Color.parseColor("#80CBC4");
+                SeekBarProgressColor = Color.parseColor("#80CBC4");
+                BtnON = Color.parseColor("#003300");
+                BtnOFF = Color.parseColor("#7f0000");
+                CheckBoxColor = Color.parseColor("#80CBC4");
+                RadioColor = Color.parseColor("#FFFFFF");
+                NumberTxt = "#41c300";
+                break;
+        }
+
     }
 }

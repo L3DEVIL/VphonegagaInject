@@ -135,7 +135,6 @@ public class FloatingModMenuService extends Service {
         Preferences.context = this;
 
         //Create the menu
-        ChangeTheme(1);
         initFloating();
         initAlertDiag();
 
@@ -963,49 +962,5 @@ public class FloatingModMenuService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
-    }
-
-    private void ChangeTheme(int num)
-    {
-        switch (num) {
-            case 1:
-                TEXT_COLOR = Color.parseColor("#82CAFD");
-                TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
-                BTN_COLOR = Color.parseColor("#00649F");
-                MENU_BG_COLOR = Color.parseColor("#252E3B");
-                MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24");
-                HintTxtColor = Color.parseColor("#434d52");
-                ToggleON = Color.parseColor("#0066FF");
-                ToggleOFF = Color.parseColor("#00649F");
-                BtnON = Color.parseColor("#0066CC");
-                BtnOFF = Color.parseColor("#1A2028");
-                CategoryBG =  Color.parseColor("#2F3D4C");
-                SeekBarColor = Color.parseColor("#00649F");
-                SeekBarProgressColor = Color.parseColor("#00649F");
-                CheckBoxColor = Color.parseColor("#00649F");
-                RadioColor = Color.parseColor("#00649F");
-                NumberTxt = "#41c300";
-
-                break;
-            case 2:
-                TEXT_COLOR = Color.parseColor("#82CAFD");
-                TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
-                BTN_COLOR = Color.parseColor("#1C262D");
-                MENU_BG_COLOR = Color.parseColor("#DD1C2A35"); //#AARRGGBB
-                MENU_FEATURE_BG_COLOR = Color.parseColor("#FF171E24"); //#AARRGGBB
-                HintTxtColor = Color.parseColor("#434d52");
-                ToggleON = Color.parseColor("#0066FF");
-                ToggleOFF = Color.parseColor("#00649F");
-                CategoryBG =  Color.parseColor("#2F3D4C");
-                SeekBarColor = Color.parseColor("#80CBC4");
-                SeekBarProgressColor = Color.parseColor("#80CBC4");
-                BtnON = Color.parseColor("#003300");
-                BtnOFF = Color.parseColor("#7f0000");
-                CheckBoxColor = Color.parseColor("#80CBC4");
-                RadioColor = Color.parseColor("#FFFFFF");
-                NumberTxt = "#41c300";
-                break;
-        }
-
     }
 }

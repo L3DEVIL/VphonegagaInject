@@ -475,7 +475,7 @@ See more about logcat: https://developer.android.com/studio/debug/am-logcat
 If you believe the game has protection, bypass it or drop it
 
 ### I have a problem decompiling or compiling APK file
-Check if apk is protected. If not, search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
+Search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
 
 ### I'm getting an error `Unsigned short value out of range: 65536` if I compile
 The method index can't fit into an unsigned 16-bit value, means you have too many methods in the smali due to the limit 65535. Place your code on other classes, such as smali_classes2 instead. This work for Android 5 (Lollipop) and above only.
@@ -486,11 +486,6 @@ See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki/Executing-external
 ### I'm getting strange issues on Android Studio or Gradle
 See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki
 
-### How to add colored text on JNI toast?
-There is no point to implement since it is deprecated in API level 30/Android 11, means custom toast will no longer work
-
-See: https://developer.android.com/reference/android/widget/Toast#getView()
-
 ### How can I protect my dex and/or lib?
 
 There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough. We do not recommended to use chinese tools as anti virus may flag your mod for malware (false positive). Don't ask us for the tools
@@ -499,35 +494,27 @@ There is no need to protect dex since there are nothing important in java/smali 
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
-### Someone created an awesome features like animation closing. Can you implement it?
+### Why can't you just add the feature I want? For example closing animation?
 
-No, ask the CORRECT modder for the specific code for it, not us. We will only implement when we want it, you don't decide
+Also known as: "You're a developer after all — it shouldn't be that hard!"
+
+Since I can't spend my days on it, I have to prioritize the features and fixes that are likely to benefit the larger number of people. Features that is specific to your usage is not going to benefit that many users after all. This is important that you do not expect that I know everything. With all this being said, remember that this is 100% Open Source. So if you really want a specific feature, try to do it yourself, or even better, ask the owner who implemented the feature, not us. Don't be shy
+
+### Why can't you just teach me modding the game? For example, hooking or making aimbot and ESP, or modding PUBG?
+
+We aren't spoonfeeding, we aren't your parents. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, or how il2cpp works, is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. Again, if you saw someone modded the game which has special feature like floating text seen on Among US, ask the owner who implemented the feature, not us. Don't be shy.
 
 ### How can I соntact you?
 <details>
 <summary>Contact:</summary>
-You can соntact me via Tеlеgram or Disсоrd.
+You can соntact me via Tеlеgram or Disсоrd. Please make sure you have readed everything and looking on Google for answer before contacting.
 
-Please make sure you have readed everything and looking on Google for answer before contacting.
-
-Don't contact if you are a beginner/newbie/noobs, don't be annoying, don't ask too much like asking same question everytime, don't beg to spoonfeed. You will likely get ignored or even BLOCKED!
+**DON'T contact if you are a beginner/newbie/noobs, don't be annoying, don't beg to spoonfeed, don't ask how to mod games. You will likely get ignored or even BLOCKED!**
 
 Tеlеgram: @ThеᒪGᒪ
 
 Disсоrd: ᒪGᒪ#6844
 </details>
-
-### Can you help me mod (name of game)?
-
-Noob, we are not spoonfeeding. Don't соntact if you don't know how to mod games. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions.
-
-### Where can I learn hooking?
-
-* https://piin.dev/basic-hooking-tutorial-t19.html
-* https://iosgods.com/topic/65529-instance-variables-and-function-pointers/
-* https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-* http://www.cydiasubstrate.com/api/c/MSHookFunction/
-* https://www.cprogramming.com/tutorial/function-pointers.html
 
 # Credits/Acknowledgements
 Thanks to the following individuals whose code helped me develop this mod menu

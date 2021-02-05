@@ -354,7 +354,7 @@ public class FloatingModMenuService extends Service {
             public void run() {
                 //If the save preferences is enabled, it will check if game lib is loaded before starting menu
                 //Comment the if-else code out except startService if you want to run the app and test preferences
-                if (Preferences.savePref && !isGameLibLoaded() || stopChecking) {
+                if (Preferences.savePref && !isGameLibLoaded() && !stopChecking) {
                     if (!viewLoaded) {
                         patches.addView(Category("Save preferences was been enabled. Waiting for game lib to be loaded...\n\nForce load menu may not apply mods instantly. You would need to reactivate them again"));
                         patches.addView(Button(-100, "Force load menu"));

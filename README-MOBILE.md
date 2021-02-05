@@ -21,6 +21,11 @@
 * [Modded APK Editor Pro app](https://drive.google.com/file/d/1tJd7LLXUXFL-J180lFTLMuv8-B67w1K2/view): To edit `AndroidManifest.xml` for free
 * [Floating apps](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en) (optional): You can use it to read this page and working at the same time or use a build-in feature by OEM
 
+# Video Tutorial
+Video tutorial by Mahmoud Gaming (Mod menu v2.0)
+
+https://www.youtube.com/watch?v=SMCsUy60Hs8
+
 # Download/Clone
 
 Go to releases page https://github.com/LGLTeam/Android-Mod-Menu/releases/ and download **Source code (zip)**

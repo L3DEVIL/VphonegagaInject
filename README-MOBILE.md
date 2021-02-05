@@ -4,6 +4,7 @@
 
 # Quick links
 - [Softwares you need](#softwares-you-need)
+- [Video Tutorial](#video-tutorial)
 - [download/clone](#downloadclone)
 - [Setting up AIDE](#setting-up-aide)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
@@ -17,8 +18,8 @@
 * [Modded AIDE app](https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk): The official AIDE from Play Store will not work with this project
 * [ndk.tar.gz](https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk): NDK support for modded AIDE
 * [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en): File Manager
-* [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file
-* [Modded APK Editor Pro app](https://drive.google.com/file/d/1tJd7LLXUXFL-J180lFTLMuv8-B67w1K2/view): To edit `AndroidManifest.xml` for free
+* [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file. Note: It requires VIP to edit `AndroidManifest.xml` more than 200 lines
+* Any Apktool app to edit `AndroidManifest.xml` for free: [Modded APK Editor Pro app](https://mega.nz/file/zQxA0YDY#eNRgcyrHwpWh1nSTHhcc4quxzeXrXcUHlYPoRyltKEw) or [APK Repacker](https://mega.nz/file/LIom0DDL#hJyIchPDCk2n_gcDmutNsOKS86WXQN58qpEGa9JsLrU) (We use APK Editor Pro)
 * [Floating apps](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en) (optional): You can use it to read this page and working at the same time or use a build-in feature by OEM
 
 # Video Tutorial

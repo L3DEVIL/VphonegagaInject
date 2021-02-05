@@ -4,7 +4,7 @@
 
 **This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask. The codes in the template simply tells you how to use them**
 
-**For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)** how to use this template on your Android mobile.
+**For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
 # Quick links
 - [Prerequisites](#prerequisites)

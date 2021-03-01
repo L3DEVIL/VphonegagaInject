@@ -21,7 +21,6 @@
 #include "Includes/Logger.h"
 #include "Includes/Utils.h"
 #include "Menu.h"
-#include "Toast.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <And64InlineHook/And64InlineHook.hpp>
@@ -29,6 +28,7 @@
 
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
+#include <iostream>
 
 #endif
 
@@ -40,9 +40,8 @@ struct My_Patches {
     // etc...
 } hexPatches;
 
-
 bool feature1 = false, feature2 = false, featureHookToggle = false;
-int sliderValue = 1, dmgmul = 1, defmul = 1, valueFromInput;
+int sliderValue = 1;
 void *instanceBtn;
 
 // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -55,42 +54,80 @@ void (*AddMoneyExample)(void *instance, int amount);
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
 extern "C" {
+JNIEXPORT void JNICALL
+Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
+    MakeToast(env, context, OBFUSCATE("Modded by LGL"), Toast::LENGTH_LONG);
+}
+
+// Note:
+// Do not change or translate the first text unless you know what you are doing
+// Assigning feature numbers is optional. Without it, it will automatically count for you, starting from 0
+// Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 0,1,2,3,4,5...
+// ButtonLink, Category, RichTextView and RichWebView is not counted. They can't have feature number assigned
+// To learn HTML, go to this page: https://www.w3schools.com/
+
+// Usage:
+// (Optional feature number)_Toggle_(feature name)
+// (Optional feature number)_SeekBar_(feature name)_(min value)_(max value)
+// (Optional feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
+// (Optional feature number)_Button_(feature name)
+// (Optional feature number)_ButtonOnOff_(feature name)
+// (Optional feature number)_InputValue_(feature name)
+// (Optional feature number)_CheckBox_(feature name)
+// (Optional feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
+// RichTextView_(Text with limited HTML support)
+// RichWebView_(Full HTML support)
+// ButtonLink_(feature name)_(URL/Link here)
+// Category_(text)
+
+// Few examples:
+// 10_Toggle_Jump hack
+// 100_Toggle_Ammo hack
+// Toggle_Ammo hack
+// 1_Spinner_Weapons_AK47,9mm,Knife
+// Spinner_Weapons_AK47,9mm,Knife
+// 2_ButtonOnOff_God mode
+// Category_Hello world
+
 JNIEXPORT jobjectArray
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
     jobjectArray ret;
 
     const char *features[] = {
-            OBFUSCATE("0_Category_The Category"),
-            OBFUSCATE("1_Toggle_The toggle"),
-            OBFUSCATE("2_SeekBar_The slider_1_100"),
-            OBFUSCATE("3_SeekBar_Kittymemory slider example_1_5"),
-            OBFUSCATE("4_Spinner_The spinner_Items 1,Items 2,Items 3"),
-            OBFUSCATE("5_Button_The button"),
-            OBFUSCATE("0_ButtonLink_The button with link_https://www.youtube.com/"),
-            OBFUSCATE("6_ButtonOnOff_The On/Off button"),
-            OBFUSCATE("7_CheckBox_The Check Box"),
-            OBFUSCATE("200_InputValue_The input number"),
-            OBFUSCATE("100_RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
+            OBFUSCATE("Category_The Category"), //Not counted
+            OBFUSCATE("Toggle_The toggle"), //Starts with 0
+            OBFUSCATE("100_Toggle_The toggle 2"), //This one have feature number assigned
+            OBFUSCATE("110_Toggle_The toggle 3"), //This one too
+            OBFUSCATE("SeekBar_The slider_1_100"), //Assigned numbers are not counted, so 1
+            OBFUSCATE("SeekBar_Kittymemory slider example_1_5"), //2
+            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"), //3
+            OBFUSCATE("Button_The button"), //4
+            OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"), //Not counted
+            OBFUSCATE("ButtonOnOff_The On/Off button"), //5
+            OBFUSCATE("CheckBox_The Check Box"),
+            OBFUSCATE("InputValue_Input number"),
+            OBFUSCATE("InputText_Input text"),
+            OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
             OBFUSCATE(
-                    "0_RichTextView_This is text view, not fully HTML."
+                    "RichTextView_This is text view, not fully HTML."
                     "<b>Bold</b> <i>italic</i> <u>underline</u>"
                     "<br />New line <font color='red'>Support colors</font>"),
             OBFUSCATE(
-                    "0_RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
                     "This is WebView, with REAL HTML support!"
                     "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
                     "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
                     "</body></html>")
     };
 
-    int Total_Feature = (sizeof features /
-                         sizeof features[0]); //Now you dont have to manually update the number everytime;
+    //Now you dont have to manually update the number everytime;
+    int Total_Feature = (sizeof features / sizeof features[0]);
     ret = (jobjectArray)
             env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
                                 env->NewStringUTF(""));
-    int i;
-    for (i = 0; i < Total_Feature; i++)
+
+    for (int i = 0; i < Total_Feature; i++)
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
 
     pthread_t ptid;
@@ -101,17 +138,24 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
 
 JNIEXPORT void JNICALL
 Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
-                                        jint feature, jint value, jboolean boolean, jstring str) {
+                                        jint featNum, jstring featName, jint value,
+                                        jboolean boolean, jstring str) {
+    //Convert java string to c++
+    const char *featureName = env->GetStringUTFChars(featName, 0);
+    const char *TextInput;
+    if (str != NULL)
+        TextInput = env->GetStringUTFChars(str, 0);
+    else
+        TextInput = "Empty";
 
-    const char *featureName = env->GetStringUTFChars(str, 0);
+    LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d | Text: = %s"), featNum,
+         featureName, value,
+         boolean, TextInput);
 
-    LOGD(OBFUSCATE("Feature name: %d - %s | Value: = %d | Bool: = %d"), feature, featureName, value,
-         boolean);
+    //BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
-    //!!! BE CAREFUL NOT TO ACCIDENTLY REMOVE break; !!!//
-
-    switch (feature) {
-        case 1:
+    switch (featNum) {
+        case 0:
             feature2 = boolean;
             if (feature2) {
                 // To print bytes you can do this
@@ -121,20 +165,25 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                 //}
                 hexPatches.GodMode.Modify();
                 hexPatches.GodMode2.Modify();
-                LOGI(OBFUSCATE("On"));
+                //LOGI(OBFUSCATE("On"));
             } else {
                 hexPatches.GodMode.Restore();
                 hexPatches.GodMode2.Restore();
-                LOGI(OBFUSCATE("Off"));
+                //LOGI(OBFUSCATE("Off"));
             }
             break;
-        case 2:
+        case 100:
+            break;
+        case 110:
+            break;
+        case 1:
             if (value >= 1) {
                 sliderValue = value;
             }
             break;
-        case 3:
+        case 2:
             switch (value) {
+                //For noobies
                 case 0:
                     hexPatches.SliderExample = MemoryPatch::createWithHex(
                             targetLibName, string2Offset(
@@ -164,7 +213,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
             }
             break;
-        case 4:
+        case 3:
             switch (value) {
                 case 0:
                     LOGD(OBFUSCATE("Selected item 1"));
@@ -177,33 +226,30 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                     break;
             }
             break;
-        case 5:
-            LOGD(OBFUSCATE("Feature 5 Called"));
+        case 4:
             // Since we have instanceBtn as a field, we can call it out of Update hook function
             // See more https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
             if (instanceBtn != NULL)
                 AddMoneyExample(instanceBtn, 999999);
             MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
             break;
-        case 6:
-            LOGD(OBFUSCATE("Feature 6 Called"));
+        case 5:
             break;
-        case 7:
-            LOGD(OBFUSCATE("Feature 7 Called"));
+        case 6:
             featureHookToggle = boolean;
             break;
-        case 200:
-            LOGD(OBFUSCATE("Feature 200 Called"));
-            valueFromInput = value;
+        case 7:
             break;
-        case 100:
-            LOGD(OBFUSCATE("Feature 100 Called"));
+        case 8:
+            MakeToast(env, obj, TextInput, Toast::LENGTH_SHORT);
+            break;
+        case 9:
             break;
     }
 }
 }
 
-// ---------- Hooking ---------- //
+// Hooking example
 
 bool (*old_get_BoolExample)(void *instance);
 

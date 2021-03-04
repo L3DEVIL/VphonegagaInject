@@ -27,9 +27,9 @@ It support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 archi
 
 Preview:
 
-![](https://images2.imgbox.com/2e/57/onRTwFAZ_o.png)
+![](https://images2.imgbox.com/86/dc/wNW9qYdH_o.png)
 
-![](https://images2.imgbox.com/51/1e/g46ZEW0R_o.png)
+![](https://images2.imgbox.com/2e/57/onRTwFAZ_o.png)
 
 # Prerequisites
 Before we can jump head first into working a template, we need to go over a few things.

@@ -4,7 +4,7 @@
 
 **This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask. The codes in the template simply tells you how to use them**
 
-**For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)** how to use this template on your Android mobile.
+**For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
 # Quick links
 - [Prerequisites](#prerequisites)
@@ -17,16 +17,17 @@
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
+- [Reporting issues/Cоntact](reportingissuescоntact)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
-Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/) (Yes, he made it first before Octo), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
+Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/) (Yes, he made it first), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
 
 It support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
 
 Preview:
 
-![](https://i.imgur.com/42Sh72L.gif)
+![](https://i.imgur.com/zeumkBG.gif)
 
 # Prerequisites
 Before we can jump head first into working a template, we need to go over a few things.
@@ -44,10 +45,10 @@ Before we can jump head first into working a template, we need to go over a few 
 # Softwares you need
 * Android Studio 4 and up: https://developer.android.com/studio
 * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools
-* APK Easy Tool. To get main activity: https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960
-* Any text editor. I use [Notepad++](https://notepad-plus-plus.org/downloads/)
-* Any png compression to compress your png file: https://compresspng.com/
-* Any base64 encoding to encode your file: https://www.base64encode.org/
+* [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960). To get main activity: 
+* Any text editor. We use [Notepad++](https://notepad-plus-plus.org/downloads/)
+* Any png compression to compress your png file: We use https://compresspng.com/
+* Any base64 encoding to encode your file: We use https://www.base64encode.org/
 
 # Download/Clone
 Download this repo as ZIP, or clone using any git tools
@@ -57,7 +58,7 @@ Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
 Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
 
 # Video Tutorial
-Big thanks to PMT DVA who created a video tutorial for me. Be warned, this is not for beginners, it's a quite misleading
+Big thanks to PMT DVA who created a video tutorial for me. Be warned, this is not for beginners, the title is quite misleading
 
 https://www.youtube.com/watch?v=ieMclBtL6Ig
 
@@ -132,7 +133,7 @@ Set the gradient drawable to the view component
 
 - Resizing menu box
 
-I have added variables so you can find it easly to resize
+I've added variables so you can find it easly to resize
 ```
 private final int MENU_WIDTH = 290;
 private final int MENU_HEIGHT = 200;
@@ -160,7 +161,7 @@ LinearLayoutExample.addView(textView);
 
 ```
 
-There are many more. While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc. for more infomation
+While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc. for more infomation
 
 **`MainActivity.java`**:
 Activity launcher. Checks if device running Android 6.0 or above and if have overlay permission enabled before starting menu service.
@@ -202,8 +203,6 @@ Nothing:
 return NULL
 ```
 
-**`Toast.h`**: Your toast
-
 **`Main.cpp`**: In this file, you will work with your mods here
 
 - `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
@@ -212,39 +211,40 @@ return NULL
 
 - `getFeatureList`: Mod features
 
-Now you need to manually assign feature numbers. The benefit is you can easly remember the numbers and you don't need to re-order your Changes anymore when you remove/add/re-order your features
-Feature numbers can be like 1,3,200,10... instead in order 1,2,3,4,5...
+Assigning feature numbers is optional. Without it, it will automatically count for you, starting from 0
 
-Do not translate the first text
+Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 0,1,2,3,4,5...
+
+Do not change or translate the first text unless you know what you are doing
 
 To learn HTML, go to this page: https://www.w3schools.com/
 
 Usage:
 
 ```
-(Feature number)_Category_(text)
-(Feature number)_Toggle_(feature name)
-(Feature number)_SeekBar_(feature name)_(min value)_(max value)
-(Feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
-(Feature number)_Button_(feature name)
-(Feature number)_ButtonLink_(feature name)_(URL/Link here)
-(Feature number)_ButtonOnOff_(feature name)
-(Feature number)_InputValue_(feature name)
-(Feature number)_CheckBox_(feature name)
-(Feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
-(Feature number)_RichTextView_(Text with limited HTML support)
-(Feature number)_RichWebView_(Full HTML support)
+(Optional feature number)_Toggle_(feature name)
+(Optional feature number)_SeekBar_(feature name)_(min value)_(max value)
+(Optional feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
+(Optional feature number)_Button_(feature name)
+(Optional feature number)_ButtonOnOff_(feature name)
+(Optional feature number)_InputValue_(feature name)
+(Optional feature number)_CheckBox_(feature name)
+(Optional feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
+RichTextView_(Text with limited HTML support)
+RichWebView_(Full HTML support)
+ButtonLink_(feature name)_(URL/Link here)
+Category_(text)
 ```
 
-Examples:
-
+Examples
 ```
-0_Category_Hello world
-1_Toggle_God mode
-2_Spinner_Weapons_AK47,9mm,Knife
-3_Button_OnOff_God mode
-0_Category_Hello world
-0_Category_Hello world
+10_Toggle_Jump hack
+100_Toggle_Ammo hack
+Toggle_Ammo hack
+1_Spinner_Weapons_AK47,9mm,Knife
+Spinner_Weapons_AK47,9mm,Knife
+2_ButtonOnOff_God mode
+Category_Hello world
 ```
 
 Learn more about HTML https://www.w3schools.com/
@@ -289,15 +289,13 @@ OBFUSCATE_KEY("Hello world", 'u')
 
 # Testing
 
-Connect your device to computer or run your emulator. Make sure you have USB-Debugging enabled in the developer option of your device. Android Studio will detect and you can click Play to run your app.
+Connect your device to the computer or run your emulator. Android Studio will detect and you can click Play to run your app.
 
 ![](https://i.imgur.com/ZegjeM8.png)
 
-Sometimes emulators such as NOX or MEMU fail to connect to adb automatically, in order to connect them, simply reboot the emulator.
+On physical device, make sure you have USB-Debugging enabled in the developer option of your device. To make it visible, go to **Settings** > **About phone** and tap Build number seven times. Return to the previous screen to find Developer options at the bottom. The Developer options screen might be located or named differently on some devices
 
-On Android 4.2 and higher, the Developer options screen is hidden by default. To make it visible, go to **Settings** > **About phone** and tap Build number seven times. Return to the previous screen to find Developer options at the bottom.
-
-On some devices, the Developer options screen might be located or named differently.
+Sometimes Android Studio does not detect emulators such as NOX or MEMU fail to connect to adb automatically, reboot can help sometimes. Please refer to the support page.
 
 # Implementing the menu to the target game
 
@@ -319,7 +317,7 @@ Be sure to enable Word wrap so it is easier to read
 
 ![](https://i.imgur.com/JQdPjyZ.png)
 
-Note it somewhere so you can easly remember it
+Note it somewhere to remember it
 
 ### 2. Making corresponding changes in the files
 
@@ -438,7 +436,7 @@ If you face any problem, please read the [FAQ](#faq)
 
 # Loading lib without mod menu
 
-Comment out `Start(this);` in `MainActivity.java`
+Just comment out or remove the code that checks for Overlay permission in `MainActivity.java` and loads. No need to remove any menu related from cpp
 
 # FAQ
 ### My game crashing or freezing/My mod menu does not work
@@ -488,7 +486,7 @@ See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki
 
 ### How can I protect my dex and/or lib?
 
-There is no need to protect dex since there are nothing important in java/smali codes. All the important codes such as offsets are in the lib file and they are protected enough. We do not recommended to use chinese tools as anti virus may flag your mod for malware (false positive). Don't ask us for the tools
+There is no need to protect dex since there are nothing important in java/smali codes. Offsets and strings are protected enough. We do not recommended to use chinese tools as anti virus may flag your mod for malware (false positive). Don't ask us for the tools
 
 ### How to get older version of the template? or how to see updates/commits?
 
@@ -502,15 +500,21 @@ Since I can't spend my days on it, I have to prioritize the features and fixes t
 
 ### Why can't you just teach me modding the game? For example, hooking or making aimbot and ESP, or modding PUBG?
 
-We aren't spoonfeeding, we aren't your parents. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, or how il2cpp works, is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. Again, if you saw someone modded the game which has special feature like floating text seen on Among US, ask the owner who implemented the feature, not us. Don't be shy.
+We aren't spoonfeeding. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, or how il2cpp works, is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. Again, if you saw someone modded the game which has special feature like floating text seen on Among US, ask the owner who implemented the feature.
 
-### How can I соntact you?
+# Reporting issues/Cоntact
+Please stop and read this carefully.
+
+Make sure you have readed FAQ and at least searching for answers.
+
+If you have installation or usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing P**G, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
+
+Beginner/newbie/noobs are **NOT** allowed to cоntact. They are often annoying, which is the reason we no longer accept. Your will be left **unanswered**. Experienced modders can contact as they want, as long as they are not annoying.
+
+Issue tracker is currently disabled at this time
+
 <details>
-<summary>Contact:</summary>
-You can соntact me via Tеlеgram or Disсоrd. Please make sure you have readed everything and looking on Google for answer before contacting.
-
-**DON'T contact if you are a beginner/newbie/noobs, don't be annoying, don't beg to spoonfeed, don't ask how to mod games. You will likely get ignored or even BLOCKED!**
-
+<summary>Cоntact:</summary>
 Tеlеgram: @ThеᒪGᒪ
 
 Disсоrd: ᒪGᒪ#6844
@@ -524,4 +528,4 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
 * Rprop - https://github.com/Rprop/And64InlineHook
-* Some modders for suggestions and ideas :)
+* Some amazing modders for suggestions, ideas and feedbacks :)

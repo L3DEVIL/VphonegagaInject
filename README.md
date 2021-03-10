@@ -1,8 +1,6 @@
 **WARNING: THIS TEMPLATE IS NOT FOR BEGINNERS. YOU NEED THE PROGRAMMING KNOWLEDGE, OTHERWISE THIS TEMPLATE WILL BE TOO HARD FOR YOU**
 
-**We have disabled issues section due to beginners using issues improperly**
-
-**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask. The codes in the template simply tells you how to use them**
+**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers. This template simply tells you how to use them**
 
 **For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
@@ -58,9 +56,11 @@ Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
 Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
 
 # Video Tutorial
-Big thanks to PMT DVA who created a video tutorial for me. Be warned, this is not for beginners, the title is quite misleading
+Big thanks to modders who created a video tutorial for me. Be warned, this is not for beginners, the title is quite misleading
 
-https://www.youtube.com/watch?v=ieMclBtL6Ig
+PMT DVA: https://www.youtube.com/watch?v=ieMclBtL6Ig
+
+Pasha Production: https://www.youtube.com/watch?v=RvrZKIe-QGc
 
 # Setting up Android Studio
 
@@ -217,6 +217,8 @@ Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 
 
 Do not change or translate the first text unless you know what you are doing
 
+Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add `True_`. Example: `CheckBox_True_The Check Box`
+
 To learn HTML, go to this page: https://www.w3schools.com/
 
 Usage:
@@ -262,6 +264,8 @@ KittyMemory usage:
 ```
 
 Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
+
+Use ARM Converter to convert ARM to HEX: https://armconverter.com/
 
 Hook usage:
 ARM64:
@@ -507,9 +511,9 @@ Please stop and read this carefully.
 
 Make sure you have readed FAQ and at least searching for answers.
 
-If you have installation or usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing P**G, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
+If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing P**G, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
 
-Beginner/newbie/noobs are **NOT** allowed to cоntact. They are often annoying, which is the reason we no longer accept. Your will be left **unanswered**. Experienced modders can contact as they want, as long as they are not annoying.
+Beginner/newbie/noobs are **NOT** allowed to cоntact. They are often annoying, which is the reason we no longer accept. You will be left **unanswered**. Experienced modders can contact as they want, as long as they are not annoying.
 
 Issue tracker is currently disabled at this time
 

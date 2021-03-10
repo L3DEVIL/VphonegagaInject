@@ -56,7 +56,7 @@ public class Preferences {
         return 0;
     }
 
-    public static boolean loadPrefBoolean(String featureName, int featureNum) {
+    public static boolean loadPrefBoolean(String featureName, int featureNum, boolean def) {
         try {
             SharedPreferences preferences = getDefaultSharedPreferences(context);
             if (featureNum == -3) {
@@ -65,14 +65,14 @@ public class Preferences {
             if (savePref || featureNum < 0) {
                 //if (featureNum == 1001 && !preferences.contains("1001"))
                 //    return true;
-                boolean bool = preferences.getBoolean(String.valueOf(featureNum), false);
-                Changes(context, featureNum, featureName, 0, bool, null);
-                return bool;
+                def = preferences.getBoolean(String.valueOf(featureNum), def);
             }
+            Changes(context, featureNum, featureName, 0, def, null);
+            return def;
         } catch (ClassCastException e) {
             Log.e(FloatingModMenuService.TAG, e.getMessage());
         }
-        return false;
+        return def;
     }
 
     public static String loadPrefString(String featureName, int featureNum) {

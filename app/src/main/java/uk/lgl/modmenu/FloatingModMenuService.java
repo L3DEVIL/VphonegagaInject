@@ -165,7 +165,7 @@ public class FloatingModMenuService extends Service {
         gdMenuBody.setCornerRadius(MENU_CORNER); //Set corner
         gdMenuBody.setColor(MENU_BG_COLOR); //Set background color
         //gradientdrawable.setStroke(1, Color.parseColor("#32cb00")); //Set border
-        mExpanded.setBackground(Preferences.loadPrefBoolean("Color animation", -1) ? gdAnimation : gdMenuBody); //Apply aninmation to it
+        mExpanded.setBackground(Preferences.loadPrefBoolean("Color animation", -1, false) ? gdAnimation : gdMenuBody); //Apply aninmation to it
 
         //********** The icon to open mod menu **********
         startimage = new ImageView(this);
@@ -259,7 +259,7 @@ public class FloatingModMenuService extends Service {
         scrlLL = new LinearLayout.LayoutParams(MATCH_PARENT, dp(MENU_HEIGHT));
         scrlLLExpanded = new LinearLayout.LayoutParams(mExpanded.getLayoutParams());
         scrlLLExpanded.weight = 1.0f;
-        scrollView.setLayoutParams(Preferences.loadPrefBoolean("Auto size vertically", -2) ? scrlLLExpanded : scrlLL);
+        scrollView.setLayoutParams(Preferences.loadPrefBoolean("Auto size vertically", -2, false) ? scrlLLExpanded : scrlLL);
         scrollView.setBackgroundColor(MENU_FEATURE_BG_COLOR);
 
         patches = new LinearLayout(this);
@@ -359,16 +359,20 @@ public class FloatingModMenuService extends Service {
     }
 
     private void featureList(String[] listFT, LinearLayout linearLayout) {
-        Log.i(TAG, listFT[0]);
-
         int featureNum, subFeat = 0;
+
         for (int i = 0; i < listFT.length; i++) {
+            boolean switchedOn = false;
+            Log.i("featureList", listFT[i]);
             String feature = listFT[i];
+            if (feature.contains("True_")) {
+                switchedOn = true;
+                feature = feature.replaceFirst("True_", "");
+            }
             String[] str = feature.split("_");
             if (TextUtils.isDigitsOnly(str[0]) || str[0].matches("-[0-9]*")) {
                 featureNum = Integer.parseInt(str[0]);
                 feature = feature.replaceFirst(str[0] + "_", "");
-                Log.i(TAG, feature);
                 subFeat++;
             } else {
                 //Subtract feature number. We don't want to count ButtonLink, Category, RichTextView and RichWebView
@@ -377,13 +381,13 @@ public class FloatingModMenuService extends Service {
             String[] strSplit = feature.split("_");
 
             if (strSplit[0].equals("Toggle")) {
-                linearLayout.addView(Switch(featureNum, strSplit[1]));
+                linearLayout.addView(Switch(featureNum, strSplit[1], switchedOn));
             } else if (strSplit[0].equals("SeekBar")) {
                 linearLayout.addView(SeekBar(featureNum, strSplit[1], Integer.parseInt(strSplit[2]), Integer.parseInt(strSplit[3])));
             } else if (strSplit[0].equals("Button")) {
                 linearLayout.addView(Button(featureNum, strSplit[1]));
             } else if (strSplit[0].equals("ButtonOnOff")) {
-                linearLayout.addView(ButtonOnOff(featureNum, strSplit[1]));
+                linearLayout.addView(ButtonOnOff(featureNum, strSplit[1], switchedOn));
             } else if (strSplit[0].equals("Spinner")) {
                 linearLayout.addView(RichTextView(strSplit[1]));
                 linearLayout.addView(Spinner(featureNum, strSplit[1], strSplit[2]));
@@ -392,7 +396,7 @@ public class FloatingModMenuService extends Service {
             } else if (strSplit[0].equals("InputValue")) {
                 linearLayout.addView(TextField(featureNum, strSplit[1], true));
             } else if (strSplit[0].equals("CheckBox")) {
-                linearLayout.addView(CheckBox(featureNum, strSplit[1]));
+                linearLayout.addView(CheckBox(featureNum, strSplit[1], switchedOn));
             } else if (strSplit[0].equals("RadioButton")) {
                 linearLayout.addView(RadioButton(featureNum, strSplit[1], strSplit[2]));
             } else if (strSplit[0].equals("ButtonLink")) {
@@ -458,7 +462,7 @@ public class FloatingModMenuService extends Service {
         };
     }
 
-    private View Switch(final int featureNum, final String featureName) {
+    private View Switch(final int featureNum, final String featureName, boolean switchedOn) {
         final Switch switchR = new Switch(this);
         ColorStateList buttonStates = new ColorStateList(
                 new int[][]{
@@ -481,7 +485,7 @@ public class FloatingModMenuService extends Service {
         switchR.setText(featureName);
         switchR.setTextColor(TEXT_COLOR_2);
         switchR.setPadding(10, 5, 0, 5);
-        switchR.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
+        switchR.setChecked(Preferences.loadPrefBoolean(featureName, featureNum, switchedOn));
         switchR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 localChanges(featureNum, isChecked);
@@ -570,17 +574,16 @@ public class FloatingModMenuService extends Service {
         return button;
     }
 
-    private View ButtonOnOff(final int featureNum, String featureName) {
+    private View ButtonOnOff(final int featureNum, String featureName, boolean switchedOn) {
         final Button button = new Button(this);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
         layoutParams.setMargins(7, 5, 7, 5);
         button.setLayoutParams(layoutParams);
         button.setTextColor(TEXT_COLOR_2);
-        button.setGravity(Gravity.CENTER);
         button.setAllCaps(false); //Disable caps to support html
 
         final String finalFeatureName = featureName.replace("OnOff_", "");
-        boolean isOn = Preferences.loadPrefBoolean(featureName, featureNum);
+        boolean isOn = Preferences.loadPrefBoolean(featureName, featureNum, switchedOn);
         if (isOn) {
             button.setText(Html.fromHtml(finalFeatureName + ": ON"));
             button.setBackgroundColor(BtnON);
@@ -609,7 +612,6 @@ public class FloatingModMenuService extends Service {
                 }
             }
         });
-
         return button;
     }
 
@@ -760,13 +762,13 @@ public class FloatingModMenuService extends Service {
         return linearLayout;
     }
 
-    private View CheckBox(final int featureNum, final String featureName) {
+    private View CheckBox(final int featureNum, final String featureName, boolean switchedOn) {
         final CheckBox checkBox = new CheckBox(this);
         checkBox.setText(featureName);
         checkBox.setTextColor(TEXT_COLOR_2);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
             checkBox.setButtonTintList(ColorStateList.valueOf(CheckBoxColor));
-        checkBox.setChecked(Preferences.loadPrefBoolean(featureName, featureNum));
+        checkBox.setChecked(Preferences.loadPrefBoolean(featureName, featureNum, switchedOn));
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -827,7 +829,6 @@ public class FloatingModMenuService extends Service {
         textView.setBackgroundColor(CategoryBG);
         textView.setText(Html.fromHtml(text));
         textView.setGravity(Gravity.CENTER);
-        textView.setTextSize(14.0f);
         textView.setTextColor(TEXT_COLOR_2);
         textView.setTypeface(null, Typeface.BOLD);
         textView.setPadding(0, 5, 0, 5);

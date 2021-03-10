@@ -64,6 +64,7 @@ Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
 // Assigning feature numbers is optional. Without it, it will automatically count for you, starting from 0
 // Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 0,1,2,3,4,5...
 // ButtonLink, Category, RichTextView and RichWebView is not counted. They can't have feature number assigned
+// Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add True_. Example: CheckBox_True_The Check Box
 // To learn HTML, go to this page: https://www.w3schools.com/
 
 // Usage:
@@ -88,6 +89,7 @@ Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
 // Spinner_Weapons_AK47,9mm,Knife
 // 2_ButtonOnOff_God mode
 // Category_Hello world
+//
 
 JNIEXPORT jobjectArray
 JNICALL
@@ -97,7 +99,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
     const char *features[] = {
             OBFUSCATE("Category_The Category"), //Not counted
             OBFUSCATE("Toggle_The toggle"), //Starts with 0
-            OBFUSCATE("100_Toggle_The toggle 2"), //This one have feature number assigned
+            OBFUSCATE("100_Toggle_True_The toggle 2"), //This one have feature number assigned, and switched on by default
             OBFUSCATE("110_Toggle_The toggle 3"), //This one too
             OBFUSCATE("SeekBar_The slider_1_100"), //Assigned numbers are not counted, so 1
             OBFUSCATE("SeekBar_Kittymemory slider example_1_5"), //2
@@ -112,7 +114,8 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject a
             OBFUSCATE(
                     "RichTextView_This is text view, not fully HTML."
                     "<b>Bold</b> <i>italic</i> <u>underline</u>"
-                    "<br />New line <font color='red'>Support colors</font>"),
+                    "<br />New line <font color='red'>Support colors</font>"
+                    "<br/><big>bigger Text</big>"),
             OBFUSCATE(
                     "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
                     "This is WebView, with REAL HTML support!"
@@ -280,6 +283,7 @@ void Update(void *instance) {
 // Don't forget to remove or comment out logs before you compile it.
 
 //KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
+//Use ARM Converter to convert ARM to HEX: https://armconverter.com/
 //Note: We use OBFUSCATE_KEY for offsets which is the important part xD
 
 void *hack_thread(void *) {

@@ -19,9 +19,9 @@
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
-Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/) (Yes, he made it first), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
+Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
 
-It support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
+It support Android 4.4.x way up to Android S Preview. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
 
 Preview:
 
@@ -329,10 +329,12 @@ Decompile the game APK
 
 Open the game's `AndroidManifest.xml`
 
-Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. We only need one permission. Doesn't matter where you place it as long as it's above the application tag
+Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. Doesn't matter where you place it as long as it's above the application tag
 ```
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 ```
+
+If you don't add it, you can't allow overlay permission.
 
 ![](https://i.imgur.com/XOxLU91.png)
 

@@ -189,18 +189,23 @@ public class FloatingModMenuService extends Service {
 
         //********** The icon in Webview to open mod menu **********
         WebView wView = new WebView(this); //Icon size width=\"50\" height=\"50\"
+        wView.setLayoutParams(new RelativeLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+        int applyDimension2 = (int) TypedValue.applyDimension(1, ICON_SIZE, getResources().getDisplayMetrics()); //Icon size
+        wView.getLayoutParams().height = applyDimension2;
+        wView.getLayoutParams().width = applyDimension2;
         wView.loadData("<html>" +
                 "<head></head>" +
                 "<body style=\"margin: 0; padding: 0\">" +
-                "<img src=\"" + IconWebViewData() + "\" width=\"" + ICON_SIZE + "\" height=\"" + ICON_SIZE + "\"" +
+                "<img src=\"" + IconWebViewData() + "\" width=\"" + ICON_SIZE + "\" height=\"" + ICON_SIZE + "\" >" +
                 "</body>" +
                 "</html>", "text/html", "utf-8");
-        wView.setBackgroundColor(0x00000000); //Transparent
+        //wView.setBackgroundColor(0x00000000); //Transparent
         wView.setAlpha(ICON_ALPHA);
         wView.getSettings().setAppCachePath("/data/data/" + getPackageName() + "/cache");
         wView.getSettings().setAppCacheEnabled(true);
         wView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         wView.setOnTouchListener(onTouchListener());
+
         wView.requestLayout();
 
         //********** Settings icon **********
@@ -709,6 +714,9 @@ public class FloatingModMenuService extends Service {
                     edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
                     edittext.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
                     edittext.setText(String.valueOf(edittextnum.getNum()));
+                    InputFilter[] FilterArray = new InputFilter[1];
+                    FilterArray[0] = new InputFilter.LengthFilter(10);
+                    edittext.setFilters(FilterArray);
                 } else {
                     edittext.setText(edittextstring.getString());
                 }
@@ -725,6 +733,7 @@ public class FloatingModMenuService extends Service {
                 });
                 edittext.requestFocus();
 
+
                 //Button
                 Button btndialog = new Button(getApplicationContext());
                 btndialog.setBackgroundColor(BTN_COLOR);
@@ -734,7 +743,12 @@ public class FloatingModMenuService extends Service {
                     @Override
                     public void onClick(View view) {
                         if (numOnly) {
-                            int num = Integer.parseInt(TextUtils.isEmpty(edittext.getText().toString()) ? "0" : edittext.getText().toString());
+                            int num;
+                            try {
+                                num = Integer.parseInt(TextUtils.isEmpty(edittext.getText().toString()) ? "0" : edittext.getText().toString());
+                            } catch (NumberFormatException ex) {
+                                num = 2147483640;
+                            }
                             edittextnum.setNum(num);
                             button.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + num + "</font></font>"));
                             alert.dismiss();

@@ -78,7 +78,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_settingsList(JNIEnv *env, jobject act
             OBFUSCATE("-1_Toggle_Color animation"),
             OBFUSCATE("-2_Toggle_Auto size vertically"),
             OBFUSCATE(
-                    "-3_Toggle_Save feature preferences (Radio Button is not saved)"), //-3 is checked on Preferences.java
+                    "-3_Toggle_Save feature preferences"), //-3 is checked on Preferences.java
             OBFUSCATE("Category_Logcat"),
             OBFUSCATE(
                     "RichTextView_Save logcat if a bug occured and sent it to the modder. Clear logcat and reproduce bug again if the log file is too large"),

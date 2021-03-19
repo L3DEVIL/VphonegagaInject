@@ -814,25 +814,23 @@ public class FloatingModMenuService extends Service {
             final String finalFeatureName = featureName, radioName = lists.get(i);
             View.OnClickListener first_radio_listener = new View.OnClickListener() {
                 public void onClick(View v) {
-                    textView.setText(finalFeatureName + ": " + radioName);
                     textView.setText(Html.fromHtml("<font face='roboto'>" + finalFeatureName + ": <font color='" + NumberTxtColor + "'>" + radioName + "</font>"));
                     Preferences.changeFeatureInt(finalFeatureName, featureNum, radioGroup.indexOfChild(Radioo));
                 }
             };
             System.out.println(lists.get(i));
-            //int index = Preferences.loadPrefInt(featureName, featureNum);
-            //Load preferences does not work well with radiobutton. Checked radio won't uncheck
-            /*if ((index - 1) == i)
-            {
-                Radioo.setChecked(true);
-                Preferences.changeFeatureInt(finalFeatureName, featureNum, index);
-            }*/
             Radioo.setText(lists.get(i));
             Radioo.setTextColor(Color.LTGRAY);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                 Radioo.setButtonTintList(ColorStateList.valueOf(RadioColor));
             Radioo.setOnClickListener(first_radio_listener);
             radioGroup.addView(Radioo);
+        }
+
+        int index = Preferences.loadPrefInt(featureName, featureNum);
+        if (index > 0) { //Preventing it to get an index less than 1. below 1 = null = crash
+            textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + lists.get(index - 1) + "</font>"));
+            ((RadioButton)radioGroup.getChildAt(index)).setChecked(true);
         }
 
         return radioGroup;

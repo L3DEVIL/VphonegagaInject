@@ -502,18 +502,20 @@ Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
 Also known as: "You're a developer after all — it shouldn't be that hard!"
 
-Since I can't spend my days on it, I have to prioritize the features and fixes that are likely to benefit the larger number of people. Features that is specific to your usage is not going to benefit that many users after all. This is important that you do not expect that I know everything. With all this being said, remember that this is 100% Open Source. So if you really want a specific feature, try to do it yourself, or even better, ask the owner who implemented the feature, not us. Don't be shy
+Since I can't spend my days on it, I have to prioritize the features and fixes that are likely to benefit the larger number of people. Features that is specific to your usage is not going to benefit that many users after all. This is important that you do not expect that I can do everything for you. Developing *is* hard, and even outside of supporting a feature, adding the code can take longer than you think!
 
-### Why can't you just teach me modding the game? For example, hooking or making aimbot and ESP, or modding PUBG?
+With all this being said, remember that this is 100% Open Source. So if you really want a specific feature, try to do it yourself, or ask someone who are willing to help you.
 
-We aren't spoonfeeding. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, or how il2cpp works, is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. Again, if you saw someone modded the game which has special feature like floating text seen on Among US, ask the owner who implemented the feature.
+### Why can't you just teach me modding the game? For example, hooking or making aimbot and ESP?
+
+We aren't spoonfeeding. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, how il2cpp works, etc. is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. If you saw someone modded the game which has special feature like floating text seen on Among US, ask the right owner. Move on if they don't want to help you!
 
 # Reporting issues/Cоntact
 Please stop and read this carefully.
 
 Make sure you have readed FAQ and at least searching for answers.
 
-If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing P**G, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
+If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing PUBG, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
 
 Beginner/newbie/noobs are **NOT** allowed to cоntact. They are often annoying, which is the reason we no longer accept. You will be left **unanswered**. Experienced modders can contact as they want, as long as they are not annoying.
 

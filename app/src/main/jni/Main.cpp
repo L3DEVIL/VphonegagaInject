@@ -53,6 +53,74 @@ void (*AddMoneyExample)(void *instance, int amount);
 //Target lib here
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
+// we will run our patches in a new thread so our while loop doesn't block process main thread
+// Don't forget to remove or comment out logs before you compile it.
+
+//KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
+//Use ARM Converter to convert ARM to HEX: https://armconverter.com/
+//Note: We use OBFUSCATE_KEY for offsets which is the important part xD
+
+void *hack_thread(void *) {
+    LOGI(OBFUSCATE("pthread created"));
+
+    //Check if target lib is loaded
+    do {
+        sleep(1);
+    } while (!isLibraryLoaded(targetLibName));
+
+    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
+
+#if defined(__aarch64__) //Compile for arm64 lib only
+    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '3')),
+                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
+                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+
+    // Offset Hook example
+    // A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
+    //                (void **) &old_get_BoolExample);
+
+    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
+    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
+
+#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
+
+    // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
+                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
+                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //Apply patches here if you don't use mod menu
+    //hexPatches.GodMode.Modify();
+    //hexPatches.GodMode2.Modify();
+
+    // Offset Hook example
+    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+    //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
+
+    // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
+    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
+
+    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
+    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
+
+    LOGI(OBFUSCATE("Done"));
+#endif
+
+    return NULL;
+}
+
+//JNI calls
 extern "C" {
 JNIEXPORT void JNICALL
 Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
@@ -66,30 +134,6 @@ Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
 // ButtonLink, Category, RichTextView and RichWebView is not counted. They can't have feature number assigned
 // Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add True_. Example: CheckBox_True_The Check Box
 // To learn HTML, go to this page: https://www.w3schools.com/
-
-// Usage:
-// (Optional feature number)_Toggle_(feature name)
-// (Optional feature number)_SeekBar_(feature name)_(min value)_(max value)
-// (Optional feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
-// (Optional feature number)_Button_(feature name)
-// (Optional feature number)_ButtonOnOff_(feature name)
-// (Optional feature number)_InputValue_(feature name)
-// (Optional feature number)_CheckBox_(feature name)
-// (Optional feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
-// RichTextView_(Text with limited HTML support)
-// RichWebView_(Full HTML support)
-// ButtonLink_(feature name)_(URL/Link here)
-// Category_(text)
-
-// Few examples:
-// 10_Toggle_Jump hack
-// 100_Toggle_Ammo hack
-// Toggle_Ammo hack
-// 1_Spinner_Weapons_AK47,9mm,Knife
-// Spinner_Weapons_AK47,9mm,Knife
-// 2_ButtonOnOff_God mode
-// Category_Hello world
-//
 
 JNIEXPORT jobjectArray
 JNICALL
@@ -277,73 +321,6 @@ void (*old_Update)(void *instance);
 void Update(void *instance) {
     instanceBtn = instance;
     old_Update(instance);
-}
-
-// we will run our patches in a new thread so our while loop doesn't block process main thread
-// Don't forget to remove or comment out logs before you compile it.
-
-//KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
-//Use ARM Converter to convert ARM to HEX: https://armconverter.com/
-//Note: We use OBFUSCATE_KEY for offsets which is the important part xD
-
-void *hack_thread(void *) {
-    LOGI(OBFUSCATE("pthread called"));
-
-    //Check if target lib is loaded
-    do {
-        sleep(1);
-    } while (!isLibraryLoaded(targetLibName));
-
-    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
-
-#if defined(__aarch64__) //Compile for arm64 lib only
-    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", '3')),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-
-    // Offset Hook example
-    // A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
-    //                (void **) &old_get_BoolExample);
-
-    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
-    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
-
-#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
-
-    // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //Apply patches here if you don't use mod menu
-    //hexPatches.GodMode.Modify();
-    //hexPatches.GodMode2.Modify();
-
-    // Offset Hook example
-    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
-    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
-    //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
-
-    // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
-    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
-
-    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
-    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
-
-    LOGI(OBFUSCATE("Done"));
-#endif
-
-    return NULL;
 }
 
 //No need to use JNI_OnLoad, since we don't use JNIEnv

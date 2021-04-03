@@ -104,15 +104,20 @@ After it's done, you can start working!
 
 ### Java
 
-**`modmenu/Logcat.java`**: To save and clear logcat on menu settings without root and without file permission. Can be helpful for modders to diagnose the issues
+#### **modmenu/Logcat.java**
+To save and clear logcat on menu settings without root and without file permission. Can be helpful for modders to diagnose the issues
 
 Android 11: /storage/emulated/0/Documents/Mod Menu logs/
 
 Android 10 and below: /storage/emulated/0/Android/data/(package name)/files/Mod Menu logs
 
-**`modmenu/Preferences.java`**: Saving the menu feature preferences and calling changes via JNI
+#### **modmenu/Preferences.java**
 
-**`modmenu/FloatingModMenuService.java`**: Main codes of mod menu design
+Saving the menu feature preferences and calling changes via JNI
+
+#### **modmenu/FloatingModMenuService.java**
+
+Main codes of mod menu design
 
 The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments
 
@@ -163,14 +168,17 @@ LinearLayoutExample.addView(textView);
 
 While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc. for more infomation
 
-**`MainActivity.java`**:
+#### **MainActivity.java**
+
 Activity launcher. Checks if device running Android 6.0 or above and if have overlay permission enabled before starting menu service.
 
 You pretty don't need to work with it unless you are implementing something like login layout.
 
 ### Cpp
 
-- **`Menu.h`**: Menu related with JNI calls
+#### **Menu.h**
+
+Menu related with JNI calls
 
 - `Title`: Big text
 
@@ -203,7 +211,9 @@ Nothing:
 return NULL
 ```
 
-**`Main.cpp`**: In this file, you will work with your mods here
+#### **Main.cpp**
+
+In this file, you will work with your mods here
 
 - `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
@@ -253,7 +263,7 @@ Learn more about HTML https://www.w3schools.com/
 
 - `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
 
-KittyMemory usage:
+#### KittyMemory usage:
 ```MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
 [Struct].get_CurrBytes().Modify();
 [Struct].get_CurrBytes().Restore();
@@ -267,20 +277,20 @@ Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.c
 
 Use ARM Converter to convert ARM to HEX: https://armconverter.com/
 
-Hook usage:
+#### Hook usage:
 ARM64:
 ```A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
 
 ARMv7/x86:
 ```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
 
-**`Android.mk`**
+#### **Android.mk**
 
 The make file for the c++ compiler. In that file, you can change the lib name on the `LOCAL_MODULE` line
 When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on `MainActivity.java`
 Both must have same name
 
-**C++ string obfuscation**
+#### **C++ string obfuscation**
 
 We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
 

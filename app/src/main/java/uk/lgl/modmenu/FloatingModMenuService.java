@@ -199,13 +199,12 @@ public class FloatingModMenuService extends Service {
                 "<img src=\"" + IconWebViewData() + "\" width=\"" + ICON_SIZE + "\" height=\"" + ICON_SIZE + "\" >" +
                 "</body>" +
                 "</html>", "text/html", "utf-8");
-        //wView.setBackgroundColor(0x00000000); //Transparent
+        wView.setBackgroundColor(0x00000000); //Transparent
         wView.setAlpha(ICON_ALPHA);
-        wView.getSettings().setAppCachePath("/data/data/" + getPackageName() + "/cache");
+        wView.getSettings().setAppCachePath(String.valueOf(getCacheDir()));
         wView.getSettings().setAppCacheEnabled(true);
         wView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         wView.setOnTouchListener(onTouchListener());
-
         wView.requestLayout();
 
         //********** Settings icon **********
@@ -368,7 +367,7 @@ public class FloatingModMenuService extends Service {
 
         for (int i = 0; i < listFT.length; i++) {
             boolean switchedOn = false;
-            Log.i("featureList", listFT[i]);
+            //Log.i("featureList", listFT[i]);
             String feature = listFT[i];
             if (feature.contains("True_")) {
                 switchedOn = true;
@@ -508,7 +507,7 @@ public class FloatingModMenuService extends Service {
         linearLayout.setGravity(Gravity.CENTER);
 
         final TextView textView = new TextView(this);
-        textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + ((loadedProg == 0) ? min : loadedProg) + "</font>"));
+        textView.setText(Html.fromHtml(featureName + ": <font color='" + NumberTxtColor + "'>" + ((loadedProg == 0) ? min : loadedProg)));
         textView.setTextColor(TEXT_COLOR_2);
 
         SeekBar seekBar = new SeekBar(this);
@@ -530,7 +529,7 @@ public class FloatingModMenuService extends Service {
                 //if progress is greater than minimum, don't go below. Else, set progress
                 seekBar.setProgress(i < min ? min : i);
                 Preferences.changeFeatureInt(featureName, featureNum, i < min ? min : i);
-                textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + (i < min ? min : i) + "</font>"));
+                textView.setText(Html.fromHtml(featureName + ": <font color='" + NumberTxtColor + "'>" + (i < min ? min : i)));
             }
         });
         linearLayout.addView(textView);
@@ -669,11 +668,11 @@ public class FloatingModMenuService extends Service {
         if (numOnly) {
             int num = Preferences.loadPrefInt(featureName, feature);
             edittextnum.setNum((num == 0) ? 1 : num);
-            button.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + ((num == 0) ? 1 : num) + "</font></font>"));
+            button.setText(Html.fromHtml(featureName + ": <font color='" + NumberTxtColor + "'>" + ((num == 0) ? 1 : num) + "</font>"));
         } else {
             String string = Preferences.loadPrefString(featureName, feature);
             edittextstring.setString((string == "") ? "" : string);
-            button.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + string + "</font></font>"));
+            button.setText(Html.fromHtml(featureName + ": <font color='" + NumberTxtColor + "'>" + string + "</font>"));
         }
         button.setAllCaps(false);
         button.setLayoutParams(layoutParams);
@@ -750,13 +749,13 @@ public class FloatingModMenuService extends Service {
                                 num = 2147483640;
                             }
                             edittextnum.setNum(num);
-                            button.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + num + "</font></font>"));
+                            button.setText(Html.fromHtml(featureName + ": <font color='#41c300'>" + num + "</font>"));
                             alert.dismiss();
                             Preferences.changeFeatureInt(featureName, feature, num);
                         } else {
                             String str = edittext.getText().toString();
                             edittextstring.setString(edittext.getText().toString());
-                            button.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='#41c300'>" + str + "</font></font>"));
+                            button.setText(Html.fromHtml(featureName + ": <font color='#41c300'>" + str + "</font>"));
                             alert.dismiss();
                             Preferences.changeFeatureString(featureName, feature, str);
                         }
@@ -814,7 +813,7 @@ public class FloatingModMenuService extends Service {
             final String finalFeatureName = featureName, radioName = lists.get(i);
             View.OnClickListener first_radio_listener = new View.OnClickListener() {
                 public void onClick(View v) {
-                    textView.setText(Html.fromHtml("<font face='roboto'>" + finalFeatureName + ": <font color='" + NumberTxtColor + "'>" + radioName + "</font>"));
+                    textView.setText(Html.fromHtml(finalFeatureName + ": <font color='" + NumberTxtColor + "'>" + radioName));
                     Preferences.changeFeatureInt(finalFeatureName, featureNum, radioGroup.indexOfChild(Radioo));
                 }
             };
@@ -829,7 +828,7 @@ public class FloatingModMenuService extends Service {
 
         int index = Preferences.loadPrefInt(featureName, featureNum);
         if (index > 0) { //Preventing it to get an index less than 1. below 1 = null = crash
-            textView.setText(Html.fromHtml("<font face='roboto'>" + featureName + ": <font color='" + NumberTxtColor + "'>" + lists.get(index - 1) + "</font>"));
+            textView.setText(Html.fromHtml(featureName + ": <font color='" + NumberTxtColor + "'>" + lists.get(index - 1)));
             ((RadioButton)radioGroup.getChildAt(index)).setChecked(true);
         }
 

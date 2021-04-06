@@ -16,6 +16,7 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
+#include <iostream>
 #include "Includes/obfuscate.h"
 #include "KittyMemory/MemoryPatch.h"
 #include "Includes/Logger.h"
@@ -25,11 +26,8 @@
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <And64InlineHook/And64InlineHook.hpp>
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
-
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
-#include <iostream>
-
 #endif
 
 // fancy struct for patches for kittyMemory
@@ -60,6 +58,32 @@ void (*AddMoneyExample)(void *instance, int amount);
 //Use ARM Converter to convert ARM to HEX: https://armconverter.com/
 //Note: We use OBFUSCATE_KEY for offsets which is the important part xD
 
+// Hooking example
+
+bool (*old_get_BoolExample)(void *instance);
+bool get_BoolExample(void *instance) {
+    if (instance != NULL && featureHookToggle) {
+        return true;
+    }
+    return old_get_BoolExample(instance);
+}
+
+float (*old_get_FloatExample)(void *instance);
+
+float get_FloatExample(void *instance) {
+    if (instance != NULL && sliderValue > 1) {
+        return (float) sliderValue;
+    }
+    return old_get_FloatExample(instance);
+}
+
+void (*old_Update)(void *instance);
+
+void Update(void *instance) {
+    instanceBtn = instance;
+    old_Update(instance);
+}
+
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread created"));
 
@@ -72,16 +96,19 @@ void *hack_thread(void *) {
 
 #if defined(__aarch64__) //Compile for arm64 lib only
     // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
+    // ARM64 assembly example
+    // MOV X0, #0x0 = 00 00 80 D2
+    // RET = C0 03 5F D6
     hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '3')),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+                                                    OBFUSCATE("00 00 80 D2 C0 03 5F D6"));
     //You can also specify target lib like this
     hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
                                                      string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+                                                     OBFUSCATE("20 00 80 D2 C0 03 5F D6"));
 
     // Offset Hook example
-    // A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
+    //A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
     //                (void **) &old_get_BoolExample);
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -91,14 +118,17 @@ void *hack_thread(void *) {
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
     // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
+    // ARMv7 assembly example
+    // MOV R0, #0x0 = 00 00 A0 E3
+    // BX LR = 1E FF 2F E1
     hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
                                                     string2Offset(OBFUSCATE_KEY("0x123456", '-')),
                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
     //You can also specify target lib like this
     hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
                                                      string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //Apply patches here if you don't use mod menu
+                                                     OBFUSCATE("01 00 A0 E3 1E FF 2F E1"));
+    //Can apply patches directly here without need to use switch
     //hexPatches.GodMode.Modify();
     //hexPatches.GodMode2.Modify();
 
@@ -296,32 +326,71 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
 }
 }
 
-// Hooking example
+																	
 
-bool (*old_get_BoolExample)(void *instance);
+																										
+																	
+																	   
 
-bool get_BoolExample(void *instance) {
-    if (instance != NULL && featureHookToggle) {
-        return true;
-    }
-    return old_get_BoolExample(instance);
-}
+						   
+									  
 
-float (*old_get_FloatExample)(void *instance);
+								   
+		
+				 
+											  
 
-float get_FloatExample(void *instance) {
-    if (instance != NULL && sliderValue > 1) {
-        return (float) sliderValue;
-    }
-    return old_get_FloatExample(instance);
-}
+																								
 
-void (*old_Update)(void *instance);
+													 
+																																	 
+																  
+																								  
+																						  
+											   
+																									
+																								   
+																						   
 
-void Update(void *instance) {
-    instanceBtn = instance;
-    old_Update(instance);
-}
+						  
+																																									  
+													  
+
+																								 
+																																
+																					   
+
+																								   
+
+																																	
+																  
+																								  
+																						  
+											   
+																									
+																								   
+																						   
+												  
+								  
+								   
+
+						  
+															   
+																						  
+																										 
+
+																																									 
+																																			 
+
+																								 
+																																
+																						  
+
+							
+	  
+
+				
+ 
 
 //No need to use JNI_OnLoad, since we don't use JNIEnv
 //We do this to hide OnLoad from disassembler

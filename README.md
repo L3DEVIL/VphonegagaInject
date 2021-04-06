@@ -292,7 +292,7 @@ Both must have same name
 
 #### **C++ string obfuscation**
 
-We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
+We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`. If you are concerned of its security, just use another obfuscation
 
 Example
 ```

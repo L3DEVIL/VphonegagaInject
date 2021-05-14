@@ -32,6 +32,7 @@ struct My_Patches {
 
 bool feature1 = false, feature2 = false, featureHookToggle = false;
 int sliderValue = 1;
+int level = 0;
 void *instanceBtn;
 
 // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -66,6 +67,19 @@ float get_FloatExample(void *instance) {
         return (float) sliderValue;
     }
     return old_get_FloatExample(instance);
+}
+
+//By Mabmoud Gaming
+//https://github.com/Mahmoud-GMG
+int (*old_Level)(void *instance);
+int Level(void *instance) {
+	//LOGD("Level 1");
+    if (instance != NULL && level) {
+        //LOGD("Level 2");
+	return (int) level;
+    }
+	//LOGD("Level 3");
+    return old_Level(instance);
 }
 
 void (*old_Update)(void *instance);
@@ -132,6 +146,9 @@ void *hack_thread(void *) {
     //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
     //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
     //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
+   // MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+    //               (void *) Level, (void **) &old_Level);
 
     // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
     //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
@@ -177,6 +194,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject c
             OBFUSCATE("ButtonOnOff_The On/Off button"),
             OBFUSCATE("CheckBox_The Check Box"),
             OBFUSCATE("InputValue_Input number"),
+            OBFUSCATE("50_InputValue_Input Level"),
             OBFUSCATE("InputText_Input text"),
             OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
 
@@ -326,6 +344,10 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             //MakeToast(env, obj, TextInput, Toast::LENGTH_SHORT);
             break;
         case 9:
+            break;
+        case 50:
+           //LOGD(OBFUSCATE("Feature 50 Called"));
+          level = value;
             break;
     }
 }

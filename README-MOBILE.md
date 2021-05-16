@@ -1,9 +1,9 @@
 **This is for Android mobile users who do not have a PC. Floating apps or similar is recommended to read this page while working at the same time**
 
-**This is best viewed on mobile**
+**BEST VIEWED ON MOBILE!**
 
 # Quick links
-- [Softwares you need](#softwares-you-need)
+- [What you need](#what-you-need)
 - [Video Tutorial](#video-tutorial)
 - [download/clone](#downloadclone)
 - [Setting up AIDE](#setting-up-aide)
@@ -14,18 +14,22 @@
 - [Useful links](#useful-links)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
-# Softwares you need
+# What you need
 * [Modded AIDE app](https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk): The official AIDE from Play Store will not work with this project
 * [ndk.tar.gz](https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk): NDK support for modded AIDE
 * [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en): File Manager
 * [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file. Note: It requires VIP to edit `AndroidManifest.xml` more than 200 lines
-* Any Apktool app to edit `AndroidManifest.xml` for free: [Modded APK Editor Pro app](https://mega.nz/file/zQxA0YDY#eNRgcyrHwpWh1nSTHhcc4quxzeXrXcUHlYPoRyltKEw) or [APK Repacker](https://mega.nz/file/LIom0DDL#hJyIchPDCk2n_gcDmutNsOKS86WXQN58qpEGa9JsLrU) (We use APK Editor Pro)
+* Apktool app to edit `AndroidManifest.xml` for free: [Modded APK Editor Pro app](https://mega.nz/file/zQxA0YDY#eNRgcyrHwpWh1nSTHhcc4quxzeXrXcUHlYPoRyltKEw) or [APK Repacker](https://mega.nz/file/LIom0DDL#hJyIchPDCk2n_gcDmutNsOKS86WXQN58qpEGa9JsLrU) (We use APK Editor Pro)
 * [Floating apps](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en) (optional): You can use it to read this page and working at the same time or use a build-in feature by OEM
 
 # Video Tutorial
-Video tutorial by Mahmoud Gaming (Mod menu v2.0)
+Note: Videos may be quite outdated
 
-https://www.youtube.com/watch?v=SMCsUy60Hs8
+Mahmoud Gaming: https://www.youtube.com/watch?v=SMCsUy60Hs8
+
+NSRAÎNA HACKER: https://www.youtube.com/watch?v=MkkZ_loEDTU
+
+BROKE MODS OFC (Customized menu): https://www.youtube.com/watch?v=IYREVGc-quM
 
 # Download/Clone
 
@@ -232,13 +236,11 @@ If it works, congratulations!
 
 # Troubleshooting
 
-Problem with the project: click **More... - Project - Refresh Build**. This will clear the project cache. Or delete the `build` folder from the project
+AIDE has a lot of compatibility issues, you need to research a lot.
 
-Problem with AIDE: Open System Settings - Apps and clear data of AIDE app. This will reset everything and you need to install NDK again
+Problem with the project: click **More... -> Project -> Refresh Build**. This will clear the project cache and fix problems. Or delete the `build` folder from the project
 
-# Loading lib without mod menu
-
-See: https://github.com/LGLTeam/Android-Mod-Menu#loading-lib-without-mod-menu
+Problem with AIDE: Open System Settings -> Apps and clear data of AIDE app. This will reset everything and you need to install NDK again
 
 # FAQ
 

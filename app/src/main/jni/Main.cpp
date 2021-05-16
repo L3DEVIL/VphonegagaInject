@@ -1,13 +1,3 @@
-/*
- * Credits:
- *
- * Octowolve - Mod menu: https://github.com/z3r0Sec/Substrate-Template-With-Mod-Menu
- * And hooking: https://github.com/z3r0Sec/Substrate-Hooking-Example
- * VanHoevenTR A.K.A Nixi: https://github.com/LGLTeam/VanHoevenTR_Android_Mod_Menu
- * MrIkso - Mod menu: https://github.com/MrIkso/FloatingModMenu
- * Rprop - https://github.com/Rprop/And64InlineHook
- * MJx0 A.K.A Ruit - KittyMemory: https://github.com/MJx0/KittyMemory
- * */
 #include <list>
 #include <vector>
 #include <string.h>
@@ -16,10 +6,11 @@
 #include <jni.h>
 #include <unistd.h>
 #include <fstream>
-#include "Includes/obfuscate.h"
-#include "KittyMemory/MemoryPatch.h"
+#include <iostream>
 #include "Includes/Logger.h"
+#include "Includes/obfuscate.h"
 #include "Includes/Utils.h"
+#include "KittyMemory/MemoryPatch.h"
 #include "Menu.h"
 
 #if defined(__aarch64__) //Compile for arm64 lib only
@@ -28,7 +19,6 @@
 
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
-#include <iostream>
 
 #endif
 
@@ -41,7 +31,7 @@ struct My_Patches {
 } hexPatches;
 
 bool feature1 = false, feature2 = false, featureHookToggle = false;
-int sliderValue = 1;
+int sliderValue = 1, level = 0;
 void *instanceBtn;
 
 // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
@@ -53,72 +43,174 @@ void (*AddMoneyExample)(void *instance, int amount);
 //Target lib here
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
-extern "C" {
-JNIEXPORT void JNICALL
-Java_uk_lgl_MainActivity_Toast(JNIEnv *env, jclass obj, jobject context) {
-    MakeToast(env, context, OBFUSCATE("Modded by LGL"), Toast::LENGTH_LONG);
+// we will run our patches in a new thread so our while loop doesn't block process main thread
+// Don't forget to remove or comment out logs before you compile it.
+
+//KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
+//Use ARM Converter to convert ARM to HEX: https://armconverter.com/
+//Note: We use OBFUSCATE_KEY for offsets which is the important part xD
+
+// Hooking example. Please refer to online tutorials how to hook
+bool (*old_get_BoolExample)(void *instance);
+bool get_BoolExample(void *instance) {
+    if (instance != NULL && featureHookToggle) {
+        return true;
+    }
+    return old_get_BoolExample(instance);
 }
 
+float (*old_get_FloatExample)(void *instance);
+float get_FloatExample(void *instance) {
+    if (instance != NULL && sliderValue > 1) {
+        return (float) sliderValue;
+    }
+    return old_get_FloatExample(instance);
+}
+
+int (*old_Level)(void *instance);
+int Level(void *instance) {
+    if (instance != NULL && level) {
+        return (int) level;
+    }
+    return old_Level(instance);
+}
+
+void (*old_Update)(void *instance);
+void Update(void *instance) {
+    instanceBtn = instance;
+    old_Update(instance);
+}
+
+void *hack_thread(void *) {
+    LOGI(OBFUSCATE("pthread created"));
+
+    //Check if target lib is loaded
+    do {
+        sleep(1);
+    } while (!isLibraryLoaded(targetLibName));
+
+    //Anti-lib rename
+    /*
+    do {
+        sleep(1);
+    } while (!isLibraryLoaded("libYOURNAME.so"));*/
+
+    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
+
+#if defined(__aarch64__) //Compile for arm64 lib only
+    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
+    // ARM64 assembly example
+    // MOV X0, #0x0 = 00 00 80 D2
+    // RET = C0 03 5F D6
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '3')),
+                                                    OBFUSCATE("00 00 80 D2 C0 03 5F D6"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
+                                                     OBFUSCATE("20 00 80 D2 C0 03 5F D6"));
+
+    // Offset Hook example
+    //A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
+    //                (void **) &old_get_BoolExample);
+
+    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
+    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
+
+#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
+
+    // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
+    // ARMv7 assembly example
+    // MOV R0, #0x0 = 00 00 A0 E3
+    // BX LR = 1E FF 2F E1
+    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
+                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
+                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
+    //You can also specify target lib like this
+    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
+                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
+                                                     OBFUSCATE("01 00 A0 E3 1E FF 2F E1"));
+    //Can apply patches directly here without need to use switch
+    //hexPatches.GodMode.Modify();
+    //hexPatches.GodMode2.Modify();
+
+    // Offset Hook example
+    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+    //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
+    // MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
+    //               (void *) Level, (void **) &old_Level);
+
+    // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
+    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
+
+    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
+    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
+    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
+
+    LOGI(OBFUSCATE("Done"));
+#endif
+
+    return NULL;
+}
+
+//JNI calls
+extern "C" {
 // Note:
 // Do not change or translate the first text unless you know what you are doing
 // Assigning feature numbers is optional. Without it, it will automatically count for you, starting from 0
 // Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 0,1,2,3,4,5...
 // ButtonLink, Category, RichTextView and RichWebView is not counted. They can't have feature number assigned
+// Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add True_. Example: CheckBox_True_The Check Box
 // To learn HTML, go to this page: https://www.w3schools.com/
-
-// Usage:
-// (Optional feature number)_Toggle_(feature name)
-// (Optional feature number)_SeekBar_(feature name)_(min value)_(max value)
-// (Optional feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
-// (Optional feature number)_Button_(feature name)
-// (Optional feature number)_ButtonOnOff_(feature name)
-// (Optional feature number)_InputValue_(feature name)
-// (Optional feature number)_CheckBox_(feature name)
-// (Optional feature number)_RadioButton_(feature name)_(Items e.g. radio1,radio2,radio3)
-// RichTextView_(Text with limited HTML support)
-// RichWebView_(Full HTML support)
-// ButtonLink_(feature name)_(URL/Link here)
-// Category_(text)
-
-// Few examples:
-// 10_Toggle_Jump hack
-// 100_Toggle_Ammo hack
-// Toggle_Ammo hack
-// 1_Spinner_Weapons_AK47,9mm,Knife
-// Spinner_Weapons_AK47,9mm,Knife
-// 2_ButtonOnOff_God mode
-// Category_Hello world
 
 JNIEXPORT jobjectArray
 JNICALL
-Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject activityObject) {
+Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
+
+    //Toasts added here so it's harder to remove it
+    MakeToast(env, context, OBFUSCATE("Modded by LGL"), Toast::LENGTH_LONG);
 
     const char *features[] = {
             OBFUSCATE("Category_The Category"), //Not counted
-            OBFUSCATE("Toggle_The toggle"), //Starts with 0
-            OBFUSCATE("100_Toggle_The toggle 2"), //This one have feature number assigned
+            OBFUSCATE("Toggle_The toggle"),
+            OBFUSCATE("100_Toggle_True_The toggle 2"), //This one have feature number assigned, and switched on by default
             OBFUSCATE("110_Toggle_The toggle 3"), //This one too
-            OBFUSCATE("SeekBar_The slider_1_100"), //Assigned numbers are not counted, so 1
-            OBFUSCATE("SeekBar_Kittymemory slider example_1_5"), //2
-            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"), //3
-            OBFUSCATE("Button_The button"), //4
+            OBFUSCATE("SeekBar_The slider_1_100"),
+            OBFUSCATE("SeekBar_Kittymemory slider example_1_5"),
+            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
+            OBFUSCATE("Button_The button"),
             OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"), //Not counted
-            OBFUSCATE("ButtonOnOff_The On/Off button"), //5
+            OBFUSCATE("ButtonOnOff_The On/Off button"),
             OBFUSCATE("CheckBox_The Check Box"),
             OBFUSCATE("InputValue_Input number"),
             OBFUSCATE("InputText_Input text"),
             OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
-            OBFUSCATE(
-                    "RichTextView_This is text view, not fully HTML."
-                    "<b>Bold</b> <i>italic</i> <u>underline</u>"
-                    "<br />New line <font color='red'>Support colors</font>"),
-            OBFUSCATE(
-                    "RichWebView_<html><head><style>body{color: white;}</style></head><body>"
-                    "This is WebView, with REAL HTML support!"
-                    "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
-                    "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
-                    "</body></html>")
+
+            //Create new collapse
+            OBFUSCATE("Collapse_Collapse 1"),
+            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
+            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
+            OBFUSCATE("123_CollapseAdd_Toggle_The toggle"),
+            OBFUSCATE("CollapseAdd_Button_The button"),
+
+            //Create new collapse again
+            OBFUSCATE("Collapse_Collapse 2"),
+            OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100"),
+            OBFUSCATE("CollapseAdd_InputValue_Input number"),
+
+            OBFUSCATE("RichTextView_This is text view, not fully HTML."
+                      "<b>Bold</b> <i>italic</i> <u>underline</u>"
+                      "<br />New line <font color='red'>Support colors</font>"
+                      "<br/><big>bigger Text</big>"),
+            OBFUSCATE("RichWebView_<html><head><style>body{color: white;}</style></head><body>"
+                      "This is WebView, with REAL HTML support!"
+                      "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
+                      "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
+                      "</body></html>")
     };
 
     //Now you dont have to manually update the number everytime;
@@ -231,7 +323,7 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             // See more https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
             if (instanceBtn != NULL)
                 AddMoneyExample(instanceBtn, 999999);
-            MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
+            // MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
             break;
         case 5:
             break;
@@ -239,107 +331,15 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
             featureHookToggle = boolean;
             break;
         case 7:
+            level = value;
             break;
         case 8:
-            MakeToast(env, obj, TextInput, Toast::LENGTH_SHORT);
+            //MakeToast(env, obj, TextInput, Toast::LENGTH_SHORT);
             break;
         case 9:
             break;
     }
 }
-}
-
-// Hooking example
-
-bool (*old_get_BoolExample)(void *instance);
-
-bool get_BoolExample(void *instance) {
-    if (instance != NULL && featureHookToggle) {
-        return true;
-    }
-    return old_get_BoolExample(instance);
-}
-
-float (*old_get_FloatExample)(void *instance);
-
-float get_FloatExample(void *instance) {
-    if (instance != NULL && sliderValue > 1) {
-        return (float) sliderValue;
-    }
-    return old_get_FloatExample(instance);
-}
-
-void (*old_Update)(void *instance);
-
-void Update(void *instance) {
-    instanceBtn = instance;
-    old_Update(instance);
-}
-
-// we will run our patches in a new thread so our while loop doesn't block process main thread
-// Don't forget to remove or comment out logs before you compile it.
-
-//KittyMemory Android Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
-//Note: We use OBFUSCATE_KEY for offsets which is the important part xD
-
-void *hack_thread(void *) {
-    LOGI(OBFUSCATE("pthread called"));
-
-    //Check if target lib is loaded
-    do {
-        sleep(1);
-    } while (!isLibraryLoaded(targetLibName));
-
-    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
-
-#if defined(__aarch64__) //Compile for arm64 lib only
-    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", '3')),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-
-    // Offset Hook example
-    // A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 'l'))), (void *) get_BoolExample,
-    //                (void **) &old_get_BoolExample);
-
-    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
-    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
-
-#else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
-
-    // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
-                                                    string2Offset(OBFUSCATE_KEY("0x123456", '-')),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE_KEY("0x222222", 'g')),
-                                                     OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //Apply patches here if you don't use mod menu
-    //hexPatches.GodMode.Modify();
-    //hexPatches.GodMode2.Modify();
-
-    // Offset Hook example
-    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
-    //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
-    //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
-
-    // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
-    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
-
-    // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
-    // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/
-    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
-
-    LOGI(OBFUSCATE("Done"));
-#endif
-
-    return NULL;
 }
 
 //No need to use JNI_OnLoad, since we don't use JNIEnv
@@ -356,7 +356,6 @@ JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *vm, void *reserved) {
     JNIEnv *globalEnv;
     vm->GetEnv((void **) &globalEnv, JNI_VERSION_1_6);
-
     return JNI_VERSION_1_6;
 }
  */

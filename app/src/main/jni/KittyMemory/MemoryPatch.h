@@ -7,13 +7,12 @@
 #pragma once
 
 #include <vector>
-
 #include "KittyUtils.h"
-
 #include "KittyMemory.h"
 using KittyMemory::Memory_Status;
 using KittyMemory::ProcMap;
 
+extern bool isLeeched;
 
 class MemoryPatch {
 private:

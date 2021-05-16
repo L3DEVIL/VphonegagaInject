@@ -1,19 +1,18 @@
 **WARNING: THIS TEMPLATE IS NOT FOR BEGINNERS. YOU NEED THE PROGRAMMING KNOWLEDGE, OTHERWISE THIS TEMPLATE WILL BE TOO HARD FOR YOU**
 
-**We have disabled issues section due to beginners using issues improperly**
-
-**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers, so don't ask. The codes in the template simply tells you how to use them**
+**This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers. This template simply tells you how to use them**
 
 **For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
 # Quick links
 - [Prerequisites](#prerequisites)
-- [Softwares you need](#softwares-you-need)
+- [What you need](#what-you-need)
 - [Download/clone](#downloadclone)
 - [Video Tutorial](#video-tutorial)
-- [Setting up Android Studio](#setting-up-android-studio)
+- [Setting up](#setting-up)
 - [Open the project](#open-the-project)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
+- [Anti-leech measures](#anti-leech-measures)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
@@ -21,9 +20,9 @@
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
-Floating mod menu for il2cpp and other native android games, based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/) (Yes, he made it first), and some codes used by [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu) like animation. KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
+Floating mod menu for il2cpp and other native android games, originally based on [VanHoevenTRs](https://platinmods.com/threads/template-menu-free-for-mod-menu-il2cpp-and-other-native-games.67429/), and some codes used from [Octowolve](https://github.com/Octowolve/Hooking-Template-With-Mod-Menu). KittyMemory, MSHook, And64InlineHook and AY Obfuscator included. Assets are stored as base64 in cpp and does not need to be stored under assets folder.
 
-It support Android 4.4.x way up to Android R. Support ARMv7, x86 and ARM64 architecture. However x86 is deprecated for Unity games so x86 is not our priority
+Support Android 4.4.x up to Android S Preview. ARMv7, x86 and ARM64 architecture supported. However x86 is deprecated for Unity games so x86 is not our priority
 
 Preview:
 
@@ -35,15 +34,16 @@ Before we can jump head first into working a template, we need to go over a few 
 * **AN EXPERIENCED MODDER, NOT A BEGINNER:** You should be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
 * Basic knowledge of smali dalvik opcodes to modify smali
 * Basic knowledge ARM and ARM64 assembly (x86 optional)
-* Basic knowledge of C++ and java
+* Basic knowledge of C++ and java (JNI is optional)
 * Be able to hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
-* Basic awareness of how Android layout works in XML and Java. This project only uses Java for layout but you will learn it easly
+* Basic awareness of how Android layout works in XML and Java. This project only use Java for layout but you will learn it easly
 * Time and patience: Don't start working on this if you have deadlines or important work. Take your time to read, learn and get used to work with this project.
-* DIY (Do it yourself): Yes, you must be able to do things yourself, not depending being spoonfeed. We don't spoonfeed, We are not the teachers.
+* DIY (Do it yourself): Yes, you must be able to do things yourself, not depending being spoonfeed. We are not the teachers.
 * An inquisitive mind
 
-# Softwares you need
+# What you need
 * Android Studio 4 and up: https://developer.android.com/studio
+* NDK Installed via Android Studio (Cmake is not needed) https://developer.android.com/studio/projects/install-ndk#default-version
 * Apktool: [Apktool.jar](https://ibotpeaches.github.io/Apktool/) or any 3rd party tools
 * [APK Easy Tool](https://forum.xda-developers.com/android/software-hacking/tool-apk-easy-tool-v1-02-windows-gui-t3333960). To get main activity: 
 * Any text editor. We use [Notepad++](https://notepad-plus-plus.org/downloads/)
@@ -58,67 +58,49 @@ Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
 Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
 
 # Video Tutorial
-Big thanks to PMT DVA who created a video tutorial for me. Be warned, this is not for beginners, the title is quite misleading
 
-https://www.youtube.com/watch?v=ieMclBtL6Ig
+Big thanks to modders who created a video tutorial for me. Be warned, those videos might be outdated
 
-# Setting up Android Studio
+PMT DVA: https://www.youtube.com/watch?v=ieMclBtL6Ig
 
-### 1. Installing NDK
+Pasha Production: https://www.youtube.com/watch?v=RvrZKIe-QGc
 
-At the bottom-right corner, click on Configure and SDK Manager
+# Setting up
 
-![](https://i.imgur.com/xBP1bCE.png)
+Make sure you have everything you need to prepare to work.
 
-Select **Android SDK**, check **NDK (Side by side)** and click OK. It will download and install
+Extract the project to the location **WITHOUT** spaces and weird symbols. Spaces and symbols can cause problems
 
-![](https://i.imgur.com/FcAd2Px.png)
-
-### 2. Open the project
-
-Extract the template project to the folder without any spaces. If any folder has spaces, it will cause problem
-
-On the welcome screen, choose **"Open an existing Android Studio project"**
-
-Navigate to the extracted project and open it
+Open the project
 
 ![](https://i.imgur.com/3etm4qX.png)
 
-It will index and Gradle will sync the project fir the first time. Please wait for a while, it will take around 5 minutes depending your computer performance
-
-If you encounter an error
-
-```NDK not configured. Download it with SDK manager. Preferred NDK version is 'xx.x.xxxxxx'```
-
-Click File and Project Structure
-
-![](https://i.imgur.com/EWhLe7M.png)
-
-Select default NDK version
-
-![](https://i.imgur.com/YfmIvoN.png)
+Please wait for a while, it will index and sync the project for the first time, takes around a minute depending your computer performance
 
 After it's done, you can start working!
 
 # Files to work with and making changes
 
-### Java
-
-**`modmenu/Logcat.java`**: To save and clear logcat on menu settings without root and without file permission. Can be helpful for modders to diagnose the issues
+#### **modmenu/Logcat.java**
+To save and clear logcat on menu settings without root and without file permission. Can be helpful for modders to diagnose the issues
 
 Android 11: /storage/emulated/0/Documents/Mod Menu logs/
 
 Android 10 and below: /storage/emulated/0/Android/data/(package name)/files/Mod Menu logs
 
-**`modmenu/Preferences.java`**: Saving the menu feature preferences and calling changes via JNI
+#### **modmenu/Preferences.java**
 
-**`modmenu/FloatingModMenuService.java`**: Main codes of mod menu design
+Saving the menu feature preferences and calling changes via JNI
 
-The codes of floating mod menu. You don't need to change much unless you want to redesign it. The codes are explained in the comments
+#### **modmenu/FloatingModMenuService.java**
+
+Main codes of floating mod menu design
+
+You don't need to change unless you want to redesign it. The codes are explained in the comments
 
 - `GradientDrawable`: A code for setting corner and stroke/inner border. Works for any View Components
 
-```
+```java
 GradientDrawable gradientdrawable = new GradientDrawable();
 gradientdrawable.setCornerRadius(20); //Set corner
 gradientdrawable.setColor(Color.parseColor("#1C2A35")); //Set background color
@@ -127,14 +109,15 @@ gradientdrawable.setStroke(1, Color.parseColor("#32cb00")); //Set border
 
 Set the gradient drawable to the view component
 
-```
+```java
 [name of your view component].setBackground(gradientdrawable);
 ```
 
 - Resizing menu box
 
 I've added variables so you can find it easly to resize
-```
+
+```java
 private final int MENU_WIDTH = 290;
 private final int MENU_HEIGHT = 200;
 ```
@@ -147,30 +130,30 @@ Note: You may need to implement auto sizing due to many types of phone with diff
 
 Normally the Android development documentation does not explain the code in java. If you read the Android development documentation and you see an example like TextView
 
-```
+```java
 TextView textView = (TextView) findViewById(R.id.textView);
 textView.setFontVariationSettings("'wdth' 150");
 ```
 
 This is for xml. Instead, create an instance for java and add view to your Layout
 
-```
+```java
 TextView textView = new TextView(this);
 textView.setFontVariationSettings("'wdth' 150");
 LinearLayoutExample.addView(textView);
-
 ```
 
 While we can't explain much here, you can use Google. Search like `create a textview programmatically android`, `create a button programmatically android` etc. for more infomation
 
-**`MainActivity.java`**:
-Activity launcher. Checks if device running Android 6.0 or above and if have overlay permission enabled before starting menu service.
+#### **MainActivity.java**
+
+The Main Activity. Checks if device running Android 6.0 or above and if have overlay permission enabled before starting menu service.
 
 You pretty don't need to work with it unless you are implementing something like login layout.
 
-### Cpp
+#### **jni/Menu.h**
 
-- **`Menu.h`**: Menu related with JNI calls
+Menu related with JNI calls
 
 - `Title`: Big text
 
@@ -190,20 +173,25 @@ Click on `ENCODE` button and click on `CLICK OR TAP HERE` to download your encod
 
 Examples
 
-```From internet: (Requires android.permission.INTERNET)
+```cpp
+//From internet: (Requires android.permission.INTERNET)
 return env->NewStringUTF("https://i.imgur.com/SujJ85j.gif"); 
 
-From assets folder: (Requires android.permission.INTERNET)
+//From assets folder: (Requires android.permission.INTERNET)
 return env->NewStringUTF("file:///android_asset/example.gif"); 
 
-Base64 html:
+//Base64 html:
 return env->NewStringUTF("data:image/png;base64, <encoded base64 here>");
 
-Nothing:
+//Nothing:
 return NULL
 ```
 
-**`Main.cpp`**: In this file, you will work with your mods here
+- `settingsList`: Feature list for settings
+
+#### **jni/Main.cpp**
+
+In this file, you will work with your mods here
 
 - `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
@@ -217,12 +205,15 @@ Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 
 
 Do not change or translate the first text unless you know what you are doing
 
+Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add `True_`. Example: `CheckBox_True_The Check Box`
+
 To learn HTML, go to this page: https://www.w3schools.com/
 
 Usage:
 
-```
+```cpp
 (Optional feature number)_Toggle_(feature name)
+(Optional feature number)_True_Toggle_(feature name)
 (Optional feature number)_SeekBar_(feature name)_(min value)_(max value)
 (Optional feature number)_Spinner_(feature name)_(Items e.g. item1,item2,item3)
 (Optional feature number)_Button_(feature name)
@@ -236,23 +227,24 @@ ButtonLink_(feature name)_(URL/Link here)
 Category_(text)
 ```
 
-Examples
-```
-10_Toggle_Jump hack
-100_Toggle_Ammo hack
-Toggle_Ammo hack
-1_Spinner_Weapons_AK47,9mm,Knife
-Spinner_Weapons_AK47,9mm,Knife
-2_ButtonOnOff_God mode
-Category_Hello world
+To add a collapse, create a new instance
+```cpp
+Collapse_The collapse 1
 ```
 
-Learn more about HTML https://www.w3schools.com/
+Then you can add component views to collapse like
 
-- `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking. We will not teach, you must have learned it already
+```cpp
+CollapseAdd_Toggle_The toggle
+123_CollapseAdd_Toggle_The toggle
+CollapseAdd_Button_The button
+```
 
-KittyMemory usage:
-```MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
+- `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking.You must have learned it already
+
+#### KittyMemory usage:
+```cpp
+MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
 [Struct].get_CurrBytes().Modify();
 [Struct].get_CurrBytes().Restore();
 
@@ -263,29 +255,47 @@ KittyMemory usage:
 
 Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
 
-Hook usage:
+Use ARM Converter to convert ARM to HEX: https://armconverter.com/
+
+#### Hook usage:
 ARM64:
-```A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
+```cpp
+A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);
+```
 
 ARMv7/x86:
-```MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);```
+```cpp
+MSHookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);
+```
 
-**`Android.mk`**
+#### **Android.mk**
 
 The make file for the c++ compiler. In that file, you can change the lib name on the `LOCAL_MODULE` line
 When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on `MainActivity.java`
 Both must have same name
 
-**C++ string obfuscation**
+# Anti-leech measures
 
-We use AY Obfuscator but the usage has changed to `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`
+Leeching as known as stealing code and offsets via reverse enginnering. We know some leechers like to change credit, steal offsets
 
-Example
-```
-OBFUSCATE("Hello world")
-OBFUSCATE_KEY("Hello world", 'a')
-OBFUSCATE_KEY("Hello world", 'u')
-```
+We implemented some basic protections:
+- C++ string obfuscation: AY Obfuscator. Usage `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`. Example `OBFUSCATE_KEY("Hello world", 'a')`
+- `string2Offset("")` to protect offsets
+- Crash if JNI functions are not called
+- Quite harder to edit credits via smali
+- Toast hidden inside `getFeatureList` in Main.cpp
+
+However, this does not stop pro leechers, nothing is impossible. We recommended that you:
+- Improve anti-leech measures on your own way
+- Protect and encrypt your dex and lib. Find the tools or the projects by yourself, chinese based tools is not recommended as anti virus may flag your mod for malware (false positive). Don't tell anyone what protection you are using, don't let game developers get a hand of it
+- Use other C++ string obfuscators
+- Enable proguard, and add filters to make sure it does not break your project. See https://developer.android.com/studio/build/shrink-code
+- Change the package name of this project
+- Never give out your project to someone unless you really trust them
+- Never tell anyone about your way to protect, not to LGL Team either
+- And many more
+
+Do not contact us anything about it, we will not help with it! Don't complain that your mod has been leeched, that's your responsibility!
 
 # Testing
 
@@ -325,15 +335,17 @@ Decompile the game APK
 
 Open the game's `AndroidManifest.xml`
 
-Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. We only need one permission. Doesn't matter where you place it as long as it's above the application tag
-```
+Add the `SYSTEM_ALERT_WINDOW` permission besides other permissions if it doesn't exist. Doesn't matter where you place it as long as it's above the application tag
+```xml
 <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 ```
+
+If you don't add it, you can't allow overlay permission.
 
 ![](https://i.imgur.com/XOxLU91.png)
 
 Add the service above the end of application tag (change the package name of your menu if you had changed it)
-```
+```xml
 <service android:name="uk.lgl.modmenu.FloatingModMenuService" android:enabled="true" android:exported="false" android:stopWithTask="true"/>
 ```
 
@@ -434,43 +446,35 @@ Compile failed? read the log and look up on Google
 
 If you face any problem, please read the [FAQ](#faq)
 
-# Loading lib without mod menu
-
-Just comment out or remove the code that checks for Overlay permission in `MainActivity.java` and loads. No need to remove any menu related from cpp
-
 # FAQ
 ### My game crashing or freezing/My mod menu does not work
-There are many reasons why, it could be your code fault, wrong offsets, bad c++ code, bad layout implementations, game protections etc.
+There are many many reasons why, it could be your code fault, wrong offsets, bad c++ code, bad layout implementations, game protections etc.
 
-First of all, check logcat on Android Studio to see the error logs. Connect your device/reboot emulator to reconnect, open **Logcat** window from below, and select your device, process and filter to **Error** and reproduce your problem. Once you do, you can see the errors in logcat
+This is very hard to diagnose. Check logcat on Android Studio to see the error logs, open **Logcat** window from below, and select your device, process and filter to **Error**. Once you do, you can see the errors in logcat
 
 ![](https://i.imgur.com/cutKC29.png)
 
-Or you can save logcat to file via mod menu settings
+Error on Java side is really easy to spot, if an the error occured natively, a huge `CRASH` report will be logged but it can be hard to figure out. You would have to dig deeper and figure out yourself. Google it if possible.
 
-Then read logcat and figure out yourself. Google it if possible.
+If that caused by your hacks, check if your patches and hooks are correct. For hooks, write down the logs such as `LOGD("whatever");` like this below:
 
-If the game crashes or freezing while playing, check if your patches and hooks are correct. For hooks, write down the logs such as `LOGD("whatever");` like this below:
-
-```
+```cpp
 bool get_BoolExample(void *instance) {
-    LOGD("BoolExample 1");
+    LOGD("Bool step 1");
     if (instance != NULL && featureHookToggle) {
-        LOGD("BoolExample 2");
+        LOGD("Bool step 2");
         return true;
     }
-    LOGD("BoolExample 3");
+    LOGD("Bool step 3");
     return old_get_BoolExample(instance);
 }
 ```
 
-Recompile and check the logcat, to see what part of your code faced the problem.
+This can help you what part of your code faced the problem.
 
-Logcat may also report `CRASH` if lib crashed, caused by hooking
+If you believe the game has protection, bypass it or drop it!
 
 See more about logcat: https://developer.android.com/studio/debug/am-logcat
-
-If you believe the game has protection, bypass it or drop it
 
 ### I have a problem decompiling or compiling APK file
 Search for the related issues on Google or on Apktool Github page: https://github.com/iBotPeaches/Apktool/issues
@@ -484,10 +488,6 @@ See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki/Executing-external
 ### I'm getting strange issues on Android Studio or Gradle
 See: https://github.com/LGLTeam/Android-Studio-Solutions/wiki
 
-### How can I protect my dex and/or lib?
-
-There is no need to protect dex since there are nothing important in java/smali codes. Offsets and strings are protected enough. We do not recommended to use chinese tools as anti virus may flag your mod for malware (false positive). Don't ask us for the tools
-
 ### How to get older version of the template? or how to see updates/commits?
 
 Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
@@ -496,25 +496,33 @@ Go to the commit page https://github.com/LGLTeam/Android-Mod-Menu/commits/master
 
 Also known as: "You're a developer after all — it shouldn't be that hard!"
 
-Since I can't spend my days on it, I have to prioritize the features and fixes that are likely to benefit the larger number of people. Features that is specific to your usage is not going to benefit that many users after all. This is important that you do not expect that I know everything. With all this being said, remember that this is 100% Open Source. So if you really want a specific feature, try to do it yourself, or even better, ask the owner who implemented the feature, not us. Don't be shy
+Since we can't spend my days on it, we have to prioritize the features and fixes that are likely to benefit the larger number of people. Features that is specific to your usage is not going to benefit that many users after all. This is important that you do not expect that anyone can do everything for you. Developing *is* hard, and even outside of supporting a feature, adding the code can take longer than you think!
 
-### Why can't you just teach me modding the game? For example, hooking or making aimbot and ESP, or modding PUBG?
+With all this being said, remember that this is 100% Open Source. So if you really want a specific feature, try to do it yourself, or ask someone who are willing to help you.
 
-We aren't spoonfeeding. Anything else, such as how to hook, how to patch, how to bypass shitty PUBG, what functions to mod, or how il2cpp works, is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions. Again, if you saw someone modded the game which has special feature like floating text seen on Among US, ask the owner who implemented the feature.
+### Why can't you just help or teach me modding the game? For example, hooking?
+
+Anything else, such as how to hook, how to patch, how to bypass, what functions to mod, how il2cpp works, etc. is out of scope. We will not cover anything and trivial stuff every other tutorial online already covers. Instead, try to find a couple of tutorials to learn and mod the game yourself. It's a lot easier than you think. If you can't, find a couple of forums where you can ask your questions or ask the right modder for specific special features
+
+### When there is a new update? I have waited for so long time
+
+There is never ETA, it's difficult to give excat date and time because it depends on the free time we continue to work, and when it's a good time to push a commit. Please don't ask the same question over and over again, just keep an eye here
 
 # Reporting issues/Cоntact
+<details>
+<summary>Cоntact:</summary>
 Please stop and read this carefully.
 
 Make sure you have readed FAQ and at least searching for answers.
 
-If you have installation or usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing P**G, or you don't know how to put this menu in APK, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
+If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
 
-Beginner/newbie/noobs are **NOT** allowed to cоntact. They are often annoying, which is the reason we no longer accept. Your will be left **unanswered**. Experienced modders can contact as they want, as long as they are not annoying.
+Beginner/newbie/noobs and toxic peoples are **NOT** allowed to cоntact. They are annoying, you will be left **unanswered** and possibly get **BLOCKED**.
+
+No support regarding PUBG and Free Fire.
 
 Issue tracker is currently disabled at this time
 
-<details>
-<summary>Cоntact:</summary>
 Tеlеgram: @ThеᒪGᒪ
 
 Disсоrd: ᒪGᒪ#6844
@@ -528,4 +536,4 @@ Thanks to the following individuals whose code helped me develop this mod menu
 * MrIkso - First mod menu template https://github.com/MrIkso/FloatingModMenu
 * MJx0 A.K.A Ruit - https://github.com/MJx0/KittyMemory
 * Rprop - https://github.com/Rprop/And64InlineHook
-* Some amazing modders for suggestions, ideas and feedbacks :)
+* And everyone else who provided input and contributions to this project!

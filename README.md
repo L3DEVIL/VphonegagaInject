@@ -5,18 +5,17 @@
 **For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
 # Quick links
-- [Prerequisites](#prerequisites)
+- [Prerequisites](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#prerequisites)
 - [What you need](#what-you-need)
 - [Download/clone](#downloadclone)
 - [Video Tutorial](#video-tutorial)
 - [Setting up](#setting-up)
-- [Open the project](#open-the-project)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Anti-leech measures](#anti-leech-measures)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
-- [Reporting issues/Cоntact](reportingissuescоntact)
+- [Reporting issues/Cоntact](reporting-issuescоntact)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # Introduction
@@ -31,11 +30,11 @@ Preview:
 # Prerequisites
 Before we can jump head first into working a template, we need to go over a few things.
 
-* **AN EXPERIENCED MODDER, NOT A BEGINNER:** You should be able to mod any games in general (does not need to be a protected games), like modifying .so files, dll files, smali files, etc.
+* **AN EXPERIENCED MODDER, NOT A BEGINNER:** You should be able to mod any games in general, like modifying .so files, dll files, smali files, etc.
 * Basic knowledge of smali dalvik opcodes to modify smali
-* Basic knowledge ARM and ARM64 assembly (x86 optional)
+* Basic knowledge ARM and ARM64 assembly, to be able to patch hex (No need x86)
 * Basic knowledge of C++ and java (JNI is optional)
-* Be able to hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
+* Be able to write hook function in C++ (Not really needed, but recommended if you want to do advanced modding in the future)
 * Basic awareness of how Android layout works in XML and Java. This project only use Java for layout but you will learn it easly
 * Time and patience: Don't start working on this if you have deadlines or important work. Take your time to read, learn and get used to work with this project.
 * DIY (Do it yourself): Yes, you must be able to do things yourself, not depending being spoonfeed. We are not the teachers.
@@ -49,6 +48,7 @@ Before we can jump head first into working a template, we need to go over a few 
 * Any text editor. We use [Notepad++](https://notepad-plus-plus.org/downloads/)
 * Any png compression to compress your png file: We use https://compresspng.com/
 * Any base64 encoding to encode your file: We use https://www.base64encode.org/
+* ARM converter, to convert ARM instruction to hex: https://armconverter.com/
 
 # Download/Clone
 Download this repo as ZIP, or clone using any git tools
@@ -191,7 +191,11 @@ return NULL
 
 #### **jni/Main.cpp**
 
-In this file, you will work with your mods here
+In this file, you will work with your mods. Below `hack_thread`, you write your code to patch with KittyMemory or hook with MShook. You must have learned it already
+
+It has a macro to detect if the ARM architecture is 32-bit or 64-bit on compile-time, it's to avoid using wrong offsets, like using ARMv7 offsets on an ARM64 lib. Check the game's APK what libs it contains before you proceed. If you want to target armeabi-v7a lib, write the code below `#else`. If you want to target arm64-v8a libs, write the code below `#if defined(__aarch64__)`. If the game has both armeabi-v7a and arm64-v8a, save your time and delete arm64-v8a folder, only target on armv7. Don't worry, the game will still work on ARM64
+
+We know we could do `#if defined(__arm__)` for ARMv7 and `#if defined(__i386__)` for x86, but we will leaving `#else`, so AS doesn't make that part greyed out. We will still using ARMv7 as a primary target
 
 - `Changes`: Get values to apply mods. BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
@@ -240,8 +244,6 @@ CollapseAdd_Toggle_The toggle
 CollapseAdd_Button_The button
 ```
 
-- `hack_thread`: Here you add your code for hacking with KittyMemory or Hooking.You must have learned it already
-
 #### KittyMemory usage:
 ```cpp
 MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
@@ -276,10 +278,10 @@ Both must have same name
 
 # Anti-leech measures
 
-Leeching as known as stealing code and offsets via reverse enginnering. We know some leechers like to change credit, steal offsets
+Leeching as known as stealing code and offsets via reverse enginnering. We are aware that some leechers like to change credit, steal offsets, etc
 
 We implemented some basic protections:
-- C++ string obfuscation: AY Obfuscator. Usage `OBFUSCATE("string here")` and `OBFUSCATE_KEY("string here", 'single letter here')`. Example `OBFUSCATE_KEY("Hello world", 'a')`
+- C++ string obfuscation: AY Obfuscator. Usage `OBFUSCATE("string here")` and with a key `OBFUSCATE_KEY("string here", 64-bit key here)`. Example `OBFUSCATE_KEY("Hello", 2353474243)` or in hex `OBFUSCATE_KEY("Hello", 0x3FE63DF21A3B)`. The key must not be too long or too short
 - `string2Offset("")` to protect offsets
 - Crash if JNI functions are not called
 - Quite harder to edit credits via smali
@@ -287,6 +289,7 @@ We implemented some basic protections:
 
 However, this does not stop pro leechers, nothing is impossible. We recommended that you:
 - Improve anti-leech measures on your own way
+- Remove ALL LOGs
 - Protect and encrypt your dex and lib. Find the tools or the projects by yourself, chinese based tools is not recommended as anti virus may flag your mod for malware (false positive). Don't tell anyone what protection you are using, don't let game developers get a hand of it
 - Use other C++ string obfuscators
 - Enable proguard, and add filters to make sure it does not break your project. See https://developer.android.com/studio/build/shrink-code
@@ -295,7 +298,7 @@ However, this does not stop pro leechers, nothing is impossible. We recommended 
 - Never tell anyone about your way to protect, not to LGL Team either
 - And many more
 
-Do not contact us anything about it, we will not help with it! Don't complain that your mod has been leeched, that's your responsibility!
+Do not contact us anything about it, we will not help with it! Don't complain that your mod has been leeched, that's your responsibility! Showing us how to leech will get you instant blocked!
 
 # Testing
 
@@ -506,7 +509,7 @@ Anything else, such as how to hook, how to patch, how to bypass, what functions 
 
 ### When there is a new update? I have waited for so long time
 
-There is never ETA, it's difficult to give excat date and time because it depends on the free time we continue to work, and when it's a good time to push a commit. Please don't ask the same question over and over again, just keep an eye here
+There is no ETA, we only push a commit when we want to. Please don't ask the same question over and over again. You could make something better yourself without having to wait
 
 # Reporting issues/Cоntact
 <details>
@@ -515,17 +518,17 @@ Please stop and read this carefully.
 
 Make sure you have readed FAQ and at least searching for answers.
 
-If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, you should go to the **forums**. Here there are no teachers, or who deal with issues or spoonfeeding.
+If you have usage problems, try asking your questions on any forum sites. For example, if you have an issue with hooking or patching, bypassing security, or wanna mod PUBG and Free Fire, you should go to the **forums**. Here there are no teachers, or who deal with such issues.
 
-Beginner/newbie/noobs and toxic peoples are **NOT** allowed to cоntact. They are annoying, you will be left **unanswered** and possibly get **BLOCKED**.
+Beginner/newbie/noobs and toxic peoples are **NOT** allowed to cоntact. They are annoying, you would be left **unanswered** and possibly get **BLOCKED**. Known leechers will be instant **BLOCKED**
 
-No support regarding PUBG and Free Fire.
-
-Issue tracker is currently disabled at this time
+Issue tracker is permanently disabled
 
 Tеlеgram: @ThеᒪGᒪ
 
-Disсоrd: ᒪGᒪ#6844
+Disсоrd: Deleted because its community has become more toxic, and its security are bad
+
+You can find @ThеᒪGᒪ on some forum modding communities
 </details>
 
 # Credits/Acknowledgements

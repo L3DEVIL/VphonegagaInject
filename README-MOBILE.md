@@ -3,22 +3,27 @@
 **BEST VIEWED ON MOBILE!**
 
 # Quick links
+- [Prerequisites](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#prerequisites)
 - [What you need](#what-you-need)
 - [Video Tutorial](#video-tutorial)
-- [download/clone](#downloadclone)
+- [Download/clone](#downloadclone)
 - [Setting up AIDE](#setting-up-aide)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
-- [Loading lib without mod menu](#loading-lib-without-mod-menu)
 - [FAQ](#faq)
-- [Useful links](#useful-links)
+- [Troubleshooting](#troubleshooting)
 - [Credits/Acknowledgements](#creditsacknowledgements)
 
 # What you need
-* [Modded AIDE app](https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk): The official AIDE from Play Store will not work with this project
-* [ndk.tar.gz](https://mega.nz/file/SR5i3ZhS#INbp_Yz0CJnvZH6ZTdXg15-2FA8QFYb18fiiMLODhqk): NDK support for modded AIDE
-* [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en): File Manager
-* [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file. Note: It requires VIP to edit `AndroidManifest.xml` more than 200 lines
+* Modded AIDE app, choose one of them you like to use. The official AIDE from Play Store will not work with this project
+    * [AIDE CMODs](https://secufiles.com/nE9J/AIDE_CMODs_3.2.200108.apk)
+	* [AIDE Lite Mod](https://mega.nz/file/bIpCQL6I#BzyLf1pB1Sf7EayW_PEJHl3f50qHHZDdb0BpB8FYdVo)
+* NDK support for modded AIDE
+    * NDK for 32-bit/ARMv7 phones: [ndk_arm.tar.gz](https://mega.nz/folder/2c1TWIJD#UCzO7kIo1e4WpFwZHIMYVw/file/XRlRTIjJ)
+    * NDK for 64-bit/ARM64 phones: [ndk_arm64.tar.gz](https://mega.nz/folder/2c1TWIJD#UCzO7kIo1e4WpFwZHIMYVw/file/7RdTzYxQ)
+* Any File Manager app you like to use but these are recommended
+    * [X-plore](https://play.google.com/store/apps/details?id=com.lonelycatgames.Xplore&hl=en): 
+    * [MT Manager](https://bbs.binmt.cc/forum-2-1.html) [(Mirror link)](https://secufiles.com/js6i/MT2.9.2.apk) With build-in Apktool and editors to modify APK file. Note: It requires VIP to edit `AndroidManifest.xml` more than 200 lines
 * Apktool app to edit `AndroidManifest.xml` for free: [Modded APK Editor Pro app](https://mega.nz/file/zQxA0YDY#eNRgcyrHwpWh1nSTHhcc4quxzeXrXcUHlYPoRyltKEw) or [APK Repacker](https://mega.nz/file/LIom0DDL#hJyIchPDCk2n_gcDmutNsOKS86WXQN58qpEGa9JsLrU) (We use APK Editor Pro)
 * [Floating apps](https://play.google.com/store/apps/details?id=com.lwi.android.flappsfull&hl=en) (optional): You can use it to read this page and working at the same time or use a build-in feature by OEM
 
@@ -43,7 +48,9 @@ To download latest commit, enable desktop mode on your browser then click **Code
 
 Now let's begin
 
-Firstly, we need to install NDK support for modded AIDE. Click on 3 dots on the right-corner. Click **More... - Settings**
+Firstly, make sure you know your phone's hardware well, and download correct NDK file coresponding to your phone's architecture. ndk_arm.tar.gz for 32-bit/ARMv7 phones, ndk_arm64.tar.gz for 64-bit/ARM64 phones. Installing incorrect version will cause problems
+
+Now install NDK support for modded AIDE. Click on 3 dots on the right-corner. Click **More... - Settings**
 
 ![](https://i.imgur.com/LyZMkK1.png)
 
@@ -53,7 +60,7 @@ Go to **Build & Run**, and click on **Manage native code support**.
 
 A prompt will ask to input the path of NDK file.
 
-If you use X-plore, you can show details of the file and copy file path easly. We stored the ndk.tar.gz on an internal storage /storage/emulated/0/ndk_arm64.tar.gz
+If you use X-plore, you can show details of the file and copy file path easly.
 
 ![](https://images2.imgbox.com/54/2b/G0gVbhrN_o.png)
 
@@ -87,7 +94,9 @@ Open the app to test
 
 # Files to work with and making changes
 
-See: https://github.com/LGLTeam/Android-Mod-Menu#files-to-work-with-and-making-changes
+See more: https://github.com/LGLTeam/Android-Mod-Menu#files-to-work-with-and-making-changes
+
+Important for 32-bit users: Please remove arm64-v8a from application.mk
 
 # Implementing the menu to the target game
 
@@ -236,11 +245,11 @@ If it works, congratulations!
 
 # Troubleshooting
 
-AIDE has a lot of compatibility issues, you need to research a lot.
-
-Problem with the project: click **More... -> Project -> Refresh Build**. This will clear the project cache and fix problems. Or delete the `build` folder from the project
+Problem with the project like app crashes: click **More... -> Project -> Refresh Build**. This will clear the project cache and fix problems
 
 Problem with AIDE: Open System Settings -> Apps and clear data of AIDE app. This will reset everything and you need to install NDK again
+
+AIDE has a lot of compatibility issues, you need to research a lot and do some trial and errors until you fix something.
 
 # FAQ
 

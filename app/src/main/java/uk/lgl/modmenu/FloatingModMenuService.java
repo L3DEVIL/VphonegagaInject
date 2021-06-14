@@ -382,7 +382,8 @@ public class FloatingModMenuService extends Service {
                     case MotionEvent.ACTION_UP:
                         int rawX = (int) (motionEvent.getRawX() - initialTouchX);
                         int rawY = (int) (motionEvent.getRawY() - initialTouchY);
-
+                        mExpanded.setAlpha(1f);
+                        mCollapsed.setAlpha(1f);
                         //The check for Xdiff <10 && YDiff< 10 because sometime elements moves a little while clicking.
                         //So that is click event.
                         if (rawX < 10 && rawY < 10 && isViewCollapsed()) {
@@ -398,6 +399,8 @@ public class FloatingModMenuService extends Service {
                         }
                         return true;
                     case MotionEvent.ACTION_MOVE:
+                        mExpanded.setAlpha(0.5f);
+                        mCollapsed.setAlpha(0.5f);
                         //Calculate the X and Y coordinates of the view.
                         params.x = initialX + ((int) (motionEvent.getRawX() - initialTouchX));
                         params.y = initialY + ((int) (motionEvent.getRawY() - initialTouchY));
@@ -443,41 +446,58 @@ public class FloatingModMenuService extends Service {
                 featNum = i - subFeat;
             }
             String[] strSplit = feature.split("_");
-
-            if (strSplit[0].equals("Toggle")) {
-                linearLayout.addView(Switch(featNum, strSplit[1], switchedOn));
-            } else if (strSplit[0].equals("SeekBar")) {
-                linearLayout.addView(SeekBar(featNum, strSplit[1], Integer.parseInt(strSplit[2]), Integer.parseInt(strSplit[3])));
-            } else if (strSplit[0].equals("Button")) {
-                linearLayout.addView(Button(featNum, strSplit[1]));
-            } else if (strSplit[0].equals("ButtonOnOff")) {
-                linearLayout.addView(ButtonOnOff(featNum, strSplit[1], switchedOn));
-            } else if (strSplit[0].equals("Spinner")) {
-                linearLayout.addView(RichTextView(strSplit[1]));
-                linearLayout.addView(Spinner(featNum, strSplit[1], strSplit[2]));
-            } else if (strSplit[0].equals("InputText")) {
-                linearLayout.addView(TextField(featNum, strSplit[1], false));
-            } else if (strSplit[0].equals("InputValue")) {
-                linearLayout.addView(TextField(featNum, strSplit[1], true));
-            } else if (strSplit[0].equals("CheckBox")) {
-                linearLayout.addView(CheckBox(featNum, strSplit[1], switchedOn));
-            } else if (strSplit[0].equals("RadioButton")) {
-                linearLayout.addView(RadioButton(featNum, strSplit[1], strSplit[2]));
-            } else if (strSplit[0].equals("Collapse")) {
-                Collapse(linearLayout, strSplit[1]);
-                subFeat++;
-            } else if (strSplit[0].equals("ButtonLink")) {
-                subFeat++;
-                linearLayout.addView(ButtonLink(strSplit[1], strSplit[2]));
-            } else if (strSplit[0].equals("Category")) {
-                subFeat++;
-                linearLayout.addView(Category(strSplit[1]));
-            } else if (strSplit[0].equals("RichTextView")) {
-                subFeat++;
-                linearLayout.addView(RichTextView(strSplit[1]));
-            } else if (strSplit[0].equals("RichWebView")) {
-                subFeat++;
-                linearLayout.addView(RichWebView(strSplit[1]));
+            switch (strSplit[0]) {
+                case "Toggle":
+                    linearLayout.addView(Switch(featNum, strSplit[1], switchedOn));
+                    break;
+                case "SeekBar":
+                    linearLayout.addView(SeekBar(featNum, strSplit[1], Integer.parseInt(strSplit[2]), Integer.parseInt(strSplit[3])));
+                    break;
+                case "Button":
+                    linearLayout.addView(Button(featNum, strSplit[1]));
+                    break;
+                case "ButtonOnOff":
+                    linearLayout.addView(ButtonOnOff(featNum, strSplit[1], switchedOn));
+                    break;
+                case "Spinner":
+                    linearLayout.addView(RichTextView(strSplit[1]));
+                    linearLayout.addView(Spinner(featNum, strSplit[1], strSplit[2]));
+                    break;
+                case "InputText":
+                    linearLayout.addView(TextField(featNum, strSplit[1], false, 0));
+                    break;
+                case "InputValue":
+                    if (strSplit.length == 3)
+                        linearLayout.addView(TextField(featNum, strSplit[2], true, Integer.parseInt(strSplit[1])));
+                    if (strSplit.length == 2)
+                        linearLayout.addView(TextField(featNum, strSplit[1], true, 0));
+                    break;
+                case "CheckBox":
+                    linearLayout.addView(CheckBox(featNum, strSplit[1], switchedOn));
+                    break;
+                case "RadioButton":
+                    linearLayout.addView(RadioButton(featNum, strSplit[1], strSplit[2]));
+                    break;
+                case "Collapse":
+                    Collapse(linearLayout, strSplit[1]);
+                    subFeat++;
+                    break;
+                case "ButtonLink":
+                    subFeat++;
+                    linearLayout.addView(ButtonLink(strSplit[1], strSplit[2]));
+                    break;
+                case "Category":
+                    subFeat++;
+                    linearLayout.addView(Category(strSplit[1]));
+                    break;
+                case "RichTextView":
+                    subFeat++;
+                    linearLayout.addView(RichTextView(strSplit[1]));
+                    break;
+                case "RichWebView":
+                    subFeat++;
+                    linearLayout.addView(RichWebView(strSplit[1]));
+                    break;
             }
         }
     }
@@ -694,7 +714,7 @@ public class FloatingModMenuService extends Service {
         return linearLayout2;
     }
 
-    private View TextField(final int feature, final String featName, final boolean numOnly) {
+    private View TextField(final int feature, final String featName, final boolean numOnly, final int maxValue) {
         final EditTextString edittextstring = new EditTextString();
         final EditTextNum edittextnum = new EditTextNum();
         LinearLayout linearLayout = new LinearLayout(this);
@@ -738,6 +758,8 @@ public class FloatingModMenuService extends Service {
                 //TextView
                 final TextView TextViewNote = new TextView(getApplicationContext());
                 TextViewNote.setText("Tap OK to apply changes. Tap outside to cancel");
+                if (maxValue != 0)
+                TextViewNote.setText("Tap OK to apply changes. Tap outside to cancel\nMax value: " + maxValue);
                 TextViewNote.setTextColor(TEXT_COLOR_2);
 
                 //Edit text
@@ -748,7 +770,6 @@ public class FloatingModMenuService extends Service {
                 if (numOnly) {
                     edittext.setInputType(InputType.TYPE_CLASS_NUMBER);
                     edittext.setKeyListener(DigitsKeyListener.getInstance("0123456789-"));
-                    edittext.setText(String.valueOf(edittextnum.getNum()));
                     InputFilter[] FilterArray = new InputFilter[1];
                     FilterArray[0] = new InputFilter.LengthFilter(10);
                     edittext.setFilters(FilterArray);
@@ -780,6 +801,8 @@ public class FloatingModMenuService extends Service {
                             int num;
                             try {
                                 num = Integer.parseInt(TextUtils.isEmpty(edittext.getText().toString()) ? "0" : edittext.getText().toString());
+                                if (maxValue != 0 &&  num >= maxValue)
+                                    num = maxValue;
                             } catch (NumberFormatException ex) {
                                 num = 2147483640;
                             }

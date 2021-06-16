@@ -508,6 +508,14 @@ public class FloatingModMenuService extends Service {
                 case "SeekBarSwitch":
                     subFeat++;
                     linearLayout.addView(SeekBarSwitch(featNum, strSplit[1], Integer.parseInt(strSplit[2]), Integer.parseInt(strSplit[3]), switchedOn));
+                    break;
+                case "InputButton":
+                    subFeat++;
+                    if (strSplit.length == 3)
+                        linearLayout.addView(InputButton(featNum, strSplit[2], true, Integer.parseInt(strSplit[1])));
+                    if (strSplit.length == 2)
+                        linearLayout.addView(InputButton(featNum, strSplit[1], true, 0));
+                    break;
             }
         }
     }

@@ -66,6 +66,8 @@ import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
 
 public class FloatingModMenuService extends Service {
     //********** Here you can easly change the menu appearance **********//
+
+    //region Variable
     public static final String TAG = "Mod_Menu"; //Tag for logcat
     int TEXT_COLOR = Color.parseColor("#82CAFD");
     int TEXT_COLOR_2 = Color.parseColor("#FFFFFF");
@@ -113,6 +115,7 @@ public class FloatingModMenuService extends Service {
     native String[] settingsList();
 
     native boolean isGameLibLoaded();
+    //endregion
 
     //When this Class is called the code in this function will be executed
     @Override

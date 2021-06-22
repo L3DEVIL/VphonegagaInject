@@ -212,6 +212,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject c
             OBFUSCATE("Collapse_Collapse 2"),
             OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100"),
             OBFUSCATE("CollapseAdd_InputValue_Input number"),
+
+            //new function
+            OBFUSCATE("SeekBarSwitch_Seekbar_1_100"),
+            OBFUSCATE("InputOnOff_500_Test Input Vales"),
             OBFUSCATE("InputButton_5000_Test Input Button"),
 
             OBFUSCATE("RichTextView_This is text view, not fully HTML."

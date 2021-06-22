@@ -828,13 +828,13 @@ public class FloatingModMenuService extends Service {
                                 num = 2147483640;
                             }
                             edittextnum.setNum(num);
-                            button.setText(Html.fromHtml(featName + ": <font color='#41c300'>" + num + "</font>"));
+                            button.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + num + "</font>"));
                             alert.dismiss();
                             Preferences.changeFeatureInt(featName, featNum, num);
                         } else {
                             String str = edittext.getText().toString();
                             edittextstring.setString(edittext.getText().toString());
-                            button.setText(Html.fromHtml(featName + ": <font color='#41c300'>" + str + "</font>"));
+                            button.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + str + "</font>"));
                             alert.dismiss();
                             Preferences.changeFeatureString(featName, featNum, str);
                         }
@@ -1012,7 +1012,7 @@ public class FloatingModMenuService extends Service {
         button.setOnClickListener(new View.OnClickListener() {
             boolean isOn = finalIsOn;
             public void onClick(View v) {
-                Preferences.changeFeatureBool(finalfeatName, featNum, isOn);
+                Preferences.changeFeatureBoolInt(finalfeatName, featNum, isOn, _num[0]);
                 if (isOn) {
                     _isOn[0] = " : ON";
                     button.setBackgroundColor(BtnON);
@@ -1034,6 +1034,7 @@ public class FloatingModMenuService extends Service {
         button.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                final boolean isOn = finalIsOn;
                 final AlertDialog alert = new AlertDialog.Builder(getApplicationContext(), 2).create();
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     Objects.requireNonNull(alert.getWindow()).setType(Build.VERSION.SDK_INT >= 26 ? 2038 : 2002);
@@ -1106,7 +1107,7 @@ public class FloatingModMenuService extends Service {
                             button.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + num + "</font>" + _isOn[0]));
                             _num[0] = num;
                             alert.dismiss();
-                            Preferences.changeFeatureInt(featName, featNum, num);
+                            Preferences.changeFeatureBoolInt(featName, featNum, isOn, _num[0]);
                         } else {
                             String str = edittext.getText().toString();
                             edittextstring.setString(edittext.getText().toString());
@@ -1139,6 +1140,9 @@ public class FloatingModMenuService extends Service {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.setGravity(Gravity.CENTER);
 
+        final int[] _num = {1};
+        final boolean[] finalIsOn = {false};
+
         final Switch switchR = new Switch(this);
         ColorStateList buttonStates = new ColorStateList(
                 new int[][]{
@@ -1163,7 +1167,8 @@ public class FloatingModMenuService extends Service {
         switchR.setChecked(Preferences.loadPrefBool(featName, featNum, swiOn));
         switchR.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton compoundButton, boolean bool) {
-                Preferences.changeFeatureBool(featName, featNum, bool);
+                Preferences.changeFeatureBoolInt(featName, featNum, bool, _num[0]);
+                finalIsOn[0] = bool;
                 switch (featNum) {
                     case -1: //Save perferences
                         Preferences.with(switchR.getContext()).writeBoolean(-1, bool);
@@ -1196,7 +1201,8 @@ public class FloatingModMenuService extends Service {
             public void onProgressChanged(SeekBar seekBar, int i, boolean z) {
                 //if progress is greater than minimum, don't go below. Else, set progress
                 seekBar.setProgress(i < min ? min : i);
-                Preferences.changeFeatureInt(featName, featNum, i < min ? min : i);
+                _num[0] = i < min ? min : i;
+                Preferences.changeFeatureBoolInt(featName, featNum, finalIsOn[0], _num[0]);
                 switchR.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + (i < min ? min : i)));
             }
         });
@@ -1300,13 +1306,13 @@ public class FloatingModMenuService extends Service {
                             num = 2147483640;
                         }
                         edittextnum.setNum(num);
-                        button.setText(Html.fromHtml(featName + ": <font color='#41c300'>" + num + "</font>"));
+                        button.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + num + "</font>"));
                         alert.dismiss();
                         Preferences.changeFeatureInt(featName, featNum, num);
                     } else {
                         String str = edittext.getText().toString();
                         edittextstring.setString(edittext.getText().toString());
-                        button.setText(Html.fromHtml(featName + ": <font color='#41c300'>" + str + "</font>"));
+                        button.setText(Html.fromHtml(featName + ": <font color='" + NumberTxtColor + "'>" + str + "</font>"));
                         alert.dismiss();
                         Preferences.changeFeatureString(featName, featNum, str);
                     }

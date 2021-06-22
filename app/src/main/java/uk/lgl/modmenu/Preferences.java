@@ -43,6 +43,12 @@ public class Preferences {
         Changes(context, featureNum, featureName, 0, bool, null);
     }
 
+    public static void changeFeatureBoolInt(String featureName, int featureNum, boolean bool, int value) {
+        Preferences.with(context).writeBoolean(featureNum, bool);
+        Preferences.with(context).writeInt(featureNum, value);
+        Changes(context, featureNum, featureName, value, bool, null);
+    }
+
     public static int loadPrefInt(String featureName, int featureNum) {
         if (loadPref) {
             int i = Preferences.with(context).readInt(featureNum);

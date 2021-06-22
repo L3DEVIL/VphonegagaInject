@@ -212,6 +212,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject c
             OBFUSCATE("Collapse_Collapse 2"),
             OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100"),
             OBFUSCATE("CollapseAdd_InputValue_Input number"),
+            OBFUSCATE("InputButton_5000_Test Input Button"),
 
             OBFUSCATE("RichTextView_This is text view, not fully HTML."
                       "<b>Bold</b> <i>italic</i> <u>underline</u>"

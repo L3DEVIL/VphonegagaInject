@@ -1,4 +1,4 @@
-**WARNING: THIS TEMPLATE IS NOT FOR BEGINNERS. YOU NEED THE PROGRAMMING KNOWLEDGE, OTHERWISE THIS TEMPLATE WILL BE TOO HARD FOR YOU**
+**WARNING: THIS TEMPLATE IS NOT FOR NEWBIES, THIS IS FOR EXPERIENCES PROGRAMMERS ONLY. NEWBIES SHOULD NOT PROCEED TO TRY IT**
 
 **This won't cover how to mod games in general, hooking functions, etc that every other online tutorial already covers. This template simply tells you how to use them**
 
@@ -11,9 +11,9 @@
 - [Video Tutorial](#video-tutorial)
 - [Setting up](#setting-up)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
-- [Anti-leech measures](#anti-leech-measures)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
+- [Leeching concerns](#leeching-concerns)
 - [FAQ](#faq)
 - [Reporting issues/Cоntact](reporting-issuescоntact)
 - [Credits/Acknowledgements](#creditsacknowledgements)
@@ -276,30 +276,6 @@ The make file for the c++ compiler. In that file, you can change the lib name on
 When you change the lib name, change also on `System.loadLibrary("")` under OnCreate method on `MainActivity.java`
 Both must have same name
 
-# Anti-leech measures
-
-Leeching as known as stealing code and offsets via reverse enginnering. We are aware that some leechers like to change credit, steal offsets, etc
-
-We implemented some basic protections:
-- C++ string obfuscation: AY Obfuscator. Usage `OBFUSCATE("string here")` and with a key `OBFUSCATE_KEY("string here", 64-bit key here)`. Example `OBFUSCATE_KEY("Hello", 2353474243)` or in hex `OBFUSCATE_KEY("Hello", 0x3FE63DF21A3B)`. The key must not be too long or too short
-- `string2Offset("")` to protect offsets
-- Crash if JNI functions are not called
-- Quite harder to edit credits via smali
-- Toast hidden inside `getFeatureList` in Main.cpp
-
-However, this does not stop pro leechers, nothing is impossible. We recommended that you:
-- Improve anti-leech measures on your own way
-- Remove ALL LOGs
-- Protect and encrypt your dex and lib. Find the tools or the projects by yourself, chinese based tools is not recommended as anti virus may flag your mod for malware (false positive). Don't tell anyone what protection you are using, don't let game developers get a hand of it
-- Use other C++ string obfuscators
-- Enable proguard, and add filters to make sure it does not break your project. See https://developer.android.com/studio/build/shrink-code
-- Change the package name of this project
-- Never give out your project to someone unless you really trust them
-- Never tell anyone about your way to protect, not to LGL Team either
-- And many more
-
-Do not contact us anything about it, we will not help with it! Don't complain that your mod has been leeched, that's your responsibility! Showing us how to leech will get you instant blocked!
-
 # Testing
 
 Connect your device to the computer or run your emulator. Android Studio will detect and you can click Play to run your app.
@@ -448,6 +424,30 @@ Congrats. You have successfully implemented a mod menu.
 Compile failed? read the log and look up on Google
 
 If you face any problem, please read the [FAQ](#faq)
+
+# Leeching concerns
+
+Leeching as known as stealing code and offsets via reverse enginnering, and editing credits via file editing and recompiling. We all know that, right?
+
+There are some simple protections in the template:
+- Simple C++ string obfuscation called AY Obfuscator. Usage `OBFUSCATE("string here")` and with a key `OBFUSCATE_KEY("string here", 64-bit key here)`. Example `OBFUSCATE_KEY("Hello", 2353474243)` or in hex `OBFUSCATE_KEY("Hello", 0x3FE63DF21A3B)`. The key must not be too long or too short
+- `string2Offset("")` to protect offsets
+- Simple anti-leech measures that crashes if JNI functions are not called
+- Quite harder to edit credits via smali
+- Toast hidden inside `getFeatureList` in Main.cpp
+
+These protection are NOT full protection, it does not stop them, it will only slow them down, this intent is to help you improve on your own by yourself. You should:
+- Improve anti-leech measures on your own way
+- Protect and encrypt your dex and lib. Find the tools or the projects by yourself, chinese based tools is not recommended as anti virus may flag your mod for malware (false positive). Don't tell anyone what protection you are using, don't let game developers get a hand of it
+- Improve string obfuscators a lot more or use others which are not known. Make sure that obfuscator is not too simple
+- Enable proguard, and add filters to make sure it does not break your project. See https://developer.android.com/studio/build/shrink-code
+- Never share your project to someone
+- Do not include any important stuff such as 'offline' username and password, instead add an additional layer, e.g. a web service handling the protected request
+- And etc.
+
+Never contact how to protect more, never complain that your mod has been leeched, that's all your responsibility! If you are really worry about leeching, or getting constantly leeched, and can't protect, just upload your project on Github. They will download from your Github instead leeching.
+
+**Never tell us how to leech stuff, we are not interested getting involved in it, You will get blocked immediately!**
 
 # FAQ
 ### My game crashing or freezing/My mod menu does not work

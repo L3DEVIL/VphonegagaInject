@@ -151,7 +151,11 @@ void *hack_thread(void *) {
     //hexPatches.GodMode2.Modify();
 
     // Offset Hook example
-    //MSHookFunction((void *) getAbsoluteAddress(targetLibName,
+    // HOOK macro armv7/arm64 support
+    // HOOK(string2Offset(OBFUSCATE_KEY("0x123456", '?')), get_BoolExample, old_get_BoolExample);
+    // HOOK(string2Offset(OBFUSCATE_KEY("0x123456", '?')), Level, old_Level);
+
+    // MSHookFunction((void *) getAbsoluteAddress(targetLibName,
     //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),
     //               (void *) get_BoolExample, (void **) &old_get_BoolExample);
     // MSHookFunction((void *) getAbsoluteAddress(targetLibName,
@@ -159,7 +163,8 @@ void *hack_thread(void *) {
     //               (void *) Level, (void **) &old_Level);
 
     // Symbol hook example (untested). Symbol/function names can be found in IDA if the lib are not stripped. This is not for il2cpp games
-    //MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
+    // HOOK(("__SymbolNameExample"), get_BoolExample, old_get_BoolExample);
+    // MSHookFunction((void *) ("__SymbolNameExample"), (void *) get_BoolExample, (void **) &old_get_BoolExample);
 
     // Function pointer splitted because we want to avoid crash when the il2cpp lib isn't loaded.
     // See https://guidedhacking.com/threads/android-function-pointers-hooking-template-tutorial.14771/

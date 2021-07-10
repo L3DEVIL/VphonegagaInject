@@ -19,14 +19,14 @@
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <And64InlineHook/And64InlineHook.hpp>
 
-#define HOOK(offset, ptr, orig) A64HookFunction((void *)getAbsoluteAddress(targetLibName, offset), (void *)ptr, (void **)&orig)
+#define HOOK(offset, ptr, orig) A64HookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, '?'))), (void *)ptr, (void **)&orig)
 
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
 
-#define HOOK(offset, ptr, orig) MSHookFunction((void *)getAbsoluteAddress(targetLibName, offset), (void *)ptr, (void **)&orig)
+#define HOOK(offset, ptr, orig) MSHookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, '?'))), (void *)ptr, (void **)&orig)
 
 #endif
 
@@ -126,6 +126,10 @@ void *hack_thread(void *) {
                                                      OBFUSCATE("20 00 80 D2 C0 03 5F D6"));
 
     // Offset Hook example
+    // HOOK macro armv7/arm64 support
+    // HOOK("0x123456", get_BoolExample, old_get_BoolExample);
+    // HOOK("0x123456", Level, old_Level);
+
     //A64HookFunction((void *) getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY("0x123456", 23479432523588))), (void *) get_BoolExample,
     //                (void **) &old_get_BoolExample);
 
@@ -152,8 +156,8 @@ void *hack_thread(void *) {
 
     // Offset Hook example
     // HOOK macro armv7/arm64 support
-    // HOOK(string2Offset(OBFUSCATE_KEY("0x123456", '?')), get_BoolExample, old_get_BoolExample);
-    // HOOK(string2Offset(OBFUSCATE_KEY("0x123456", '?')), Level, old_Level);
+    // HOOK("0x123456", get_BoolExample, old_get_BoolExample);
+    // HOOK("0x123456", Level, old_Level);
 
     // MSHookFunction((void *) getAbsoluteAddress(targetLibName,
     //               string2Offset(OBFUSCATE_KEY("0x123456", '?'))),

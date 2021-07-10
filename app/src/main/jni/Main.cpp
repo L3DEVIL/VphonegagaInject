@@ -13,14 +13,23 @@
 #include "KittyMemory/MemoryPatch.h"
 #include "Menu.h"
 
+//Target lib here
+#define targetLibName OBFUSCATE("libil2cpp.so")
+
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <And64InlineHook/And64InlineHook.hpp>
+
+#define HOOK(offset, ptr, orig) A64HookFunction((void *)getAbsoluteAddress(targetLibName, offset), (void *)ptr, (void **)&orig)
+
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
 
+#define HOOK(offset, ptr, orig) MSHookFunction((void *)getAbsoluteAddress(targetLibName, offset), (void *)ptr, (void **)&orig)
+
 #endif
+
 
 // fancy struct for patches for kittyMemory
 struct My_Patches {
@@ -86,10 +95,6 @@ void HealthUpdate(void *instance) {
     }
     return old_HealthUpdate(instance);
 }
-
-//Target lib here
-#define targetLibName OBFUSCATE("libil2cpp.so")
-
 // we will run our hacks in a new thread so our while loop doesn't block process main thread
 void *hack_thread(void *) {
     LOGI(OBFUSCATE("pthread created"));

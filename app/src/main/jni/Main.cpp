@@ -19,14 +19,14 @@
 #if defined(__aarch64__) //Compile for arm64 lib only
 #include <And64InlineHook/And64InlineHook.hpp>
 
-#define HOOK(offset, ptr, orig) A64HookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, '?'))), (void *)ptr, (void **)&orig)
+#define HOOK(offset, ptr, orig) A64HookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, 23479432523588))), (void *)ptr, (void **)&orig)
 
 #else //Compile for armv7 lib only. Do not worry about greyed out highlighting code, it still works
 
 #include <Substrate/SubstrateHook.h>
 #include <Substrate/CydiaSubstrate.h>
 
-#define HOOK(offset, ptr, orig) MSHookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, '?'))), (void *)ptr, (void **)&orig)
+#define HOOK(offset, ptr, orig) MSHookFunction((void *)getAbsoluteAddress(targetLibName, string2Offset(OBFUSCATE_KEY(offset, 23479432523588))), (void *)ptr, (void **)&orig)
 
 #endif
 

@@ -6,7 +6,7 @@
 - [Prerequisites](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#prerequisites)
 - [What you need](#what-you-need)
 - [Video Tutorial](#video-tutorial)
-- [Download/clone](#downloadclone)
+- [Installation](#installation)
 - [Setting up AIDE](#setting-up-aide)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
@@ -36,7 +36,7 @@ NSRAÎNA HACKER: https://www.youtube.com/watch?v=MkkZ_loEDTU
 
 BROKE MODS OFC (Customized menu): https://www.youtube.com/watch?v=IYREVGc-quM
 
-# Download/Clone
+# Installation
 
 Go to releases page https://github.com/LGLTeam/Android-Mod-Menu/releases/ and download **Source code (zip)**
 

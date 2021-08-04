@@ -686,18 +686,17 @@ public class FloatingModMenuService extends Service {
         // Create another LinearLayout as a workaround to use it as a background
         // to keep the down arrow symbol. No arrow symbol if setBackgroundColor set
         LinearLayout linearLayout2 = new LinearLayout(this);
-        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
-        layoutParams2.setMargins(10, 2, 10, 5);
+        LinearLayout.LayoutParams layoutParams2 = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT);
+        layoutParams2.setMargins(7, 2, 7, 5);
         linearLayout2.setOrientation(LinearLayout.VERTICAL);
         linearLayout2.setBackgroundColor(BTN_COLOR);
         linearLayout2.setLayoutParams(layoutParams2);
 
         final Spinner spinner = new Spinner(this, Spinner.MODE_DROPDOWN);
-        spinner.setPadding(5, 10, 5, 8);
         spinner.setLayoutParams(layoutParams2);
         spinner.getBackground().setColorFilter(1, PorterDuff.Mode.SRC_ATOP); //trick to show white down arrow color
         //Creating the ArrayAdapter instance having the list
-        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_item, lists);
+        ArrayAdapter aa = new ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, lists);
         aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         //Setting the ArrayAdapter data on the Spinner'
         spinner.setAdapter(aa);

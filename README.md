@@ -4,12 +4,14 @@
 
 **For Android mobile users who don't have a PC, please read [README-MOBILE.md](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README-MOBILE.md)**
 
-# Quick links
+# KNOWN BUG
+- Spinner does not show on Android 11
+
+# Table of contents
 - [Prerequisites](https://github.com/LGLTeam/Android-Mod-Menu/blob/master/README.md#prerequisites)
 - [What you need](#what-you-need)
-- [Download/clone](#downloadclone)
 - [Video Tutorial](#video-tutorial)
-- [Setting up](#setting-up)
+- [Installation](#installation)
 - [Files to work with and making changes](#files-to-work-with-and-making-changes)
 - [Implementing the menu to the target game](#implementing-the-menu-to-the-target-game)
 - [Loading lib without mod menu](#loading-lib-without-mod-menu)
@@ -50,30 +52,21 @@ Before we can jump head first into working a template, we need to go over a few 
 * Any base64 encoding to encode your file: We use https://www.base64encode.org/
 * ARM converter, to convert ARM instruction to hex: https://armconverter.com/
 
-# Download/Clone
-Download this repo as ZIP, or clone using any git tools
-
-Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
-
-Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
-
 # Video Tutorial
-
 Big thanks to modders who created a video tutorial for me. Be warned, those videos might be outdated
 
 PMT DVA: https://www.youtube.com/watch?v=ieMclBtL6Ig
 
 Pasha Production: https://www.youtube.com/watch?v=RvrZKIe-QGc
 
-# Setting up
+# Installation
+Download this repo as ZIP, or clone using any git tools
 
-Make sure you have everything you need to prepare to work.
+Or download Releases here https://github.com/LGLTeam/Android-Mod-Menu/releases
 
-Extract the project to the location **WITHOUT** spaces and weird symbols. Spaces and symbols can cause problems
+Extract the source to your desired location. The location must **NOT** contain any spaces or symbols
 
 Open the project
-
-![](https://i.imgur.com/3etm4qX.png)
 
 Please wait for a while, it will index and sync the project for the first time, takes around a minute depending your computer performance
 
@@ -244,7 +237,7 @@ CollapseAdd_Toggle_The toggle
 CollapseAdd_Button_The button
 ```
 
-#### KittyMemory usage:
+#### KittyMemory patching usage:
 ```cpp
 MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]");
 [Struct].get_CurrBytes().Modify();
@@ -253,13 +246,32 @@ MemoryPatch::createWithHex([Lib Name], [offset], "[hex. With or without spaces]"
 [Struct].get_TargetAddress();
 [Struct].get_PatchSize();
 [Struct].get_CurrBytes().c_str();
+
+PATCHOFFSET("0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
+PATCHOFFSET_LIB("libFileB.so", "0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
 ```
 
 Example: https://github.com/MJx0/KittyMemory/blob/master/Android/test/src/main.cpp
 
-Use ARM Converter to convert ARM to HEX: https://armconverter.com/
+Use an online ARM assembly converter like ARMConverter to convert ARM to HEX: https://armconverter.com/
 
 #### Hook usage:
+This macro works for both ARMv7 and ARM64. Make sure to use predefined macro `defined(__aarch64__)` and `defined(__arm__)` if you are targeting both archs
+
+Strings for macros are automatically obfuscated. No need to obfuscate!
+```cpp
+HOOK("0x123456", FunctionExample, old_FunctionExample);
+HOOK_LIB("libFileB.so", "0x123456", FunctionExample, old_FunctionExample);
+HOOK_NO_ORIG("0x123456", FunctionExample);
+HOOK_LIB_NO_ORIG("libFileC.so", "0x123456", FunctionExample);
+HOOKSYM("__SymbolNameExample", FunctionExample, old_FunctionExample);
+HOOKSYM_LIB("libFileB.so", "__SymbolNameExample", FunctionExample, old_FunctionExample);
+HOOKSYM_NO_ORIG("__SymbolNameExample", FunctionExample);
+HOOKSYM_LIB_NO_ORIG("libFileB.so", "__SymbolNameExample", FunctionExample);
+```
+
+Or
+
 ARM64:
 ```cpp
 A64HookFunction((void *) getAbsoluteAddress([Lib Name], [offset]), (void *)[function], (void **)&[old function]);

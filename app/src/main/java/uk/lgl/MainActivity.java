@@ -15,7 +15,7 @@ import uk.lgl.modmenu.FloatingModMenuService;
 public class MainActivity extends Activity {
 
     //Only if you have changed MainActivity to yours and you wanna call game's activity.
-    public String GameActivity = "com.unity3d.player.UnityPlayerActivity";
+    public String GameActivity = "com.dts.freefireth.FFMainActivity";
     public boolean hasLaunched = false;
 
     //Load lib
@@ -33,6 +33,7 @@ public class MainActivity extends Activity {
 
         //To launch mod menu.
         Start(this);
+//        Alert();
 
         //To launch game activity
         if (!hasLaunched) {

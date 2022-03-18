@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
@@ -54,7 +55,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -63,6 +67,9 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static android.widget.RelativeLayout.ALIGN_PARENT_LEFT;
 import static android.widget.RelativeLayout.ALIGN_PARENT_RIGHT;
+
+import eu.chainfire.libsuperuser.Shell;
+import uk.lgl.ESPView;
 
 public class FloatingModMenuService extends Service {
     //********** Here you can easly change the menu appearance **********//
@@ -88,6 +95,8 @@ public class FloatingModMenuService extends Service {
     int SeekBarProgressColor = Color.parseColor("#80CBC4");
     int CheckBoxColor = Color.parseColor("#80CBC4");
     int RadioColor = Color.parseColor("#FFFFFF");
+    public static final int CACHE_ERROR_CODE = 2002;
+    public static final int INTERNAL_ERROR_2003 = 2003;
     String NumberTxtColor = "#41c300";
     //********************************************************************//
     RelativeLayout mCollapsed, mRootContainer;
@@ -115,9 +124,23 @@ public class FloatingModMenuService extends Service {
     native String[] settingsList();
 
     native boolean isGameLibLoaded();
+    native void Init();
+
+    private ESPView overlayView;
+    public static native void DrawOn(ESPView eSPView, Canvas canvas);
     //endregion
 
     //When this Class is called the code in this function will be executed
+
+    private void DrawCanvas() {
+        this.overlayView = new ESPView(getBaseContext());
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(-1, -1, getLayoutType(), 1080, -3);
+        layoutParams.gravity = 8388659;
+        layoutParams.x = 0;
+        layoutParams.y = 100;
+        this.mWindowManager.addView(this.overlayView, layoutParams);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -134,6 +157,19 @@ public class FloatingModMenuService extends Service {
                 handler.postDelayed(this, 1000);
             }
         });
+    }
+
+    private int getLayoutType() {
+        if (Build.VERSION.SDK_INT >= 26) {
+            return 2038;
+        }
+        if (Build.VERSION.SDK_INT >= 24) {
+            return CACHE_ERROR_CODE;
+        }
+        if (Build.VERSION.SDK_INT >= 23) {
+            return 2005;
+        }
+        return INTERNAL_ERROR_2003;
     }
 
     //Here we write the code for our Menu
@@ -365,6 +401,7 @@ public class FloatingModMenuService extends Service {
                 }
             }
         }, 500);
+        DrawCanvas();
     }
 
     private View.OnTouchListener onTouchListener() {
@@ -501,7 +538,95 @@ public class FloatingModMenuService extends Service {
                     subFeat++;
                     linearLayout.addView(RichWebView(strSplit[1]));
                     break;
+                case "InjectBTN":
+                    subFeat++;
+                    linearLayout.addView(InjectBTN());
+                    break;
             }
+        }
+    }
+
+    private View InjectBTN() {
+        final Button button = new Button(this);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT);
+        layoutParams.setMargins(6, 5, 6, 5);
+        button.setLayoutParams(layoutParams);
+        button.setTextColor(TEXT_COLOR_2);
+        button.setAllCaps(false);
+        button.setText(Html.fromHtml("CONNECT SOCKET"));
+        button.setBackgroundColor(Color.parseColor("#173546"));
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (button.isEnabled()) {
+                    button.setEnabled(false);
+                    if (Injector()) {
+                        Toast.makeText(FloatingModMenuService.this, "INJECTED SUCCESS" , Toast.LENGTH_LONG).show();
+                        button.setText(Html.fromHtml("INJECT SCRIPT : DONE"));
+                        button.setBackgroundColor(BtnON);
+                        patches.removeAllViews();
+                        featureList(getFeatureList(), patches);
+                    } else {
+                        button.setEnabled(true);
+                        Toast.makeText(FloatingModMenuService.this, "INJECTED FAILED" , Toast.LENGTH_LONG).show();
+                    }
+                }
+
+            }
+        });
+        return button;
+    }
+
+    public int Game(String pkg) {
+        try {
+            ArrayList arrayList = new ArrayList();
+            Shell.PoolWrapper poolWrapper = Shell.Pool.SU;
+            poolWrapper.run("(toolbox ps; toolbox ps -A; toybox ps; toybox ps -A) | grep \" " + pkg + "$\"", arrayList, null, false);
+            Iterator iterator = arrayList.iterator();
+            while (iterator.hasNext()) {
+                String Trim = ((String) iterator.next()).trim();
+                while (Trim.contains("  ")) {
+                    Trim = Trim.replace("  ", " ");
+                }
+                String[] Split = Trim.split(" ");
+                if (Split.length >= 2) {
+                    return Integer.parseInt(Split[1]);
+                }
+            }
+            return -1;
+        } catch (Shell.ShellDiedException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    private boolean Injector() {
+        boolean[] booleans = {false};
+        try {
+            String injector = getApplicationInfo().nativeLibraryDir + File.separator + "libinject.so";
+            String payload_source = getApplicationInfo().nativeLibraryDir + File.separator + "libserver.so";
+            String payload_dest = "/data/local/tmp/libdevil.so";
+            String context = "u:object_r:system_lib_file:s0";
+            List<String> STDOUT = new ArrayList<>();
+            Shell.Pool.SU.run("ls -lZ /system/lib/libandroid_runtime.so", STDOUT, null, false);
+            for (String line : STDOUT) {
+                if (line.contains(" u:object_r:") && line.contains(":s0 ")) {
+                    context = line.substring(line.indexOf("u:object_r:"));
+                    context = context.substring(0, context.indexOf(' '));
+                }
+            }
+            Shell.Pool.SU.run(new String[] {"cp " + payload_source + " " + payload_dest, "chmod 777 " + payload_dest});
+            int game = -1;
+            while (game < 0) { game = Game("com.dts.freefireth"); }
+            if (game < 0) { return Boolean.FALSE; }
+
+            Shell.Pool.SU.run((Object) String.format("%s %d %s", new Object[]{injector, Integer.valueOf(game), payload_dest}), booleans[0]);
+            new File(payload_dest).delete();
+            Init();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 

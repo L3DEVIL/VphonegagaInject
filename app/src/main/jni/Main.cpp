@@ -8,219 +8,210 @@
 #include <fstream>
 #include <iostream>
 #include <dlfcn.h>
+#include <SOCKET/client.h>
+#include <Unity/ESP.h>
 #include "Includes/Logger.h"
 #include "Includes/obfuscate.h"
 #include "Includes/Utils.h"
-
-#include "KittyMemory/MemoryPatch.h"
+#include "Unity/Quaternion.hpp"
+#include "Unity/Vector2.hpp"
+#include "Unity/Vector3.hpp"
+#include "Unity/Unity.h"
+//#include <Substrate/SubstrateHook.h>
+//#include "KittyMemory/MemoryPatch.h"
 #include "Menu.h"
 
-//Target lib here
-#define targetLibName OBFUSCATE("libFileA.so")
+//#include "Includes/Macros.h"
 
-#include "Includes/Macros.h"
+ESP espOverlay;
+SocketClient client;
 
-// fancy struct for patches for kittyMemory
-struct My_Patches {
-    // let's assume we have patches for these functions for whatever game
-    // like show in miniMap boolean function
-    MemoryPatch GodMode, GodMode2, SliderExample;
-    // etc...
-} hexPatches;
+void startDaemon();
+int startClient();
+bool isConnected();
+void stopClient();
+bool initServer();
+bool stopServer();
+
+
+enum Mode {
+    InitMode = 1,
+    HackMode = 2,
+    StopMode = 3,
+    EspMode = 99,
+};
+enum m_Features {
+    g_send_enable = 99,
+    g_wall_hack_car = 16,
+    g_telecar = 15,
+    g_fly_spreed = 14,
+    g_alture = 13,
+    g_enable_mod = 12,
+    g_aimFov = 10,
+    g_ignorInVisible = 11,
+    g_aimFire = 4,
+    g_aimScope = 5,
+    g_aimCrouch = 6,
+    g_aimEspFire = 7,
+    g_enable_hook = 8,
+    g_spreed_hack = 17,
+    g_TriggerBot = 18,
+};
+
+struct Request {
+    int Mode;
+    bool m_IsOn;
+    int value;
+    int screenWidth;
+    int screenHeight;
+};
+
+#define maxplayerCount 54
+
+
+struct PlayerData {
+    char PlayerName[64];
+    float Health;
+    float Distance;
+    bool get_IsDieing;
+    bool isBot;
+    Vector2 HeadV2;
+    Vector3 HeadLocation;
+    Vector3 ToeLocation;
+    Vector3 HipLocation;
+    Vector3 RShoulder;
+    Vector3 LShoulder;
+    Vector3 DedoSLocation;
+    Vector3 HandLocation;
+    Vector3 PeSLocation;
+    Vector3 PeDLocation;
+    Vector3 LocalPlayerHead;
+    Vector3 CloseEnemyHeadLocation;
+    int x;
+    int y;
+    int z;
+    int id;
+    int h;
+    char debug[60];
+};
+
+struct Response {
+    bool Success;
+    int PlayerCount;
+    PlayerData Players[maxplayerCount];
+};
+
+
+int startClient(){
+    client = SocketClient();
+    if(!client.Create()){ return -1; }
+    if(!client.Connect()){ return -1; }
+    if(!initServer()){ return -1; }
+    return 0;
+}
+
+bool isConnected(){
+    return client.connected;
+}
+
+void stopClient() {
+    if(client.created && isConnected()){
+        stopServer();
+        client.Close();
+    }
+}
+
+bool initServer() {
+    Request request{Mode::InitMode, true, 0};
+    int code = client.sendX((void*) &request, sizeof(request));
+    if(code > 0) {
+        Response response{};
+        size_t length = client.receive((void*) &response);
+        if(length > 0) {
+            return response.Success;
+        }
+    }
+    return false;
+}
+
+bool stopServer() {
+    Request request{Mode::StopMode};
+    int code = client.sendX((void*) &request, sizeof(request));
+    if(code > 0) {
+        Response response{};
+        size_t length = client.receive((void*) &response);
+        if(length > 0) {
+            return response.Success;
+        }
+    }
+    return false;
+}
+
+void SendFeatuere(int number, bool ftr, int value) {
+    Request request{number, ftr, value};
+    int code = client.sendX((void*) &request, sizeof(request));
+    if (code > 0) {
+        Response response{};
+        size_t length = client.receive((void*) &response);
+        if (length > 0) {}
+    }
+}
+
+
+Response getData(int screenWidth, int screenHeight){
+    Request request{Mode::EspMode, screenWidth, screenHeight};
+    int code = client.sendX((void*) &request, sizeof(request));
+    if(code > 0){
+        Response response{};
+        size_t length = client.receive((void*) &response);
+        if(length > 0){
+            return response;
+        }
+    }
+    Response response{false, 0};
+    return response;
+}
+
+
+
 
 bool feature1, feature2, featureHookToggle, Health;
 int sliderValue = 1, level = 0;
 void *instanceBtn;
+bool XAimKill = false;
+float Fov_Aim = 0.0f;
+bool aimFire = false;
+bool aimScope= false;
+bool aimCrouch = false;
+bool EspFire = false;
+bool EspLine = false;
+bool EspBox = false;
+bool enable_mod = false;
 
-// Hooking examples. Assuming you know how to write hook
-void (*AddMoneyExample)(void *instance, int amount);
-
-bool (*old_get_BoolExample)(void *instance);
-bool get_BoolExample(void *instance) {
-    if (instance != NULL && featureHookToggle) {
-        return true;
-    }
-    return old_get_BoolExample(instance);
-}
-
-float (*old_get_FloatExample)(void *instance);
-float get_FloatExample(void *instance) {
-    if (instance != NULL && sliderValue > 1) {
-        return (float) sliderValue;
-    }
-    return old_get_FloatExample(instance);
-}
-
-int (*old_Level)(void *instance);
-int Level(void *instance) {
-    if (instance != NULL && level) {
-        return (int) level;
-    }
-    return old_Level(instance);
-}
-
-void (*old_FunctionExample)(void *instance);
-void FunctionExample(void *instance) {
-    instanceBtn = instance;
-    if (instance != NULL) {
-        if (Health) {
-            *(int *) ((uint64_t) instance + 0x48) = 999;
-        }
-    }
-    return old_FunctionExample(instance);
-}
-
-// we will run our hacks in a new thread so our while loop doesn't block process main thread
-void *hack_thread(void *) {
-    LOGI(OBFUSCATE("pthread created"));
-
-    //Check if target lib is loaded
-    do {
-        sleep(1);
-    } while (!isLibraryLoaded(targetLibName));
-
-    //Anti-lib rename
-    /*
-    do {
-        sleep(1);
-    } while (!isLibraryLoaded("libYOURNAME.so"));*/
-
-    LOGI(OBFUSCATE("%s has been loaded"), (const char *) targetLibName);
-
-#if defined(__aarch64__) //To compile this code for arm64 lib only. Do not worry about greyed out highlighting code, it still works
-    // New way to patch hex via KittyMemory without need to  specify len. Spaces or without spaces are fine
-    // ARM64 assembly example
-    // MOV X0, #0x0 = 00 00 80 D2
-    // RET = C0 03 5F D6
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName,
-                                                    string2Offset(OBFUSCATE("0x123456")),
-                                                    OBFUSCATE("00 00 80 D2 C0 03 5F D6"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE("0x222222")),
-                                                     OBFUSCATE("20 00 80 D2 C0 03 5F D6"));
-
-    // Hook example. Comment out if you don't use hook
-    // Strings in macros are automatically obfuscated. No need to obfuscate!
-    HOOK("str", FunctionExample, old_FunctionExample);
-    HOOK_LIB("libFileB.so", "0x123456", FunctionExample, old_FunctionExample);
-    HOOK_NO_ORIG("0x123456", FunctionExample);
-    HOOK_LIB_NO_ORIG("libFileC.so", "0x123456", FunctionExample);
-    HOOKSYM("__SymbolNameExample", FunctionExample, old_FunctionExample);
-    HOOKSYM_LIB("libFileB.so", "__SymbolNameExample", FunctionExample, old_FunctionExample);
-    HOOKSYM_NO_ORIG("__SymbolNameExample", FunctionExample);
-    HOOKSYM_LIB_NO_ORIG("libFileB.so", "__SymbolNameExample", FunctionExample);
-
-    // Patching offsets directly. Strings are automatically obfuscated too!
-    PATCHOFFSET("0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
-    PATCHOFFSET_LIB("libFileB.so", "0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
-
-    AddMoneyExample = (void(*)(void *,int))getAbsoluteAddress(targetLibName, 0x123456);
-
-#else //To compile this code for armv7 lib only.
-    // New way to patch hex via KittyMemory without need to specify len. Spaces or without spaces are fine
-    // ARMv7 assembly example
-    // MOV R0, #0x0 = 00 00 A0 E3
-    // BX LR = 1E FF 2F E1
-    hexPatches.GodMode = MemoryPatch::createWithHex(targetLibName, //Normal obfuscate
-                                                    string2Offset(OBFUSCATE("0x123456")),
-                                                    OBFUSCATE("00 00 A0 E3 1E FF 2F E1"));
-    //You can also specify target lib like this
-    hexPatches.GodMode2 = MemoryPatch::createWithHex("libtargetLibHere.so",
-                                                     string2Offset(OBFUSCATE("0x222222")),
-                                                     OBFUSCATE("01 00 A0 E3 1E FF 2F E1"));
-
-    // Hook example. Comment out if you don't use hook
-    // Strings in macros are automatically obfuscated. No need to obfuscate!
-    HOOK("str", FunctionExample, old_FunctionExample);
-    HOOK_LIB("libFileB.so", "0x123456", FunctionExample, old_FunctionExample);
-    HOOK_NO_ORIG("0x123456", FunctionExample);
-    HOOK_LIB_NO_ORIG("libFileC.so", "0x123456", FunctionExample);
-    HOOKSYM("__SymbolNameExample", FunctionExample, old_FunctionExample);
-    HOOKSYM_LIB("libFileB.so", "__SymbolNameExample", FunctionExample, old_FunctionExample);
-    HOOKSYM_NO_ORIG("__SymbolNameExample", FunctionExample);
-    HOOKSYM_LIB_NO_ORIG("libFileB.so", "__SymbolNameExample", FunctionExample);
-
-    // Patching offsets directly. Strings are automatically obfuscated too!
-    PATCHOFFSET("0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
-    PATCHOFFSET_LIB("libFileB.so", "0x20D3A8", "00 00 A0 E3 1E FF 2F E1");
-
-    AddMoneyExample = (void (*)(void *, int)) getAbsoluteAddress(targetLibName, 0x123456);
-
-    LOGI(OBFUSCATE("Done"));
-#endif
-
-    return NULL;
-}
 
 //JNI calls
 extern "C" {
-
-// Do not change or translate the first text unless you know what you are doing
-// Assigning feature numbers is optional. Without it, it will automatically count for you, starting from 0
-// Assigned feature numbers can be like any numbers 1,3,200,10... instead in order 0,1,2,3,4,5...
-// ButtonLink, Category, RichTextView and RichWebView is not counted. They can't have feature number assigned
-// Toggle, ButtonOnOff and Checkbox can be switched on by default, if you add True_. Example: CheckBox_True_The Check Box
-// To learn HTML, go to this page: https://www.w3schools.com/
 
 JNIEXPORT jobjectArray
 JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject context) {
     jobjectArray ret;
-
     //Toasts added here so it's harder to remove it
     MakeToast(env, context, OBFUSCATE("Modded by LGL"), Toast::LENGTH_LONG);
 
+    const char *status =  isConnected() ? "Category_STATUS: CONNECTED" : "Category_STATUS: OFFLINE";
     const char *features[] = {
-            OBFUSCATE("Category_The Category"), //Not counted
-            OBFUSCATE("Toggle_The toggle"),
-            OBFUSCATE(
-                    "100_Toggle_True_The toggle 2"), //This one have feature number assigned, and switched on by default
-            OBFUSCATE("110_Toggle_The toggle 3"), //This one too
-            OBFUSCATE("SeekBar_The slider_1_100"),
-            OBFUSCATE("SeekBar_Kittymemory slider example_1_5"),
-            OBFUSCATE("Spinner_The spinner_Items 1,Items 2,Items 3"),
-            OBFUSCATE("Button_The button"),
-            OBFUSCATE("ButtonLink_The button with link_https://www.youtube.com/"), //Not counted
-            OBFUSCATE("ButtonOnOff_The On/Off button"),
-            OBFUSCATE("CheckBox_The Check Box"),
-            OBFUSCATE("InputValue_Input number"),
-            OBFUSCATE("InputValue_1000_Input number 2"), //Max value
-            OBFUSCATE("InputText_Input text"),
-            OBFUSCATE("RadioButton_Radio buttons_OFF,Mod 1,Mod 2,Mod 3"),
-
-            //Create new collapse
-            OBFUSCATE("Collapse_Collapse 1"),
-            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("123_CollapseAdd_Toggle_The toggle"),
-            OBFUSCATE("CollapseAdd_Button_The button"),
-
-            //Create new collapse again
-            OBFUSCATE("Collapse_Collapse 2"),
-            OBFUSCATE("CollapseAdd_SeekBar_The slider_1_100"),
-            OBFUSCATE("CollapseAdd_InputValue_Input number"),
-
-            OBFUSCATE("RichTextView_This is text view, not fully HTML."
-                      "<b>Bold</b> <i>italic</i> <u>underline</u>"
-                      "<br />New line <font color='red'>Support colors</font>"
-                      "<br/><big>bigger Text</big>"),
-            OBFUSCATE("RichWebView_<html><head><style>body{color: white;}</style></head><body>"
-                      "This is WebView, with REAL HTML support!"
-                      "<div style=\"background-color: darkblue; text-align: center;\">Support CSS</div>"
-                      "<marquee style=\"color: green; font-weight:bold;\" direction=\"left\" scrollamount=\"5\" behavior=\"scroll\">This is <u>scrollable</u> text</marquee>"
-                      "</body></html>")
+            status,
+            OBFUSCATE("Category_The MOD MENU"), //Not counted
+            OBFUSCATE("InjectBTN"), //Not counted
+            OBFUSCATE("15_Toggle_ESP LINE"),
     };
-
-    //Now you dont have to manually update the number everytime;
     int Total_Feature = (sizeof features / sizeof features[0]);
     ret = (jobjectArray)
             env->NewObjectArray(Total_Feature, env->FindClass(OBFUSCATE("java/lang/String")),
                                 env->NewStringUTF(""));
-
     for (int i = 0; i < Total_Feature; i++)
         env->SetObjectArrayElement(ret, i, env->NewStringUTF(features[i]));
-
     pthread_t ptid;
     pthread_create(&ptid, NULL, antiLeech, NULL);
 
@@ -228,7 +219,7 @@ Java_uk_lgl_modmenu_FloatingModMenuService_getFeatureList(JNIEnv *env, jobject c
 }
 
 JNIEXPORT void JNICALL
-Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
+        Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
                                         jint featNum, jstring featName, jint value,
                                         jboolean boolean, jstring str) {
 
@@ -236,115 +227,95 @@ Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject obj,
          env->GetStringUTFChars(featName, 0), value,
          boolean, str != NULL ? env->GetStringUTFChars(str, 0) : "");
 
-    //BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
+    // BE CAREFUL NOT TO ACCIDENTLY REMOVE break;
 
     switch (featNum) {
-        case 0:
-            feature2 = boolean;
-            if (feature2) {
-                // To print bytes you can do this
-                //if (hexPatches.GodMode.Modify()) {
-                //    LOGD(OBFUSCATE("Current Bytes: %s"),
-                //         hexPatches.GodMode.get_CurrBytes().c_str());
-                //}
-                hexPatches.GodMode.Modify();
-                hexPatches.GodMode2.Modify();
-                //LOGI(OBFUSCATE("On"));
-            } else {
-                hexPatches.GodMode.Restore();
-                hexPatches.GodMode2.Restore();
-                //LOGI(OBFUSCATE("Off"));
+        case 10:
+            Fov_Aim = (float)value;
+            if(value == 0) {
+                Fov_Aim = 0.0f;
             }
             break;
-        case 100:
-            break;
-        case 110:
-            break;
-        case 1:
-            if (value >= 1) {
-                sliderValue = value;
-            }
-            break;
-        case 2:
-            switch (value) {
-                //For noobies
-                case 0:
-                    hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            targetLibName, string2Offset(
-                                    OBFUSCATE("0x100000")),
-                            OBFUSCATE(
-                                    "00 00 A0 E3 1E FF 2F E1"));
-                    hexPatches.SliderExample.Modify();
-                    break;
-                case 1:
-                    hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            targetLibName, string2Offset(
-                                    OBFUSCATE("0x100000")),
-                            OBFUSCATE(
-                                    "01 00 A0 E3 1E FF 2F E1"));
-                    hexPatches.SliderExample.Modify();
-                    break;
-                case 2:
-                    hexPatches.SliderExample = MemoryPatch::createWithHex(
-                            targetLibName,
-                            string2Offset(
-                                    OBFUSCATE("0x100000")),
-                            OBFUSCATE(
-                                    "02 00 A0 E3 1E FF 2F E1"));
-                    hexPatches.SliderExample.Modify();
-                    break;
-            }
-            break;
-        case 3:
-            switch (value) {
-                case 0:
-                    LOGD(OBFUSCATE("Selected item 1"));
-                    break;
-                case 1:
-                    LOGD(OBFUSCATE("Selected item 2"));
-                    break;
-                case 2:
-                    LOGD(OBFUSCATE("Selected item 3"));
-                    break;
-            }
-            break;
-        case 4:
-            // Since we have instanceBtn as a field, we can call it out of Update hook function
-            if (instanceBtn != NULL)
-                AddMoneyExample(instanceBtn, 999999);
-            // MakeToast(env, obj, OBFUSCATE("Button pressed"), Toast::LENGTH_SHORT);
-            break;
-        case 5:
-            break;
-        case 6:
-            featureHookToggle = boolean;
-            break;
-        case 7:
-            level = value;
-            break;
-        case 8:
-            //MakeToast(env, obj, TextInput, Toast::LENGTH_SHORT);
-            break;
-        case 9:
-            break;
+        case 5: XAimKill = !XAimKill; break;
+        case 11: aimFire = !aimFire;  break;
+        case 12: aimScope= !aimScope;  break;
+        case 13: aimCrouch = !aimCrouch;  break;
+        case 14: EspFire = !EspFire;  break;
+        case 15: EspLine = !EspLine;  break;
+        case 16: EspBox = !EspBox;  break;
+
+        }
     }
 }
+
+bool isValidPlayer(PlayerData data) {
+    return (data.HeadLocation != Vector3::Zero()); // || data.PlayerName.size() > 0
+}
+bool isValidCloseEnemy(PlayerData data) {
+    return (data.CloseEnemyHeadLocation != Vector3::Zero());
 }
 
-//No need to use JNI_OnLoad, since we don't use JNIEnv
-//We do this to hide OnLoad from disassembler
-__attribute__((constructor))
-void lib_main() {
-    // Create a new thread so it does not block the main thread, means the game would not freeze
-    pthread_t ptid;
-    pthread_create(&ptid, NULL, hack_thread, NULL);
+void DrawESP(ESP esp, int screenWidth, int screenHeight) {
+    float mScale = (float) screenHeight / (float) 1080;
+    esp.DrawText(Color::Green(), 0.6f, OBFUSCATE("L3DEVIL") ,
+                 Vector3((float)screenWidth / 2, (float)screenHeight / 1.03f + 10.0f),  30.0f);
+
+    if (enable_mod) {
+        if (isConnected()) {
+            Response response = getData(screenWidth, screenHeight);
+            if(response.Success) {
+                int count = response.PlayerCount;
+                if(count > 0) {
+                    PlayerData localPlayer = response.Players[0];
+                    for(int i = 0; i < count; i++) {
+                        PlayerData player = response.Players[i];
+
+                        if(!isValidPlayer(player)){ continue; }
+                        Vector3 Head = player.HeadLocation;
+
+                        char bx[20];
+                        Vector3 End = Head;
+                        Vector3 End2 = player.ToeLocation;
+                        auto boxWidth = static_cast<float>(((player.RShoulder.X * 0.995) - (player.LShoulder.X * 1.005)) *1.5);
+                        float Tamanho = 0.0f;
+                        float Distance2 = player.Distance;
+                        if (Distance2 > 10.0f) {
+                            Tamanho = 10.0f;
+                        } else if (Distance2 > 20.0f) {
+                            Tamanho = 0.0f;
+                        }
+
+                        if (EspLine) {
+                            esp.DrawLine(player.get_IsDieing ? Color::Red() : Color::Green(),
+                                         0.9f, Vector3(((float)screenWidth / 2), 0),
+                                         Vector3(((float)screenWidth - ((float)screenWidth - Head.X)),
+                                                 ((float)screenHeight - Head.Y - 8.0f)));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
-/*
-JNIEXPORT jint JNICALL
-JNI_OnLoad(JavaVM *vm, void *reserved) {
-    JNIEnv *globalEnv;
-    vm->GetEnv((void **) &globalEnv, JNI_VERSION_1_6);
-    return JNI_VERSION_1_6;
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_DrawOn(JNIEnv *env, jclass type, jobject espView, jobject canvas) {
+    espOverlay = ESP(env, espView, canvas);
+    if (espOverlay.isValid()){
+        DrawESP(espOverlay, espOverlay.getWidth(), espOverlay.getHeight());
+    }
 }
- */
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_uk_lgl_modmenu_FloatingModMenuService_Init(JNIEnv *env, jobject thiz) {
+    MakeToast(env, thiz, startClient() ? "CONNECTED" : "FAILED", Toast::LENGTH_LONG);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+    Java_uk_lgl_modmenu_FloatingModMenuService_Stop(JNIEnv *env, jobject type) {
+    stopClient();
+}

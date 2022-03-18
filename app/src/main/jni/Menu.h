@@ -26,6 +26,26 @@ void setText(JNIEnv *env, jobject obj, const char* text){
     (*env).CallVoidMethod(obj, setText,  (*env).CallStaticObjectMethod(html, fromHtml, jstr));
 }
 
+
+void setDialog(jobject ctx, JNIEnv *env, const char *title, const char *msg){
+    jclass Alert = env->FindClass("android/app/AlertDialog$Builder");
+    jmethodID AlertCons = env->GetMethodID(Alert, "<init>", "(Landroid/content/Context;)V");
+    jobject MainAlert = env->NewObject(Alert, AlertCons, ctx);
+    jmethodID setTitle = env->GetMethodID(Alert, "setTitle", "(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;");
+    env->CallObjectMethod(MainAlert, setTitle, env->NewStringUTF(title));
+    jmethodID setMsg = env->GetMethodID(Alert, "setMessage", "(Ljava/lang/CharSequence;)Landroid/app/AlertDialog$Builder;");
+    env->CallObjectMethod(MainAlert, setMsg, env->NewStringUTF(msg));
+    jmethodID setCa = env->GetMethodID(Alert, "setCancelable", "(Z)Landroid/app/AlertDialog$Builder;");
+    env->CallObjectMethod(MainAlert, setCa, false);
+    jmethodID setPB = env->GetMethodID(Alert, "setPositiveButton", "(Ljava/lang/CharSequence;Landroid/content/DialogInterface$OnClickListener;)Landroid/app/AlertDialog$Builder;");
+    env->CallObjectMethod(MainAlert, setPB, env->NewStringUTF("Ok"), static_cast<jobject>(NULL));
+    jmethodID create = env->GetMethodID(Alert, "create", "()Landroid/app/AlertDialog;");
+    jobject creaetob = env->CallObjectMethod(MainAlert, create);
+    jclass AlertN = env->FindClass("android/app/AlertDialog");
+    jmethodID show = env->GetMethodID(AlertN, "show", "()V");
+    env->CallVoidMethod(creaetob, show);
+}
+
 extern "C" {
 JNIEXPORT void JNICALL
 Java_uk_lgl_modmenu_FloatingModMenuService_setTitleText(JNIEnv *env, jobject thiz, jobject obj) {
@@ -104,3 +124,10 @@ Java_uk_lgl_modmenu_FloatingModMenuService_settingsList(JNIEnv *env, jobject act
     return (ret);
 }
 }
+
+//extern "C"
+//JNIEXPORT void JNICALL
+//Java_uk_lgl_modmenu_Preferences_Changes(JNIEnv *env, jclass clazz, jobject con, jint f_num,
+//                                        jstring f_name, jint i, jboolean bool, jstring str) {
+//    // TODO: implement Changes()
+//}

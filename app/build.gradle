@@ -9,7 +9,7 @@ android {
         versionCode 1
         versionName "2.9"
         ndk {
-            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86'
+            abiFilters 'armeabi-v7a'
         }
         signingConfig signingConfigs.debug
     }
@@ -36,4 +36,5 @@ android {
 //dependencies must be placed below 'android' brackets to get it work on AIDE
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'eu.chainfire:libsuperuser:1.1.0.+'
 }

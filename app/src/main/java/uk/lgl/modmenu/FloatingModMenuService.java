@@ -605,7 +605,7 @@ public class FloatingModMenuService extends Service {
         try {
             String injector = getApplicationInfo().nativeLibraryDir + File.separator + "libinject.so";
             String payload_source = getApplicationInfo().nativeLibraryDir + File.separator + "libserver.so";
-            String payload_dest = "/data/local/tmp/libdevil.so";
+            String payload_dest = "/data/local/tmp/libserver.so";
             String context = "u:object_r:system_lib_file:s0";
             List<String> STDOUT = new ArrayList<>();
             Shell.Pool.SU.run("ls -lZ /system/lib/libandroid_runtime.so", STDOUT, null, false);
